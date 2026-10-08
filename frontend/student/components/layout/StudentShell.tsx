@@ -1,0 +1,557 @@
+'use client';
+
+import React, { useState, useEffect, createContext, useContext } from 'react';
+import { Button } from '../ui/Button';
+import { Dropdown } from '../ui/Dropdown';
+import { Sidebar } from '../ui/Sidebar';
+import { PageSpinner } from '../ui/LoadingState';
+
+// Authenticated Student Profile Interface
+export interface StudentProfile {
+  id: string;
+  email: string;
+  role: string;
+  full_name: string;
+  student_id: string;
+  department_id?: string | null;
+  phone?: string | null;
+}
+
+interface StudentShellContextType {
+  user: StudentProfile | null;
+  isLoading: boolean;
+  unreadCount: number;
+  refreshUnreadCount: () => void;
+  logout: () => void;
+  currentPath: string;
+}
+
+const StudentShellContext = createContext<StudentShellContextType | undefined>(undefined);
+
+export const useStudentShell = () => {
+  const context = useContext(StudentShellContext);
+  if (!context) {
+    throw new Error('useStudentShell must be used within a StudentShell');
+  }
+  return context;
+};
+
+export interface StudentShellProps {
+  children: React.ReactNode;
+  activePath?: string;
+  requireAuth?: boolean;
+}
+
+export const StudentShell: React.FC<StudentShellProps> = ({
+  children,
+  activePath = '/dashboard',
+  requireAuth = true,
+}) => {
+  const [user, setUser] = useState<StudentProfile | null>(null);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [unreadCount, setUnreadCount] = useState<number>(2);
+  const [isMobileDrawerOpen, setIsMobileDrawerOpen] = useState<boolean>(false);
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState<boolean>(false);
+
+  // Fetch session user from actual API /api/auth/me
+  useEffect(() => {
+    async function fetchSession() {
+      try {
+        const res = await fetch('/api/auth/me', {
+          headers: {
+            'x-demo-user-id': '00000000-0000-0000-0000-000000000006',
+            'x-demo-user-role': 'STUDENT',
+          },
+        });
+        const data = await res.json();
+        if (data.success && data.data?.user) {
+          const u = data.data.user;
+          setUser({
+            id: u.id,
+            email: u.email,
+            role: u.role,
+            full_name: u.profile?.full_name || 'Alex Mercer',
+            student_id: u.profile?.student_id || 'CS-2023-014',
+            department_id: u.profile?.department_id,
+            phone: u.profile?.phone,
+          });
+        } else if (requireAuth) {
+          // Unauthenticated redirect to login
+          window.location.href = '/login';
+        }
+      } catch (err) {
+        console.error('Session verification error:', err);
+        if (requireAuth) {
+          // Fallback demo user for local hackathon testing
+          setUser({
+            id: '00000000-0000-0000-0000-000000000006',
+            email: 'student.alex@campus.edu',
+            role: 'STUDENT',
+            full_name: 'Alex Mercer',
+            student_id: 'CS-2023-014',
+          });
+        }
+      } finally {
+        setIsLoading(false);
+      }
+    }
+    fetchSession();
+  }, [requireAuth]);
+
+  // Fetch unread notification count
+  const refreshUnreadCount = async () => {
+    try {
+      const res = await fetch('/api/notifications', {
+        headers: {
+          'x-demo-user-id': '00000000-0000-0000-0000-000000000006',
+          'x-demo-user-role': 'STUDENT',
+        },
+      });
+      const data = await res.json();
+      const count =
+        data.data?.unreadCount ??
+        data.data?.unread_count ??
+        data.meta?.unreadCount ??
+        (Array.isArray(data.data?.notifications)
+          ? data.data.notifications.filter((n: any) => !n.is_read).length
+          : undefined);
+      if (count !== undefined) {
+        setUnreadCount(count);
+      }
+    } catch (err) {
+      // Keep default
+    }
+  };
+
+  const handleLogout = () => {
+    setUser(null);
+    window.location.href = '/login';
+  };
+
+  const navigationItems = [
+    { label: 'Dashboard', href: '/student/page', icon: '📊' },
+    { label: 'My Grievances', href: '/student/grievances', icon: '📂' },
+    { label: 'Report Grievance', href: '/student/report', icon: '➕', isCta: true },
+    { label: 'Notifications', href: '/student/notifications', icon: '🔔', badge: unreadCount },
+    { label: 'Feedback & Ratings', href: '/student/feedback', icon: '⭐' },
+    { label: 'My Profile', href: '/student/page', icon: '👤' },
+  ];
+
+  if (isLoading) {
+    return <PageSpinner label="Verifying Student Session..." />;
+  }
+
+  return (
+    <StudentShellContext.Provider
+      value={{
+        user,
+        isLoading,
+        unreadCount,
+        refreshUnreadCount,
+        logout: handleLogout,
+        currentPath: activePath,
+      }}
+    >
+      <div style={{ minHeight: '100vh', backgroundColor: '#F8FAF8', color: '#111827', display: 'flex', flexDirection: 'column' }}>
+        
+        {/* Top Header Bar */}
+        <header
+          style={{
+            height: '64px',
+            backgroundColor: '#FFFFFF',
+            borderBottom: '1px solid #E5E7EB',
+            position: 'sticky',
+            top: 0,
+            zIndex: 1030,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            padding: '0 1.5rem',
+            boxShadow: '0 1px 3px rgba(0,0,0,0.04)',
+          }}
+        >
+          {/* Left: Mobile Drawer Trigger + Institutional Brand Logo */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+            <button
+              className="sg-mobile-toggle"
+              onClick={() => setIsMobileDrawerOpen(true)}
+              style={{
+                background: 'none',
+                border: 'none',
+                fontSize: '1.25rem',
+                cursor: 'pointer',
+                color: '#374151',
+                padding: '0.25rem',
+                display: 'flex',
+              }}
+            >
+              ☰
+            </button>
+
+            <a href="/" style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', textDecoration: 'none' }}>
+              <div
+                style={{
+                  width: '36px',
+                  height: '36px',
+                  borderRadius: '50%',
+                  backgroundColor: '#1B4332',
+                  color: '#FFFFFF',
+                  fontWeight: 800,
+                  fontSize: '1rem',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  boxShadow: '0 2px 8px rgba(27, 67, 50, 0.2)',
+                }}
+              >
+                🏛️
+              </div>
+              <div>
+                <span style={{ fontSize: '0.9375rem', fontWeight: 800, color: '#1B4332', letterSpacing: '-0.01em' }}>
+                  AMIT Student Portal
+                </span>
+                <span style={{ fontSize: '0.65rem', display: 'block', color: '#2D6A4F', fontWeight: 600 }}>
+                  Smart Grievance System 2026
+                </span>
+              </div>
+            </a>
+          </div>
+
+          {/* Center: Search / Quick Navigation Trigger (Desktop) */}
+          <div style={{ display: 'none', alignItems: 'center' }} className="sg-desktop-search">
+            <div
+              onClick={() => (window.location.href = '/student/page')}
+              style={{
+                backgroundColor: '#F3F4F6',
+                borderRadius: '9999px',
+                padding: '0.45rem 1rem',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.5rem',
+                cursor: 'pointer',
+                fontSize: '0.85rem',
+                color: '#6B7280',
+                width: '260px',
+                border: '1px solid #E5E7EB',
+              }}
+            >
+              <span>🔍</span>
+              <span>Search grievances or ticket ID...</span>
+            </div>
+          </div>
+
+          {/* Right: Primary CTA + Notifications + Profile Dropdown */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
+            {/* Quick Report Grievance Action Button */}
+            <Button
+              variant="primary"
+              size="sm"
+              pill
+              onClick={() => (window.location.href = '/student/report')}
+              leftIcon="➕"
+              className="sg-header-cta"
+            >
+              Report Grievance
+            </Button>
+
+            {/* Notification Bell */}
+            <button
+              onClick={() => (window.location.href = '/student/notifications')}
+              style={{
+                position: 'relative',
+                background: '#F3F4F6',
+                border: 'none',
+                borderRadius: '50%',
+                width: '38px',
+                height: '38px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                cursor: 'pointer',
+                fontSize: '1rem',
+              }}
+              title="Notifications"
+            >
+              🔔
+              {unreadCount > 0 && (
+                <span
+                  style={{
+                    position: 'absolute',
+                    top: '-2px',
+                    right: '-2px',
+                    backgroundColor: '#DC2626',
+                    color: '#FFFFFF',
+                    fontSize: '0.65rem',
+                    fontWeight: 700,
+                    width: '16px',
+                    height: '16px',
+                    borderRadius: '50%',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    border: '2px solid #FFFFFF',
+                  }}
+                >
+                  {unreadCount}
+                </span>
+              )}
+            </button>
+
+            {/* Profile Dropdown */}
+            <Dropdown
+              align="right"
+              trigger={
+                <div
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '0.5rem',
+                    backgroundColor: '#F4F9F6',
+                    padding: '0.3rem 0.65rem 0.3rem 0.3rem',
+                    borderRadius: '9999px',
+                    border: '1px solid #D8F3DC',
+                  }}
+                >
+                  <div
+                    style={{
+                      width: '28px',
+                      height: '28px',
+                      borderRadius: '50%',
+                      backgroundColor: '#2D6A4F',
+                      color: '#FFFFFF',
+                      fontWeight: 700,
+                      fontSize: '0.75rem',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                    }}
+                  >
+                    🎓
+                  </div>
+                  <span style={{ fontSize: '0.8125rem', fontWeight: 700, color: '#1B4332' }}>
+                    {user?.full_name || 'Alex Mercer'}
+                  </span>
+                  <span style={{ fontSize: '0.65rem', color: '#6B7280' }}>▼</span>
+                </div>
+              }
+              items={[
+                {
+                  id: 'profile',
+                  label: 'My Profile & ID',
+                  icon: '👤',
+                  onClick: () => (window.location.href = '/student/page'),
+                },
+                {
+                  id: 'my-grievances',
+                  label: 'My Grievances',
+                  icon: '📂',
+                  onClick: () => (window.location.href = '/student/page'),
+                },
+                {
+                  id: 'notifications',
+                  label: `Notifications (${unreadCount})`,
+                  icon: '🔔',
+                  onClick: () => (window.location.href = '/student/page'),
+                },
+                {
+                  id: 'logout',
+                  label: 'Log Out',
+                  icon: '🚪',
+                  danger: true,
+                  onClick: handleLogout,
+                },
+              ]}
+            />
+          </div>
+        </header>
+
+        {/* Main Body: Desktop Sidebar + Page Content Container */}
+        <div style={{ display: 'flex', flex: 1 }}>
+          
+          {/* Desktop Left Sidebar */}
+          <aside
+            className="sg-desktop-sidebar"
+            style={{
+              width: isSidebarCollapsed ? '72px' : '250px',
+              backgroundColor: '#FFFFFF',
+              borderRight: '1px solid #E5E7EB',
+              display: 'flex',
+              flexDirection: 'column',
+              justifyContent: 'space-between',
+              padding: '1.25rem 0.75rem',
+              transition: 'width 200ms ease',
+              zIndex: 1010,
+            }}
+          >
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
+              {navigationItems.map((item) => {
+                const isActive = activePath === item.href;
+                if (item.isCta) {
+                  return (
+                    <a
+                      key={item.label}
+                      href={item.href}
+                      style={{
+                        margin: '0.5rem 0',
+                        padding: '0.65rem 1rem',
+                        backgroundColor: '#2D6A4F',
+                        color: '#FFFFFF',
+                        borderRadius: '12px',
+                        fontWeight: 700,
+                        fontSize: '0.875rem',
+                        textDecoration: 'none',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: isSidebarCollapsed ? 'center' : 'flex-start',
+                        gap: '0.6rem',
+                        boxShadow: '0 4px 12px rgba(45, 106, 79, 0.2)',
+                      }}
+                    >
+                      <span>{item.icon}</span>
+                      {!isSidebarCollapsed && <span>{item.label}</span>}
+                    </a>
+                  );
+                }
+
+                return (
+                  <a
+                    key={item.label}
+                    href={item.href}
+                    style={{
+                      padding: '0.65rem 0.85rem',
+                      borderRadius: '10px',
+                      fontWeight: isActive ? 700 : 500,
+                      fontSize: '0.875rem',
+                      color: isActive ? '#1B4332' : '#4B5563',
+                      backgroundColor: isActive ? '#E8F5E9' : 'transparent',
+                      borderLeft: isActive ? '3px solid #2D6A4F' : '3px solid transparent',
+                      textDecoration: 'none',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: isSidebarCollapsed ? 'center' : 'space-between',
+                      transition: 'all 150ms ease',
+                    }}
+                  >
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
+                      <span>{item.icon}</span>
+                      {!isSidebarCollapsed && <span>{item.label}</span>}
+                    </div>
+                    {!isSidebarCollapsed && item.badge !== undefined && item.badge > 0 && (
+                      <span
+                        style={{
+                          backgroundColor: '#DC2626',
+                          color: '#FFFFFF',
+                          fontSize: '0.7rem',
+                          fontWeight: 700,
+                          padding: '0.1rem 0.45rem',
+                          borderRadius: '9999px',
+                        }}
+                      >
+                        {item.badge}
+                      </span>
+                    )}
+                  </a>
+                );
+              })}
+            </div>
+
+            {/* Sidebar Bottom Info Box */}
+            {!isSidebarCollapsed && (
+              <div style={{ backgroundColor: '#F0FDF4', padding: '0.85rem', borderRadius: '12px', border: '1px solid #DCFCE7' }}>
+                <div style={{ fontSize: '0.75rem', fontWeight: 700, color: '#1B4332' }}>🎓 Active Student</div>
+                <div style={{ fontSize: '0.8125rem', fontWeight: 600, color: '#2D6A4F', marginTop: '0.15rem' }}>{user?.full_name}</div>
+                <div style={{ fontSize: '0.7rem', color: '#6B7280' }}>ID: {user?.student_id}</div>
+              </div>
+            )}
+          </aside>
+
+          {/* Main Content Area */}
+          <main className="sg-main-content" style={{ flex: 1, padding: '1.5rem', maxWidth: '1280px', width: '100%', margin: '0 auto', overflowX: 'hidden' }}>
+            {children}
+          </main>
+        </div>
+
+        {/* Mobile Navigation Drawer */}
+        <Sidebar
+          isOpen={isMobileDrawerOpen}
+          onClose={() => setIsMobileDrawerOpen(false)}
+          activePath={activePath}
+        />
+
+        {/* Mobile Bottom Navigation Bar */}
+        <nav
+          className="sg-mobile-bottom-bar"
+          aria-label="Student Mobile Navigation"
+          style={{
+            position: 'sticky',
+            bottom: 0,
+            left: 0,
+            right: 0,
+            backgroundColor: '#FFFFFF',
+            borderTop: '1px solid #E5E7EB',
+            display: 'flex',
+            justifyContent: 'space-around',
+            padding: '0.5rem 0.25rem',
+            zIndex: 1020,
+            boxShadow: '0 -4px 10px rgba(0,0,0,0.05)',
+          }}
+        >
+          <a href="/student/page" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', fontSize: '0.7rem', color: '#1B4332', fontWeight: 700, textDecoration: 'none' }}>
+            <span style={{ fontSize: '1.1rem' }}>📊</span>
+            Dashboard
+          </a>
+          <a href="/student/grievances" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', fontSize: '0.7rem', color: '#4B5563', textDecoration: 'none' }}>
+            <span style={{ fontSize: '1.1rem' }}>📂</span>
+            Complaints
+          </a>
+          <a href="/student/report" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', fontSize: '0.75rem', color: '#FFFFFF', backgroundColor: '#2D6A4F', padding: '0.3rem 0.8rem', borderRadius: '9999px', fontWeight: 700, textDecoration: 'none' }}>
+            <span style={{ fontSize: '1rem' }}>➕</span>
+            Report
+          </a>
+          <a href="/student/notifications" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', fontSize: '0.7rem', color: '#4B5563', textDecoration: 'none' }}>
+            <span style={{ fontSize: '1.1rem' }}>🔔</span>
+            Alerts
+          </a>
+          <a href="/student/page" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', fontSize: '0.7rem', color: '#4B5563', textDecoration: 'none' }}>
+            <span style={{ fontSize: '1.1rem' }}>👤</span>
+            Profile
+          </a>
+        </nav>
+      </div>
+
+      <style jsx global>{`
+        @media (min-width: 900px) {
+          .sg-mobile-toggle {
+            display: none !important;
+          }
+          .sg-desktop-sidebar {
+            display: flex !important;
+          }
+          .sg-desktop-search {
+            display: flex !important;
+          }
+          .sg-mobile-bottom-bar {
+            display: none !important;
+          }
+        }
+        @media (max-width: 899px) {
+          .sg-desktop-sidebar {
+            display: none !important;
+          }
+          .sg-header-cta {
+            display: none !important;
+          }
+          .sg-main-content {
+            padding-bottom: 5.5rem !important;
+          }
+        }
+        @media (max-width: 600px) {
+          .sg-main-content {
+            padding: 1rem 0.75rem !important;
+            padding-bottom: 5.5rem !important;
+          }
+        }
+      `}</style>
+    </StudentShellContext.Provider>
+  );
+};

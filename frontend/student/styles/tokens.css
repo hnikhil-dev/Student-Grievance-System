@@ -1,0 +1,265 @@
+/* ==========================================================================
+   SMART STUDENT GRIEVANCE SYSTEM - DESIGN SYSTEM TOKENS
+   Visual Theme Grounded in Institutional Reference Design (Emerald / Mint / Slate)
+   ========================================================================== */
+
+:root {
+  /* ------------------------------------------------------------------------
+     1. COLOR PALETTE
+     ------------------------------------------------------------------------ */
+  /* Institutional Primary Emerald (Reference Image Accent) */
+  --color-primary-50: #f0fdf4;
+  --color-primary-100: #dcfce7;
+  --color-primary-200: #bbf7d0;
+  --color-primary-300: #86efac;
+  --color-primary-400: #4ade80;
+  --color-primary-500: #2d6a4f; /* Main Institutional Green */
+  --color-primary-600: #1b4332; /* Deep Forest Green */
+  --color-primary-700: #143627;
+  --color-primary-800: #0f291e;
+  --color-primary-900: #091a13;
+
+  /* Secondary Sage / Mint Surfaces */
+  --color-sage-50: #f4f9f6;
+  --color-sage-100: #e8f5e9;
+  --color-sage-200: #d8f3dc;
+  --color-sage-300: #b7e4c7;
+
+  /* AI Intelligence Accent (Indigo / Violet for trustworthy AI signals) */
+  --color-ai-50: #eef2ff;
+  --color-ai-100: #e0e7ff;
+  --color-ai-200: #c7d2fe;
+  --color-ai-500: #4f46e5;
+  --color-ai-600: #4338ca;
+  --color-ai-700: #3730a3;
+
+  /* Neutrals (Charcoal Text & Slate Surfaces) */
+  --color-neutral-0: #ffffff;
+  --color-neutral-50: #f8faf8;
+  --color-neutral-100: #f3f4f6;
+  --color-neutral-200: #e5e7eb;
+  --color-neutral-300: #d1d5db;
+  --color-neutral-400: #9ca3af;
+  --color-neutral-500: #6b7280;
+  --color-neutral-600: #4b5563;
+  --color-neutral-700: #374151;
+  --color-neutral-800: #1f2937;
+  --color-neutral-900: #111827;
+
+  /* Status & Semantic Colors */
+  --color-success-bg: #ecfdf5;
+  --color-success-text: #047857;
+  --color-success-border: #a7f3d0;
+
+  --color-warning-bg: #fffbeb;
+  --color-warning-text: #b45309;
+  --color-warning-border: #fde68a;
+
+  --color-danger-bg: #fef2f2;
+  --color-danger-text: #b91c1c;
+  --color-danger-border: #fca5a5;
+
+  --color-info-bg: #f0f9ff;
+  --color-info-text: #0369a1;
+  --color-info-border: #bae6fd;
+
+  /* ------------------------------------------------------------------------
+     2. TYPOGRAPHY
+     ------------------------------------------------------------------------ */
+  --font-family-sans: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  
+  --font-size-xs: 0.75rem;    /* 12px */
+  --font-size-sm: 0.875rem;   /* 14px */
+  --font-size-base: 1rem;     /* 16px */
+  --font-size-lg: 1.125rem;   /* 18px */
+  --font-size-xl: 1.25rem;    /* 20px */
+  --font-size-2xl: 1.5rem;    /* 24px */
+  --font-size-3xl: 1.875rem;  /* 30px */
+
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+
+  /* ------------------------------------------------------------------------
+     3. BORDER RADIUS & SHADOWS (Matching Reference Floating Cards)
+     ------------------------------------------------------------------------ */
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;   /* Floating Card Radius */
+  --radius-pill: 9999px;
+
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.07), 0 2px 4px -1px rgba(0, 0, 0, 0.04);
+  --shadow-lg: 0 10px 25px -5px rgba(0, 0, 0, 0.06), 0 8px 10px -6px rgba(0, 0, 0, 0.02);
+  --shadow-floating: 0 20px 40px -15px rgba(27, 67, 50, 0.12);
+
+  /* ------------------------------------------------------------------------
+     4. TRANSITIONS & Z-INDEX
+     ------------------------------------------------------------------------ */
+  --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-normal: 250ms cubic-bezier(0.4, 0, 0.2, 1);
+
+  --z-dropdown: 1000;
+  --z-sticky: 1020;
+  --z-fixed: 1030;
+  --z-modal-backdrop: 1040;
+  --z-modal: 1050;
+  --z-toast: 1060;
+}
+
+/* ==========================================================================
+   GLOBAL RESET & ACCESSIBILITY UTILITIES
+   ========================================================================== */
+
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+  -webkit-text-size-adjust: 100%;
+}
+
+img, svg, video {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Accessible focus ring for keyboard navigation */
+:focus-visible {
+  outline: 2px solid #2D6A4F;
+  outline-offset: 2px;
+}
+
+button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible {
+  outline: 2px solid #2D6A4F;
+  outline-offset: 2px;
+}
+
+/* Screen reader only utility */
+.sg-sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+/* Text and Layout utilities */
+.sg-break-words {
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+  word-break: break-word;
+}
+
+.sg-truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Card & Surface utilities */
+.sg-card {
+  background-color: var(--color-neutral-0);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-lg);
+  border: 1px solid rgba(229, 231, 235, 0.8);
+}
+
+.sg-input-focus:focus {
+  outline: none;
+  border-color: var(--color-primary-500);
+  box-shadow: 0 0 0 3px rgba(45, 106, 79, 0.15);
+}
+
+@media (max-width: 480px) {
+  .sg-card-container {
+    padding: 1.25rem 0.875rem !important;
+    border-radius: 16px !important;
+  }
+}
+
+/* Subtle, professional microinteractions */
+@keyframes sg-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes sg-slide-up {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes sg-pulse-soft {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.82;
+    transform: scale(1.02);
+  }
+}
+
+@keyframes sg-success-pop {
+  0% {
+    transform: scale(0.85);
+    opacity: 0;
+  }
+  60% {
+    transform: scale(1.08);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.sg-animate-fade-in {
+  animation: sg-fade-in 200ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.sg-animate-slide-up {
+  animation: sg-slide-up 240ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.sg-animate-pulse-soft {
+  animation: sg-pulse-soft 2s infinite ease-in-out;
+}
+
+.sg-animate-success-pop {
+  animation: sg-success-pop 320ms cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+/* Agentic Action Badge Styles */
+.sg-action-card {
+  transition: transform 180ms ease, box-shadow 180ms ease;
+}
+.sg-action-card:hover {
+  transform: translateY(-1px);
+}
+
+/* Respect user motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+

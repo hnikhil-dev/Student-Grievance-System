@@ -16,7 +16,7 @@ export function useRealtimeGrievances(onUpdate: (payload: any) => void) {
       .on(
         'postgres_changes',
         { event: '*', schema: 'public', table: 'grievances' },
-        (payload) => {
+        (payload: any) => {
           onUpdate(payload);
         }
       )
@@ -45,7 +45,7 @@ export function useRealtimeNotifications(userId: string, onNotification: (payloa
           table: 'notifications',
           filter: `user_id=eq.${userId}`,
         },
-        (payload) => {
+        (payload: any) => {
           onNotification(payload);
         }
       )
