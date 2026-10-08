@@ -25,6 +25,8 @@ export interface GrievanceWithDetails extends GrievanceRow {
   attachments?: GrievanceAttachmentRow[];
   history?: GrievanceStatusHistoryRow[];
   sla_status?: SlaStatusResult;
+  evidence?: any[];
+  agent_logs?: any[];
 }
 
 export interface CreateGrievanceDTO {

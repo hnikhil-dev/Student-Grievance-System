@@ -227,3 +227,121 @@ Row Level Security is enabled on **all 12 PostgreSQL tables**:
    - All aggregations (overdue counts, breach counts, satisfaction rating, 14-day trends) are pre-calculated server-side for direct chart consumption.
 3. **Impersonation Header for Admin Testing:**
    - Add header `x-demo-user-id: 00000000-0000-0000-0000-000000000001` and `x-demo-user-role: SUPER_ADMIN` to test admin views instantly without logging in.
+
+---
+
+## 9. Autonomous Multi-Agent Governance Pipeline (2026 Architecture)
+
+The backend incorporates an autonomous, explainable multi-agent system designed for zero-latency execution, deterministic fail-safes, and full auditability during live judging:
+
+### The 4 Autonomous Agents:
+1. **`TRIAGE_AGENT`**:
+   - Decomposes complaint corpus, performs NLP intent categorization (IT, Hostel, Academics, Maintenance, Transport, etc.).
+   - Derives deterministic priority score (0-100) and priority level (`LOW`, `MEDIUM`, `HIGH`, `CRITICAL`).
+   - Binds dynamic SLA target and autonomously routes ticket to target department.
+2. **`EVIDENCE_AGENT`**:
+   - Computes standard SHA-256 cryptographic checksum for tamper-proofing.
+   - Evaluates container integrity against allowed institutional MIME whitelist (JPEG, PNG, WebP, PDF, TXT).
+   - Scores multimodal semantic relevance (0-100) between visual evidence and grievance text.
+   - Certifies authenticity status: `VERIFIED`, `SUSPICIOUS`, or `INCONCLUSIVE`.
+3. **`SLA_SENTINEL`**:
+   - Continuous autonomous patrol monitoring server-side SLA clock and consumption velocity.
+   - Dispatches warning alerts to officers when >75% of SLA window has elapsed.
+   - Autonomously triggers escalation (`ESCALATED`) when deadline breaches, notifying Department Admins.
+4. **`RESOLUTION_VERIFIER`**:
+   - Triggered when officer proposes resolution with corrective proof.
+   - Cross-references original grievance complaint symptoms against officer corrective notes and counter-evidence.
+   - Mandates photographic counter-evidence for physical infrastructure failures (plumbing, electrical, hardware).
+   - Delivers verdict: `VERIFIED_RESOLVED`, `DEFICIENT_RESOLUTION`, or `FURTHER_EVIDENCE_REQUIRED`.
+
+### Agent Reasoning & Execution Trace Logs (`agent_execution_logs`):
+Every agent run generates an explainable, step-by-step Chain-of-Thought (CoT) trace:
+```json
+{
+  "id": "uuid",
+  "grievance_id": "uuid",
+  "agent_name": "TRIAGE_AGENT",
+  "action_taken": "CLASSIFY_AND_SCORE",
+  "thought_process": "[STEP 1: INTENT DECOMPOSITION] ...\n[STEP 2: IMPACT & SEVERITY ASSESSMENT] ...\n[STEP 3: MULTI-FACTOR WEIGHTING] ...\n[STEP 4: SMART ROUTING & SLA COMMITMENT] ...",
+  "confidence": 0.965,
+  "metadata": { "category": "IT", "priority": "CRITICAL", "priorityScore": 95, "slaHours": 4 },
+  "created_at": "2026-10-08T18:00:00Z"
+}
+```
+
+---
+
+## 10. Tamper-Proof Multimodal Evidence Vault
+
+Stored in PostgreSQL table `grievance_evidence` and Supabase Storage bucket `grievance-files`.
+
+### New API Endpoints:
+
+#### 1. `POST /api/evidence/upload-and-verify`
+- **Auth:** Authenticated User
+- **Content-Type:** `multipart/form-data` OR `application/json`
+- **Form Fields:**
+  - `file`: File blob (image/jpeg, image/png, application/pdf, etc. up to 10MB)
+  - `grievanceId`: UUID of target grievance
+  - `evidenceType`: `'PHOTO' | 'RECEIPT' | 'DOCUMENT' | 'SCREENSHOT'`
+  - `isResolutionProof`: `boolean` (true if uploaded by officer as proof of fix)
+- **Response (201):**
+```json
+{
+  "success": true,
+  "data": {
+    "evidence": {
+      "grievanceId": "uuid",
+      "fileName": "switch_burned.jpg",
+      "filePath": "evidence/uuid/1728399000_switch_burned.jpg",
+      "fileType": "image/jpeg",
+      "fileSize": 241284,
+      "sha256": "a1b2c3d4e5f6...",
+      "authenticityStatus": "VERIFIED",
+      "relevanceScore": 96,
+      "aiDescription": "Photographic inspection of switch_burned.jpg shows clear visual corroboration...",
+      "isResolutionProof": false
+    },
+    "agentAnalysis": {
+      "agentName": "EVIDENCE_AGENT",
+      "actionTaken": "MULTIMODAL_VERIFICATION",
+      "thoughtProcess": "...",
+      "confidence": 0.954
+    }
+  }
+}
+```
+
+#### 2. `GET /api/evidence/:grievanceId`
+- **Auth:** Authenticated User (with access to grievance)
+- **Response (200):** Lists all evidence items, SHA-256 hashes, and verification statuses.
+
+#### 3. `GET /api/agents/logs/:grievanceId`
+- **Auth:** Authenticated User (with access to grievance)
+- **Response (200):** Returns full chronological timeline of agent reasoning traces for Member 3's Live Agent Dashboard.
+
+#### 4. `POST /api/agents/run-pipeline`
+- **Auth:** Authenticated User
+- **Body:** `{ "action": "triage" | "verify-evidence" | "patrol-sla" | "verify-resolution", "payload": { ... } }`
+- **Response (200):** Executes requested agent pipeline on-demand and returns structured execution trace.
+
+---
+
+## 11. Realtime Subscriptions for Member 2 & Member 3
+
+Tables enabled for Supabase Realtime broadcast with `REPLICA IDENTITY FULL`:
+- `grievances` (live ticket status updates)
+- `notifications` (live alerts and SLA nudges)
+- `grievance_comments` (instant student-staff conversation)
+- `grievance_evidence` (live evidence upload and verification certification)
+- `agent_execution_logs` (live reasoning stream as agents execute)
+
+Use `frontend/lib/useRealtime.ts` helper:
+```typescript
+useRealtime<AgentExecutionLog>({
+  table: 'agent_execution_logs',
+  filter: `grievance_id=eq.${grievanceId}`,
+  onInsert: (log) => console.log('New Agent Step:', log.agent_name, log.thought_process),
+});
+```
+
