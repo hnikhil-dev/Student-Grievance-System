@@ -40,5 +40,5 @@ export * from './pages/Escalation';
 export * from './pages/Analytics';
 export * from './pages/Insights';
 
-// Services
+// Integrated Backend Services & Real-time Bridge
 export * from './services/adminApiService';
