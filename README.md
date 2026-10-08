@@ -32,32 +32,29 @@
 
 ---
 
-## 🚀 Quickstart for Backend
+## 🚀 Quickstart for Team Members
 
-1. **Navigate to the backend directory:**
-   ```bash
-   cd backend
-   ```
+Run directly from the root workspace:
 
-2. **Install dependencies:**
-   ```bash
-   npm install
-   ```
+```bash
+# 1. Install all dependencies
+npm run install:all
 
-3. **Configure environment variables:**
-   ```bash
-   cp .env.example .env.local
-   # Fill in NEXT_PUBLIC_SUPABASE_URL and keys
-   ```
+# 2. Configure environment variables
+cp .env.example backend/.env.local
+# (Fill in NEXT_PUBLIC_SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY)
 
-4. **Run tests:**
-   ```bash
-   npm test
-   ```
+# 3. Start development server
+npm run dev
 
-5. **Start development server:**
-   ```bash
-   npm run dev
-   ```
+# 4. Run automated test suite (40 Vitest tests)
+npm test
+```
 
-Refer to [backend/SETUP.md](file:///c:/Users/HNikhil/OneDrive/Desktop/Comp_Lang/Projects/Student%20Grievance%20System/backend/SETUP.md) for full instructions.
+- 📱 **Student Portal:** `http://localhost:3000/student/page`
+- 🛡️ **Admin Command Center:** `http://localhost:3000/admin/page`
+- 🔐 **Institutional Login:** `http://localhost:3000/login`
+
+> 📘 **Detailed Guides:**
+> - [TEAM_GUIDE.md](file:///c:/Users/HNikhil/OneDrive/Desktop/Comp_Lang/Projects/Student%20Grievance%20System/TEAM_GUIDE.md) - Complete team onboarding, pre-seeded demo accounts & Hackathon Judges USP sheet.
+> - [backend/SETUP.md](file:///c:/Users/HNikhil/OneDrive/Desktop/Comp_Lang/Projects/Student%20Grievance%20System/backend/SETUP.md) - Deep dive database setup & architecture.

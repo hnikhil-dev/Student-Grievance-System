@@ -1,0 +1,25 @@
+{
+  "name": "smart-student-grievance-system-workspace",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Smart Student Grievance Management System - Autonomous Agentic Platform",
+  "scripts": {
+    "dev": "npm --prefix backend run dev",
+    "build": "npm --prefix backend run build",
+    "start": "npm --prefix backend run start",
+    "test": "npm --prefix backend test",
+    "typecheck": "npm --prefix backend run typecheck",
+    "seed": "npm --prefix backend run seed",
+    "install:all": "npm --prefix backend install",
+    "lint": "npm --prefix backend run lint"
+  },
+  "keywords": [
+    "student-grievance",
+    "autonomous-agents",
+    "hackathon",
+    "nextjs",
+    "supabase"
+  ],
+  "author": "Hackathon Team",
+  "license": "MIT"
+}
