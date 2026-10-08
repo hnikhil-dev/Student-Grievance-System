@@ -31,14 +31,14 @@ export class GeminiGateway {
   public static async generateStructuredReasoning<T>(
     systemInstruction: string,
     userPrompt: string,
-    timeoutMs = 8000
+    timeoutMs = 15000
   ): Promise<GeminiResponse<T>> {
     const apiKey = this.getApiKey();
     if (!apiKey || !this.isAvailable()) {
       return { success: false, isAiGenerated: false, error: 'GEMINI_API_KEY_NOT_CONFIGURED' };
     }
 
-    const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
+    const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
 
     const requestBody = {
       contents: [
@@ -117,7 +117,7 @@ export class GeminiGateway {
       return { success: false, isAiGenerated: false, error: 'GEMINI_API_KEY_NOT_CONFIGURED' };
     }
 
-    const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
+    const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
     const base64Data = imageBuffer.toString('base64');
 
     const requestBody = {
