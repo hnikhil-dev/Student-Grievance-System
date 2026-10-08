@@ -17,6 +17,10 @@ export class GeminiGateway {
     return process.env.GEMINI_API_KEY || null;
   }
 
+  public static getApiKeyId(): string | null {
+    return process.env.GEMINI_API_KEY_ID || process.env.API_KEY_ID || null;
+  }
+
   /**
    * Returns true if a valid Gemini API key is configured in the environment
    */
