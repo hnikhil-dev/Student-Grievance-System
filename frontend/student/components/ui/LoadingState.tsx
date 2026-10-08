@@ -64,3 +64,115 @@ export const PageSpinner: React.FC<{ label?: string }> = ({ label = 'Loading Stu
     `}</style>
   </div>
 );
+
+export const GrievanceDetailSkeleton: React.FC = () => (
+  <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
+    {/* Header Skeleton Card */}
+    <div
+      style={{
+        padding: '2rem',
+        borderRadius: '24px',
+        backgroundColor: '#FFFFFF',
+        border: '1px solid #E5E7EB',
+        display: 'flex',
+        flexDirection: 'column',
+        gap: '1.25rem',
+        boxShadow: '0 4px 20px rgba(0,0,0,0.04)',
+      }}
+    >
+      <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center', flexWrap: 'wrap' }}>
+        <Skeleton height="28px" width="130px" borderRadius="10px" />
+        <Skeleton height="28px" width="100px" borderRadius="9999px" />
+        <Skeleton height="28px" width="90px" borderRadius="9999px" />
+        <Skeleton height="28px" width="120px" borderRadius="8px" />
+      </div>
+      <Skeleton height="36px" width="75%" borderRadius="8px" />
+      <Skeleton height="18px" width="95%" borderRadius="6px" />
+      <Skeleton height="18px" width="85%" borderRadius="6px" />
+      <div style={{ display: 'flex', gap: '1.5rem', marginTop: '0.5rem', flexWrap: 'wrap' }}>
+        <Skeleton height="16px" width="120px" borderRadius="4px" />
+        <Skeleton height="16px" width="150px" borderRadius="4px" />
+        <Skeleton height="16px" width="110px" borderRadius="4px" />
+      </div>
+    </div>
+
+    {/* Main Grid: Left Column + Right Column */}
+    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '2rem' }}>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+        {/* SLA Countdown Card Skeleton */}
+        <div
+          style={{
+            padding: '1.5rem',
+            borderRadius: '20px',
+            backgroundColor: '#FFFFFF',
+            border: '1px solid #E5E7EB',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '1rem',
+          }}
+        >
+          <Skeleton height="22px" width="45%" borderRadius="6px" />
+          <Skeleton height="40px" width="60%" borderRadius="8px" />
+          <Skeleton height="12px" width="100%" borderRadius="9999px" />
+        </div>
+        {/* AI Reasoning Skeleton */}
+        <div
+          style={{
+            padding: '1.5rem',
+            borderRadius: '20px',
+            backgroundColor: '#FFFFFF',
+            border: '1px solid #E5E7EB',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '1rem',
+          }}
+        >
+          <Skeleton height="22px" width="50%" borderRadius="6px" />
+          <Skeleton height="16px" width="95%" borderRadius="4px" />
+          <Skeleton height="16px" width="90%" borderRadius="4px" />
+          <Skeleton height="16px" width="75%" borderRadius="4px" />
+        </div>
+      </div>
+
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+        {/* Timeline Skeleton */}
+        <div
+          style={{
+            padding: '1.5rem',
+            borderRadius: '20px',
+            backgroundColor: '#FFFFFF',
+            border: '1px solid #E5E7EB',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '1.25rem',
+          }}
+        >
+          <Skeleton height="24px" width="45%" borderRadius="6px" />
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+            <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
+              <Skeleton height="24px" width="24px" borderRadius="50%" />
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.35rem', flex: 1 }}>
+                <Skeleton height="18px" width="55%" borderRadius="4px" />
+                <Skeleton height="14px" width="35%" borderRadius="4px" />
+              </div>
+            </div>
+            <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
+              <Skeleton height="24px" width="24px" borderRadius="50%" />
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.35rem', flex: 1 }}>
+                <Skeleton height="18px" width="70%" borderRadius="4px" />
+                <Skeleton height="14px" width="40%" borderRadius="4px" />
+              </div>
+            </div>
+            <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
+              <Skeleton height="24px" width="24px" borderRadius="50%" />
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.35rem', flex: 1 }}>
+                <Skeleton height="18px" width="60%" borderRadius="4px" />
+                <Skeleton height="14px" width="30%" borderRadius="4px" />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+);

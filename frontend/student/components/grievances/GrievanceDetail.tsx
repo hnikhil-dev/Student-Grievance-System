@@ -18,6 +18,7 @@ import {
   Textarea,
   Alert,
   PageSpinner,
+  GrievanceDetailSkeleton,
   ErrorState,
   EmptyState,
   ProgressBar,
@@ -389,7 +390,7 @@ export const GrievanceDetail: React.FC<GrievanceDetailProps> = ({ id: propId }) 
         )}
 
         {isLoading ? (
-          <PageSpinner label="Loading Grievance Audit History & Details..." />
+          <GrievanceDetailSkeleton />
         ) : errorMessage || !grievance ? (
           <ErrorState
             variant="not_found"

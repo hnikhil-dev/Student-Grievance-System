@@ -549,11 +549,35 @@ class AuthoritativeSupabaseEngine {
   };
 }
 
+let liveAdminClient: SupabaseClient<any> | null = null;
 let authoritativeEngineInstance: any = null;
 
 export function getAdminClient(): SupabaseClient<any> | any {
-  if (authoritativeEngineInstance) return authoritativeEngineInstance;
-  authoritativeEngineInstance = new AuthoritativeSupabaseEngine();
+  if (process.env.USE_LOCAL_DB === 'true') {
+    if (!authoritativeEngineInstance) {
+      authoritativeEngineInstance = new AuthoritativeSupabaseEngine();
+    }
+    return authoritativeEngineInstance;
+  }
+
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+
+  if (supabaseUrl && serviceRoleKey && !supabaseUrl.includes('placeholder') && !supabaseUrl.includes('localhost')) {
+    if (!liveAdminClient) {
+      liveAdminClient = createClient(supabaseUrl, serviceRoleKey, {
+        auth: {
+          autoRefreshToken: false,
+          persistSession: false,
+        },
+      });
+    }
+    return liveAdminClient;
+  }
+
+  if (!authoritativeEngineInstance) {
+    authoritativeEngineInstance = new AuthoritativeSupabaseEngine();
+  }
   return authoritativeEngineInstance;
 }
 

@@ -16,6 +16,7 @@ import { StatusBadge } from '../../components/ui/StatusBadge';
 import { PriorityBadge } from '../../components/ui/PriorityBadge';
 import { SearchInput } from '../../components/ui/SearchInput';
 import { Modal } from '../../components/ui/Modal';
+import { AdminKpiSkeleton, AdminTableSkeleton } from '../../components/ui/LoadingState';
 import { colors, typography, radii, shadows, transitions } from '../../tokens';
 import {
   LayoutDashboard,
@@ -95,6 +96,7 @@ export const CommandCenterPage: React.FC = () => {
   );
   const [issueCategoryFilter, setIssueCategoryFilter] = useState<string>('ALL');
   const [issueSearchQuery, setIssueSearchQuery] = useState<string>('');
+  const [isInitialLoading, setIsInitialLoading] = useState<boolean>(true);
 
   // Live Backend Data States
   const [trends, setTrends] = useState<VolumeTrendPoint[]>(MOCK_COMMAND_CENTER_DATA.trends);
@@ -133,6 +135,8 @@ export const CommandCenterPage: React.FC = () => {
       }
     } catch (err) {
       console.warn('[CommandCenter] Error fetching live backend metrics:', err);
+    } finally {
+      setIsInitialLoading(false);
     }
   }, [selectedDeptId]);
 
@@ -441,15 +445,18 @@ export const CommandCenterPage: React.FC = () => {
       {/* ---------------------------------------------------------------------- */}
       {/* 2. 4 DYNAMIC MAIN KPI CARDS */}
       {/* ---------------------------------------------------------------------- */}
-      <section
-        style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(230px, 1fr))',
-          gap: '1rem',
-        }}
-      >
-        {/* KPI 1: Total Grievances */}
-        <div
+      {isInitialLoading ? (
+        <AdminKpiSkeleton count={4} />
+      ) : (
+        <section
+          style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(230px, 1fr))',
+            gap: '1rem',
+          }}
+        >
+          {/* KPI 1: Total Grievances */}
+          <div
           style={{
             backgroundColor: colors.cardSurface,
             border: `1px solid ${colors.border}`,
@@ -628,6 +635,7 @@ export const CommandCenterPage: React.FC = () => {
           <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: '3px', backgroundColor: colors.danger }} />
         </div>
       </section>
+      )}
 
       {/* ---------------------------------------------------------------------- */}
       {/* 3. CRITICAL ATTENTION (DYNAMIC SEARCH + CATEGORY FILTER + LIVE ACTIONS) */}
@@ -691,7 +699,9 @@ export const CommandCenterPage: React.FC = () => {
           </div>
         </CardHeader>
         <CardContent style={{ padding: '0 1.5rem 1.5rem 1.5rem' }}>
-          {filteredCriticalIssues.length === 0 ? (
+          {isInitialLoading ? (
+            <AdminTableSkeleton rows={4} />
+          ) : filteredCriticalIssues.length === 0 ? (
             <div
               style={{
                 padding: '2.5rem',

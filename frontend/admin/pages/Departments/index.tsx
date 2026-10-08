@@ -65,10 +65,10 @@ export const DepartmentDashboardPage: React.FC = () => {
               return {
                 ...dept,
                 totalGrievances: live.totalGrievances || dept.totalGrievances,
-                activeTickets: live.active || dept.activeTickets,
-                resolvedTickets: live.resolved || dept.resolvedTickets,
-                slaComplianceRate: live.slaPercentage || dept.slaComplianceRate,
-                resolutionRate: live.resolutionRate || dept.resolutionRate,
+                open: live.active !== undefined ? live.active : dept.open,
+                resolved: live.resolved !== undefined ? live.resolved : dept.resolved,
+                slaPercentage: live.slaPercentage !== undefined ? live.slaPercentage : dept.slaPercentage,
+                resolutionRate: live.resolutionRate !== undefined ? live.resolutionRate : dept.resolutionRate,
               };
             }
             return dept;

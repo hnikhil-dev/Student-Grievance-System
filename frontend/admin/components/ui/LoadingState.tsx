@@ -125,3 +125,130 @@ export const LoadingState: React.FC<LoadingStateProps> = ({
     </div>
   );
 };
+
+export const AdminKpiSkeleton: React.FC<{ count?: number }> = ({ count = 4 }) => (
+  <div
+    style={{
+      display: 'grid',
+      gridTemplateColumns: `repeat(auto-fit, minmax(230px, 1fr))`,
+      gap: '1rem',
+      width: '100%',
+    }}
+  >
+    {Array.from({ length: count }).map((_, idx) => (
+      <div
+        key={idx}
+        style={{
+          backgroundColor: '#FFFFFF',
+          border: `1px solid #E5E7EB`,
+          borderRadius: radii.lg,
+          padding: '1.25rem 1.5rem',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '0.75rem',
+        }}
+      >
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <div
+            style={{
+              width: '45%',
+              height: '14px',
+              backgroundColor: colors.lightBotanical,
+              borderRadius: radii.sm,
+              animation: 'adminPulse 1.5s ease-in-out infinite',
+            }}
+          />
+          <div
+            style={{
+              width: '32px',
+              height: '32px',
+              borderRadius: radii.md,
+              backgroundColor: colors.lightBotanical,
+              animation: 'adminPulse 1.5s ease-in-out infinite',
+            }}
+          />
+        </div>
+        <div
+          style={{
+            width: '60%',
+            height: '28px',
+            backgroundColor: colors.lightBotanical,
+            borderRadius: radii.sm,
+            animation: 'adminPulse 1.5s ease-in-out infinite',
+          }}
+        />
+        <div
+          style={{
+            width: '75%',
+            height: '12px',
+            backgroundColor: colors.lightBotanical,
+            borderRadius: radii.sm,
+            animation: 'adminPulse 1.5s ease-in-out infinite',
+          }}
+        />
+        <style>{`
+          @keyframes adminPulse {
+            0%, 100% { opacity: 0.5; }
+            50% { opacity: 0.8; }
+          }
+        `}</style>
+      </div>
+    ))}
+  </div>
+);
+
+export const AdminTableSkeleton: React.FC<{ rows?: number }> = ({ rows = 5 }) => (
+  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', width: '100%' }}>
+    {Array.from({ length: rows }).map((_, idx) => (
+      <div
+        key={idx}
+        style={{
+          backgroundColor: '#FFFFFF',
+          border: `1px solid #E5E7EB`,
+          borderRadius: radii.md,
+          padding: '1rem 1.25rem',
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          gap: '1rem',
+        }}
+      >
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem', flex: 1 }}>
+          <div
+            style={{
+              width: '40%',
+              height: '16px',
+              backgroundColor: colors.lightBotanical,
+              borderRadius: radii.sm,
+              animation: 'adminPulse 1.5s ease-in-out infinite',
+            }}
+          />
+          <div
+            style={{
+              width: '70%',
+              height: '12px',
+              backgroundColor: colors.lightBotanical,
+              borderRadius: radii.sm,
+              animation: 'adminPulse 1.5s ease-in-out infinite',
+            }}
+          />
+        </div>
+        <div
+          style={{
+            width: '90px',
+            height: '24px',
+            backgroundColor: colors.lightBotanical,
+            borderRadius: radii.full,
+            animation: 'adminPulse 1.5s ease-in-out infinite',
+          }}
+        />
+        <style>{`
+          @keyframes adminPulse {
+            0%, 100% { opacity: 0.5; }
+            50% { opacity: 0.8; }
+          }
+        `}</style>
+      </div>
+    ))}
+  </div>
+);
