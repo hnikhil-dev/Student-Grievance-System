@@ -10,11 +10,13 @@ import {
   StatusBadge,
   PriorityBadge,
   SlaIndicator,
+  DynamicSlaBar,
   EmptyState,
   ErrorState,
   CardSkeleton,
   Alert,
 } from '../index';
+import { useRealtimeGrievances } from '@lib/useRealtime';
 import { GrievanceStatusType, PriorityLevel } from '../../types/design-system';
 
 interface GrievanceItem {
@@ -148,6 +150,11 @@ export const MyGrievancesList: React.FC = () => {
   useEffect(() => {
     fetchGrievances();
   }, [fetchGrievances]);
+
+  // Realtime Supabase updates: auto-fetch on changes
+  useRealtimeGrievances(() => {
+    fetchGrievances();
+  });
 
   // Apply Client-Side Category Filtering and Sorting
   const processedGrievances = useMemo(() => {
@@ -752,6 +759,9 @@ export const MyGrievancesList: React.FC = () => {
                       {g.description}
                     </p>
                   </div>
+
+                  {/* Dynamic SLA Countdown Bar */}
+                  <DynamicSlaBar slaStatus={g.sla_status} compact={true} />
 
                   {/* Card Footer: Metadata (Department, Dates, Details Action) */}
                   <div

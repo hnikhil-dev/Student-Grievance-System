@@ -12,6 +12,7 @@ import {
   StatusBadge,
   PriorityBadge,
   SlaIndicator,
+  DynamicSlaBar,
   Timeline,
   Modal,
   Textarea,
@@ -23,6 +24,7 @@ import {
   NextActionCard,
   AiReasoningCard,
 } from '../index';
+import { useRealtimeGrievances } from '@lib/useRealtime';
 import { GrievanceStatusType, PriorityLevel, TimelineItem } from '../../types/design-system';
 
 interface CommentAuthor {
@@ -201,6 +203,13 @@ export const GrievanceDetail: React.FC<GrievanceDetailProps> = ({ id: propId }) 
       loadGrievance();
     }
   }, [grievanceId, loadGrievance]);
+
+  // Real-time WebSocket: live update grievance when status changes or resolution is posted
+  useRealtimeGrievances((payload) => {
+    if (payload?.new?.id === grievanceId || payload?.old?.id === grievanceId) {
+      loadGrievance();
+    }
+  });
 
   // Post a New Comment
   const handlePostComment = async () => {
@@ -493,6 +502,11 @@ export const GrievanceDetail: React.FC<GrievanceDetailProps> = ({ id: propId }) 
                       <span>🔄 Last Updated: <strong>{formatDate(grievance.updated_at)}</strong></span>
                     )}
                   </div>
+
+                  {/* Live Dynamic SLA Countdown Bar */}
+                  <div style={{ marginTop: '1rem' }}>
+                    <DynamicSlaBar slaStatus={grievance.sla_status} compact={false} />
+                  </div>
                 </div>
               </div>
             </Card>
@@ -599,16 +613,16 @@ export const GrievanceDetail: React.FC<GrievanceDetailProps> = ({ id: propId }) 
                     <span style={{ fontSize: '1.5rem' }}>💡</span>
                     <div>
                       <h3 style={{ margin: 0, fontSize: '1.15rem', fontWeight: 800, color: '#92400E' }}>
-                        Proposed Resolution from Department
+                        Resolution Proposed by Officer - Verification Required
                       </h3>
                       <span style={{ fontSize: '0.8125rem', color: '#B45309' }}>
-                        The assigned officer has completed work on this grievance. Please confirm if the solution resolves your issue.
+                        The assigned officer has submitted a resolution. Your confirmation is required to close this ticket or reopen if unresolved.
                       </span>
                     </div>
                   </div>
 
                   <span style={{ fontSize: '0.75rem', fontWeight: 700, backgroundColor: '#FEF3C7', color: '#92400E', padding: '0.3rem 0.65rem', borderRadius: '8px' }}>
-                    Pending Student Sign-off
+                    Student Verification Required
                   </span>
                 </div>
 
@@ -639,7 +653,7 @@ export const GrievanceDetail: React.FC<GrievanceDetailProps> = ({ id: propId }) 
                     onClick={() => handleVerifyResolution(true)}
                     rightIcon="✓"
                   >
-                    Accept Resolution & Close Ticket
+                    Accept & Close
                   </Button>
 
                   <Button
@@ -652,7 +666,7 @@ export const GrievanceDetail: React.FC<GrievanceDetailProps> = ({ id: propId }) 
                     }}
                     leftIcon="✕"
                   >
-                    Reject & Reopen Grievance
+                    Reject & Reopen
                   </Button>
                 </div>
               </div>

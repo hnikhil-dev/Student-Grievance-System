@@ -24,6 +24,7 @@
       "@/*": ["./src/*"],
       "@student/*": ["../frontend/student/*"],
       "@admin/*": ["../frontend/admin/*"],
+      "@lib/*": ["../frontend/lib/*"],
       "@supabase/supabase-js": ["./node_modules/@supabase/supabase-js"],
       "@supabase/ssr": ["./node_modules/@supabase/ssr"]
     }
