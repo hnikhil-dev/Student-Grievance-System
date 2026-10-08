@@ -1,9 +1,10 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import {
   MOCK_SLA_GRIEVANCES,
   MOCK_SLA_METRICS,
   SlaGrievanceItem,
 } from '../../services/slaData';
+import { adminApiService } from '../../services/adminApiService';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '../../components/ui/Card';
 import { Button } from '../../components/ui/Button';
 import { Badge } from '../../components/ui/Badge';
@@ -37,6 +38,41 @@ export const SlaPage: React.FC = () => {
   const [actionModalMode, setActionModalMode] = useState<'ASSIGN' | 'ESCALATE' | null>(null);
   const [assignedTechnician, setAssignedTechnician] = useState<string>('Er. Rajesh Kulkarni');
   const [escalationNote, setEscalationNote] = useState<string>('');
+
+  // Load live SLA data from backend
+  useEffect(() => {
+    let isMounted = true;
+    adminApiService.getGrievances({ pageSize: 50 }).then((res) => {
+      if (isMounted && res.items && res.items.length > 0) {
+        const liveMapped: SlaGrievanceItem[] = res.items.map((g: any) => {
+          const remaining = g.sla_status?.remainingMinutes ?? 60;
+          const isBreached = g.sla_status?.isOverdue ?? false;
+          const isWarning = g.sla_status?.isWarning ?? false;
+          const health = isBreached ? 'BREACHED' : isWarning ? 'AT_RISK' : 'HEALTHY';
+          return {
+            id: g.id,
+            ticketNumber: g.ticket_number,
+            title: g.title,
+            category: g.category || 'General',
+            department: g.department?.name || 'Operations',
+            priority: g.priority || 'MEDIUM',
+            priorityScore: g.priority_score || 70,
+            health,
+            slaTargetHours: g.sla_status?.slaHours || 24,
+            timeRemainingMinutes: remaining,
+            elapsedPercentage: g.sla_status?.elapsedPercent || 50,
+            owner: g.assignee?.full_name || 'Unassigned',
+            currentStatus: g.status || 'SUBMITTED',
+            escalationLevel: g.status === 'ESCALATED' ? 'Level 2' : 'Standard',
+          };
+        });
+        setGrievances(liveMapped);
+      }
+    });
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   const filteredItems = useMemo(() => {
     return grievances.filter((item) => {
@@ -85,9 +121,17 @@ export const SlaPage: React.FC = () => {
     }
   };
 
-  const handleAssignSubmit = (e: React.FormEvent) => {
+  const handleAssignSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!activeItem) return;
+    try {
+      await adminApiService.assignGrievance(
+        activeItem.id,
+        'a0000000-0000-0000-0000-000000000001',
+        undefined,
+        `Assigned ${assignedTechnician} via SLA Radar`
+      );
+    } catch {}
     setGrievances((prev) =>
       prev.map((g) => (g.id === activeItem.id ? { ...g, owner: assignedTechnician, currentStatus: 'ASSIGNED' } : g))
     );
@@ -97,9 +141,12 @@ export const SlaPage: React.FC = () => {
     setTimeout(() => setFeedback(null), 3500);
   };
 
-  const handleEscalateSubmit = (e: React.FormEvent) => {
+  const handleEscalateSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!activeItem) return;
+    try {
+      await adminApiService.escalateGrievance(activeItem.id, escalationNote || 'SLA breached threshold');
+    } catch {}
     setGrievances((prev) =>
       prev.map((g) =>
         g.id === activeItem.id

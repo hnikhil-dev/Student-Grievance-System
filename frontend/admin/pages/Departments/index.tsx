@@ -1,10 +1,11 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import {
   MOCK_DEPARTMENTS,
   MOCK_DEPARTMENT_METRICS,
   DepartmentDetailData,
   DepartmentHealthStatus,
 } from '../../services/departmentData';
+import { adminApiService } from '../../services/adminApiService';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '../../components/ui/Card';
 import { Button } from '../../components/ui/Button';
 import { Badge } from '../../components/ui/Badge';
@@ -48,14 +49,46 @@ export const DepartmentDashboardPage: React.FC = () => {
   // 4. Feedback Alert State
   const [feedbackMessage, setFeedbackMessage] = useState<string | null>(null);
 
+  // Live departments state merged with backend analytics
+  const [departmentsList, setDepartmentsList] = useState<DepartmentDetailData[]>(MOCK_DEPARTMENTS);
+
+  useEffect(() => {
+    let isMounted = true;
+    adminApiService.getDepartmentWorkloads().then((workloads) => {
+      if (isMounted && workloads && workloads.length > 0) {
+        setDepartmentsList((prev) =>
+          prev.map((dept) => {
+            const live = workloads.find(
+              (w) => w.code.toLowerCase() === dept.code.toLowerCase() || w.id === dept.id
+            );
+            if (live) {
+              return {
+                ...dept,
+                totalGrievances: live.totalGrievances || dept.totalGrievances,
+                activeTickets: live.active || dept.activeTickets,
+                resolvedTickets: live.resolved || dept.resolvedTickets,
+                slaComplianceRate: live.slaPercentage || dept.slaComplianceRate,
+                resolutionRate: live.resolutionRate || dept.resolutionRate,
+              };
+            }
+            return dept;
+          })
+        );
+      }
+    });
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
   const activeDepartment = useMemo(() => {
     if (!selectedDepartmentId) return null;
-    return MOCK_DEPARTMENTS.find((d) => d.id === selectedDepartmentId) || null;
-  }, [selectedDepartmentId]);
+    return departmentsList.find((d) => d.id === selectedDepartmentId) || null;
+  }, [selectedDepartmentId, departmentsList]);
 
   // Filtering & Sorting Departments
   const filteredDepartments = useMemo(() => {
-    return MOCK_DEPARTMENTS.filter((dept) => {
+    return departmentsList.filter((dept) => {
       // Dept filter
       if (selectedDeptFilter !== 'ALL' && dept.id !== selectedDeptFilter) {
         return false;

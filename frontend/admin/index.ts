@@ -39,3 +39,6 @@ export * from './pages/Sla';
 export * from './pages/Escalation';
 export * from './pages/Analytics';
 export * from './pages/Insights';
+
+// Services
+export * from './services/adminApiService';
