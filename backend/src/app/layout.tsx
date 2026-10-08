@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import React from 'react';
+import '@student/styles/tokens.css';
 
 export const metadata: Metadata = {
   title: 'Smart Student Grievance System API',

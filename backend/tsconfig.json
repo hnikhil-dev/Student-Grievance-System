@@ -18,10 +18,17 @@
         "name": "next"
       }
     ],
+    "baseUrl": ".",
+    "typeRoots": ["./node_modules/@types"],
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["./src/*"],
+      "@student/*": ["../frontend/student/*"],
+      "@admin/*": ["../frontend/admin/*"],
+      "@lib/*": ["../frontend/lib/*"],
+      "@supabase/supabase-js": ["./node_modules/@supabase/supabase-js"],
+      "@supabase/ssr": ["./node_modules/@supabase/ssr"]
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "../frontend/**/*.ts", "../frontend/**/*.tsx"],
   "exclude": ["node_modules", "scripts", "tests"]
 }

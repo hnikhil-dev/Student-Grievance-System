@@ -16,7 +16,7 @@ export function useRealtimeGrievances(onUpdate: (payload: any) => void) {
       .on(
         'postgres_changes',
         { event: '*', schema: 'public', table: 'grievances' },
-        (payload) => {
+        (payload: any) => {
           onUpdate(payload);
         }
       )
@@ -28,12 +28,12 @@ export function useRealtimeGrievances(onUpdate: (payload: any) => void) {
   }, [onUpdate]);
 }
 
-/**
- * Hook to listen for live user notifications
- */
-export function useRealtimeNotifications(userId: string, onNotification: (payload: any) => void) {
+export function useRealtimeNotifications(
+  userId?: string | null,
+  onNotification?: (payload: any) => void
+) {
   useEffect(() => {
-    if (!userId) return;
+    if (!userId || !onNotification) return;
 
     const channel = supabaseClient
       .channel(`realtime-notifications-${userId}`)
@@ -45,7 +45,7 @@ export function useRealtimeNotifications(userId: string, onNotification: (payloa
           table: 'notifications',
           filter: `user_id=eq.${userId}`,
         },
-        (payload) => {
+        (payload: any) => {
           onNotification(payload);
         }
       )

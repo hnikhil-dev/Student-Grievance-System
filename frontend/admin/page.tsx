@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+<<<<<<< HEAD
 import { AdminRouteId } from './types/navigation';
 import { AdminLayout } from './components/layout/AdminLayout';
 import { PlaceholderView } from './pages/PlaceholderView';
@@ -14,6 +15,13 @@ import { SlaPage } from './pages/Sla';
 import { EscalationPage } from './pages/Escalation';
 import { AnalyticsPage } from './pages/Analytics';
 import { InsightsPage } from './pages/Insights';
+=======
+import {
+  getDynamicAuthHeaders,
+  DEFAULT_DEMO_ADMIN_ID,
+  DEFAULT_DEMO_ADMIN_ROLE,
+} from '@lib/api';
+>>>>>>> bd3d86344eb379e968ad335006df12685dad7f1d
 
 const VALID_ROUTES: AdminRouteId[] = [
   'command-center',
@@ -33,6 +41,7 @@ export default function AdminPage() {
 
   // Robust hash synchronization supporting #<route>, #/admin/<route>, etc.
   useEffect(() => {
+<<<<<<< HEAD
     const handleHashChange = () => {
       if (typeof window === 'undefined') return;
       const rawHash = window.location.hash || '';
@@ -42,6 +51,14 @@ export default function AdminPage() {
         .replace(/^admin\/?/, '')
         .split('?')[0]
         .split('/')[0] as AdminRouteId;
+=======
+    async function loadDashboardData() {
+      try {
+        const headers = getDynamicAuthHeaders({
+          'x-demo-user-id': DEFAULT_DEMO_ADMIN_ID,
+          'x-demo-user-role': DEFAULT_DEMO_ADMIN_ROLE,
+        });
+>>>>>>> bd3d86344eb379e968ad335006df12685dad7f1d
 
       if (VALID_ROUTES.includes(sanitized)) {
         setActiveRoute(sanitized);
@@ -85,7 +102,34 @@ export default function AdminPage() {
       default:
         return <PlaceholderView routeId={activeRoute} />;
     }
+<<<<<<< HEAD
   };
+=======
+
+    try {
+      const res = await fetch(`/api/admin/grievances/${id}/resolve`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...getDynamicAuthHeaders({
+            'x-demo-user-id': DEFAULT_DEMO_ADMIN_ID,
+            'x-demo-user-role': DEFAULT_DEMO_ADMIN_ROLE,
+          }),
+        },
+        body: JSON.stringify({ resolution_notes: notes }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        alert(data.data.message);
+        window.location.reload();
+      } else {
+        alert(data.error.message);
+      }
+    } catch (err) {
+      alert('Failed to propose resolution');
+    }
+  }
+>>>>>>> bd3d86344eb379e968ad335006df12685dad7f1d
 
   return (
     <AdminLayout activeRoute={activeRoute} onRouteChange={handleRouteChange}>
