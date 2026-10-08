@@ -117,15 +117,15 @@ export const LoginPage: React.FC = () => {
     setSuccessMessage(null);
 
     try {
-      // Validate credentials against institutional auth endpoint
-      const targetUserId = role === 'STUDENT' ? DEFAULT_DEMO_STUDENT_ID : DEFAULT_DEMO_ADMIN_ID;
-      const targetUserRole = role === 'STUDENT' ? 'STUDENT' : 'SUPER_ADMIN';
-
-      const res = await fetch('/api/auth/me', {
-        headers: {
-          'x-demo-user-id': targetUserId,
-          'x-demo-user-role': targetUserRole,
-        },
+      // Validate credentials against dynamic institutional auth endpoint
+      const res = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: email.trim(),
+          password,
+          role: role === 'STUDENT' ? 'STUDENT' : 'SUPER_ADMIN',
+        }),
       });
 
       if (!res.ok) {
@@ -142,21 +142,22 @@ export const LoginPage: React.FC = () => {
       if (data.success && data.data?.user) {
         const u = data.data.user;
         const prof = u.profile || {};
-        const userName = prof.full_name || (u.email ? u.email.split('@')[0] : 'Student');
+        const userName = u.name || prof.full_name || (u.email ? u.email.split('@')[0] : 'Campus User');
+        const resolvedRole = u.role || (role === 'STUDENT' ? 'STUDENT' : 'SUPER_ADMIN');
 
         setStoredUser({
           id: u.id,
-          role: u.role || (role === 'STUDENT' ? 'STUDENT' : 'SUPER_ADMIN'),
+          role: resolvedRole,
           email: u.email || email,
           name: userName,
-          studentId: prof.student_id || '',
+          studentId: u.student_id || prof.student_id || '',
           profile: prof,
         });
 
         setSuccessMessage(`Login successful! Welcome back, ${userName}. Redirecting to Dashboard...`);
         
         setTimeout(() => {
-          if (role === 'STUDENT') {
+          if (resolvedRole === 'STUDENT') {
             window.location.href = '/student/page';
           } else {
             window.location.href = '/admin/page';
@@ -173,14 +174,51 @@ export const LoginPage: React.FC = () => {
   };
 
   // 3. Quick One-Click Demo Login for Evaluators & Hackathon Judges
-  const handleQuickDemoLogin = (targetRole: 'STUDENT' | 'ADMIN') => {
+  const handleQuickDemoLogin = async (targetRole: 'STUDENT' | 'ADMIN') => {
     setIsLoading(true);
     setValidationError(null);
     setAuthError(null);
     setNetworkError(null);
 
+    const demoEmail = targetRole === 'STUDENT' ? 'student.alex@campus.edu' : 'superadmin@campus.edu';
+    setEmail(demoEmail);
+
+    try {
+      const res = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: demoEmail,
+          password: 'password123',
+          role: targetRole === 'STUDENT' ? 'STUDENT' : 'SUPER_ADMIN',
+        }),
+      });
+      const data = await res.json();
+      if (data.success && data.data?.user) {
+        const u = data.data.user;
+        const prof = u.profile || {};
+        const userName = u.name || prof.full_name || (targetRole === 'STUDENT' ? 'Alex Mercer' : 'Super Admin');
+
+        setStoredUser({
+          id: u.id,
+          role: u.role || (targetRole === 'STUDENT' ? 'STUDENT' : 'SUPER_ADMIN'),
+          email: u.email || demoEmail,
+          name: userName,
+          studentId: u.student_id || prof.student_id || (targetRole === 'STUDENT' ? 'CS-2023-014' : ''),
+          profile: prof,
+        });
+        setSuccessMessage(`${targetRole === 'STUDENT' ? 'Student' : 'Administrative'} demo identity authenticated. Accessing portal...`);
+        setTimeout(() => {
+          window.location.href = targetRole === 'STUDENT' ? '/student/page' : '/admin/page';
+        }, 700);
+        return;
+      }
+    } catch (e) {
+      // Fallback in case of offline evaluation
+    }
+
+    // Fallback default state
     if (targetRole === 'STUDENT') {
-      setEmail('student.alex@campus.edu');
       setStoredUser({
         id: DEFAULT_DEMO_STUDENT_ID,
         role: 'STUDENT',
@@ -193,7 +231,6 @@ export const LoginPage: React.FC = () => {
         window.location.href = '/student/page';
       }, 700);
     } else {
-      setEmail('superadmin@campus.edu');
       setStoredUser({
         id: DEFAULT_DEMO_ADMIN_ID,
         role: 'SUPER_ADMIN',

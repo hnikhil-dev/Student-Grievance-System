@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import {
   MOCK_PRIORITY_GRIEVANCES,
   MOCK_PRIORITY_METRICS,
@@ -12,6 +12,7 @@ import { Badge } from '../../components/ui/Badge';
 import { PriorityBadge } from '../../components/ui/PriorityBadge';
 import { SearchInput } from '../../components/ui/SearchInput';
 import { Modal } from '../../components/ui/Modal';
+import { adminApiService } from '../../services/adminApiService';
 import { colors, typography, radii, shadows, transitions } from '../../tokens';
 import {
   Zap,
@@ -30,6 +31,37 @@ export const PriorityPage: React.FC = () => {
   const [selectedPriorityFilter, setSelectedPriorityFilter] = useState<string>('ALL');
   const [selectedDeptFilter, setSelectedDeptFilter] = useState<string>('ALL');
   const [feedback, setFeedback] = useState<string | null>(null);
+
+  // Load live grievance priorities from backend
+  useEffect(() => {
+    let isMounted = true;
+    adminApiService.getGrievances({ pageSize: 50 }).then((res) => {
+      if (isMounted && res.items && res.items.length > 0) {
+        const liveMapped: PriorityGrievanceItem[] = res.items.map((g: any) => ({
+          id: g.id,
+          ticketNumber: g.ticket_number,
+          subject: g.title,
+          category: g.category || 'General',
+          department: g.department?.name || 'Operations',
+          priority: g.priority || 'MEDIUM',
+          score: g.priority_score || 55,
+          factors: {
+            severity: g.severity === 'CRITICAL' ? 30 : g.severity === 'HIGH' ? 22 : 15,
+            urgency: g.urgency === 'IMMEDIATE' ? 30 : g.urgency === 'HIGH' ? 22 : 15,
+            impactCohort: Math.min(25, (g.affected_students || 1) * 3),
+            recurrenceBonus: g.recurrence ? 15 : 0,
+          },
+          contributingSignals: g.priority_reasons || ['Evaluated via multi-factor weighting algorithm'],
+          calculatedAt: g.created_at,
+          overrideStatus: 'SYSTEM_CALCULATED',
+        }));
+        setItems(liveMapped);
+      }
+    });
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   // Detail & Override state
   const [activeItem, setActiveItem] = useState<PriorityGrievanceItem | null>(null);

@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import {
   MOCK_DUPLICATE_PAIRS,
   MOCK_DUPLICATE_METRICS,
@@ -10,6 +10,7 @@ import { Badge } from '../../components/ui/Badge';
 import { PriorityBadge } from '../../components/ui/PriorityBadge';
 import { SearchInput } from '../../components/ui/SearchInput';
 import { Modal } from '../../components/ui/Modal';
+import { adminApiService } from '../../services/adminApiService';
 import { colors, typography, radii, shadows, transitions } from '../../tokens';
 import {
   Copy,
@@ -29,6 +30,19 @@ export const DuplicatesPage: React.FC = () => {
   const [selectedSimilarityTier, setSelectedSimilarityTier] = useState<string>('ALL');
   const [selectedStatusFilter, setSelectedStatusFilter] = useState<string>('ALL');
   const [feedback, setFeedback] = useState<string | null>(null);
+
+  // Load live duplicate pairs from backend
+  useEffect(() => {
+    let isMounted = true;
+    adminApiService.getClusters().then((res) => {
+      if (isMounted && res.duplicatePairs && res.duplicatePairs.length > 0) {
+        setPairs(res.duplicatePairs);
+      }
+    });
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   // Comparison & Merge modal states
   const [comparingPair, setComparingPair] = useState<DuplicatePairItem | null>(null);

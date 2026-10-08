@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import {
   MOCK_ESCALATIONS,
   MOCK_ESCALATION_METRICS,
@@ -6,6 +6,7 @@ import {
   EscalationItem,
   EscalationLevel,
 } from '../../services/escalationData';
+import { adminApiService } from '../../services/adminApiService';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '../../components/ui/Card';
 import { Button } from '../../components/ui/Button';
 import { Badge } from '../../components/ui/Badge';
@@ -27,6 +28,7 @@ import {
 
 export const EscalationPage: React.FC = () => {
   const [escalations, setEscalations] = useState<EscalationItem[]>(MOCK_ESCALATIONS);
+  const [availableStaff, setAvailableStaff] = useState<any[]>([]);
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [selectedLevelFilter, setSelectedLevelFilter] = useState<string>('ALL');
   const [selectedStatusFilter, setSelectedStatusFilter] = useState<string>('ALL');
@@ -38,6 +40,68 @@ export const EscalationPage: React.FC = () => {
   const [actionType, setActionType] = useState<'ASSIGN' | 'ESCALATE_HIGHER' | 'REASSIGN' | 'RESOLVE' | null>(null);
   const [actionTargetOfficer, setActionTargetOfficer] = useState<string>('Dean of Student Affairs');
   const [actionJustification, setActionJustification] = useState<string>('');
+
+  useEffect(() => {
+    let mounted = true;
+    Promise.all([
+      adminApiService.getEscalations(),
+      adminApiService.getStaffMembers(),
+    ]).then(([escData, staff]) => {
+      if (!mounted) return;
+      if (staff && staff.length > 0) {
+        setAvailableStaff(staff);
+        if (staff[0]?.full_name) {
+          setActionTargetOfficer(staff[0].full_name);
+        }
+      }
+      if (escData && Array.isArray(escData.escalations) && escData.escalations.length > 0) {
+        const liveItems: EscalationItem[] = escData.escalations.map((e: any) => ({
+          id: e.id,
+          ticketNumber: e.ticketNumber,
+          title: e.title,
+          description: e.reason || 'Escalated ticket requiring executive oversight',
+          reason: e.reason,
+          department: e.department || 'Central Administration',
+          priority: e.priority || 'CRITICAL',
+          escalationLevel: e.level === 2 ? 'Level 2 (Executive Dean)' : 'Level 1 (Department Lead)',
+          assignedTo: e.assignedTo || 'Dean of Student Affairs',
+          age: 'Live',
+          status: e.status === 'RESOLVED' ? 'RESOLVED' : 'PENDING',
+          escalatedAt: e.escalatedAt || new Date().toISOString(),
+          studentName: 'Campus Student',
+          studentId: 'STD-LIVE',
+          timeline: [
+            {
+              id: `tl-1`,
+              stage: 'Incident Escalated',
+              timestamp: new Date(e.escalatedAt || Date.now()).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+              actor: 'Autonomous Sentinel',
+              description: e.reason,
+              completed: true,
+              statusType: 'danger',
+            },
+          ],
+        }));
+
+        setEscalations((prev) => {
+          const existingIds = new Set(liveItems.map((li) => li.id));
+          return [...liveItems, ...prev.filter((p) => !existingIds.has(p.id))];
+        });
+      }
+    });
+    return () => {
+      mounted = false;
+    };
+  }, []);
+
+  const dynamicMetrics = useMemo(() => {
+    return {
+      totalEscalations: escalations.length,
+      criticalCount: escalations.filter((e) => e.priority === 'CRITICAL').length,
+      pendingCount: escalations.filter((e) => e.status === 'PENDING').length,
+      resolvedCount: escalations.filter((e) => e.status === 'RESOLVED').length,
+    };
+  }, [escalations]);
 
   const filteredEscalations = useMemo(() => {
     return escalations.filter((item) => {
@@ -220,7 +284,7 @@ export const EscalationPage: React.FC = () => {
         <div style={{ backgroundColor: colors.cardSurface, border: `1px solid ${colors.border}`, borderRadius: radii.md, padding: '1.25rem', position: 'relative' }}>
           <span style={{ fontSize: typography.fontSize.xs, color: colors.secondaryText, fontWeight: 500 }}>Total Escalations</span>
           <div style={{ fontSize: typography.fontSize['2xl'], fontWeight: 700, color: colors.deepForestGreen, margin: '0.25rem 0' }}>
-            {MOCK_ESCALATION_METRICS.totalEscalations}
+            {dynamicMetrics.totalEscalations}
           </div>
           <span style={{ fontSize: typography.fontSize.xs, color: colors.secondaryText }}>Elevated governance cases</span>
           <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: '3px', backgroundColor: colors.primaryGreen }} />
@@ -229,7 +293,7 @@ export const EscalationPage: React.FC = () => {
         <div style={{ backgroundColor: colors.cardSurface, border: `1px solid ${colors.border}`, borderRadius: radii.md, padding: '1.25rem', position: 'relative' }}>
           <span style={{ fontSize: typography.fontSize.xs, color: colors.danger, fontWeight: 600 }}>Critical Escalations</span>
           <div style={{ fontSize: typography.fontSize['2xl'], fontWeight: 700, color: colors.danger, margin: '0.25rem 0' }}>
-            {MOCK_ESCALATION_METRICS.criticalCount}
+            {dynamicMetrics.criticalCount}
           </div>
           <span style={{ fontSize: typography.fontSize.xs, color: colors.danger }}>Dean intervention required</span>
           <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: '3px', backgroundColor: colors.danger }} />
@@ -238,7 +302,7 @@ export const EscalationPage: React.FC = () => {
         <div style={{ backgroundColor: colors.cardSurface, border: `1px solid ${colors.border}`, borderRadius: radii.md, padding: '1.25rem', position: 'relative' }}>
           <span style={{ fontSize: typography.fontSize.xs, color: colors.warning, fontWeight: 600 }}>Pending Action</span>
           <div style={{ fontSize: typography.fontSize['2xl'], fontWeight: 700, color: colors.warning, margin: '0.25rem 0' }}>
-            {MOCK_ESCALATION_METRICS.pendingCount}
+            {dynamicMetrics.pendingCount}
           </div>
           <span style={{ fontSize: typography.fontSize.xs, color: colors.warning }}>Awaiting department response</span>
           <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: '3px', backgroundColor: colors.warning }} />
@@ -247,7 +311,7 @@ export const EscalationPage: React.FC = () => {
         <div style={{ backgroundColor: colors.cardSurface, border: `1px solid ${colors.border}`, borderRadius: radii.md, padding: '1.25rem', position: 'relative' }}>
           <span style={{ fontSize: typography.fontSize.xs, color: colors.success, fontWeight: 600 }}>Resolved</span>
           <div style={{ fontSize: typography.fontSize['2xl'], fontWeight: 700, color: colors.success, margin: '0.25rem 0' }}>
-            {MOCK_ESCALATION_METRICS.resolvedCount}
+            {dynamicMetrics.resolvedCount}
           </div>
           <span style={{ fontSize: typography.fontSize.xs, color: colors.success }}>Closed with Dean memo</span>
           <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: '3px', backgroundColor: colors.success }} />
@@ -607,10 +671,20 @@ export const EscalationPage: React.FC = () => {
                     color: colors.primaryText,
                   }}
                 >
-                  <option value="Dean of Student Affairs">Dean of Student Affairs</option>
-                  <option value="Chief Campus Warden">Chief Campus Warden</option>
-                  <option value="Director of Infrastructure">Director of Infrastructure</option>
-                  <option value="Controller of Examinations">Controller of Examinations</option>
+                  {availableStaff.length > 0 ? (
+                    availableStaff.map((staff) => (
+                      <option key={staff.id} value={staff.full_name}>
+                        {staff.full_name} ({staff.department?.name || staff.role})
+                      </option>
+                    ))
+                  ) : (
+                    <>
+                      <option value="Dean of Student Affairs">Dean of Student Affairs</option>
+                      <option value="Chief Campus Warden">Chief Campus Warden</option>
+                      <option value="Director of Infrastructure">Director of Infrastructure</option>
+                      <option value="Controller of Examinations">Controller of Examinations</option>
+                    </>
+                  )}
                 </select>
               </div>
             )}

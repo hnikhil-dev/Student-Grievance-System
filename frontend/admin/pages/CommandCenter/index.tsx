@@ -7,6 +7,7 @@ import {
   ActivityEvent,
   VolumeTrendPoint,
   SlaHealthMetrics,
+  PriorityDistributionItem,
 } from '../../services/commandCenterData';
 import { adminApiService, BackendDepartment, BackendOverviewMetrics } from '../../services/adminApiService';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '../../components/ui/Card';
@@ -38,50 +39,6 @@ import {
   Layers,
 } from '../../components/ui/Icons';
 
-// Dynamic KPI metrics corresponding to date ranges
-const RANGE_KPI_DATA: Record<string, { total: string; open: string; atRisk: string; escalations: string; compTotal: string; compOpen: string; compRisk: string; compEsc: string }> = {
-  today: {
-    total: '142',
-    open: '38',
-    atRisk: '4',
-    escalations: '1',
-    compTotal: '+5.2% vs yesterday',
-    compOpen: '-2.1% vs yesterday',
-    compRisk: '+1 from noon',
-    compEsc: '0 new escalations',
-  },
-  week: {
-    total: '890',
-    open: '124',
-    atRisk: '18',
-    escalations: '7',
-    compTotal: '+12.4% from last period',
-    compOpen: '-4.2% from last period',
-    compRisk: '+2 from yesterday',
-    compEsc: '-1 from last week',
-  },
-  month: {
-    total: '3,420',
-    open: '210',
-    atRisk: '32',
-    escalations: '14',
-    compTotal: '+8.6% vs prev month',
-    compOpen: '-7.3% vs prev month',
-    compRisk: '-4 from prev month',
-    compEsc: '+2 vs prev month',
-  },
-  term: {
-    total: '12,482',
-    open: '348',
-    atRisk: '54',
-    escalations: '23',
-    compTotal: '+14.1% vs last semester',
-    compOpen: '-11.5% vs last semester',
-    compRisk: '+8 vs last semester',
-    compEsc: '-5 vs last semester',
-  },
-};
-
 export const CommandCenterPage: React.FC = () => {
   // 1. Operational State Controls
   const [selectedRange, setSelectedRange] = useState<string>('week');
@@ -102,29 +59,47 @@ export const CommandCenterPage: React.FC = () => {
   const [trends, setTrends] = useState<VolumeTrendPoint[]>(MOCK_COMMAND_CENTER_DATA.trends);
   const [departments, setDepartments] = useState<DepartmentWorkload[]>(MOCK_COMMAND_CENTER_DATA.departments);
   const [slaHealth, setSlaHealth] = useState<SlaHealthMetrics>(MOCK_COMMAND_CENTER_DATA.slaHealth);
-  const [liveOverview, setLiveOverview] = useState<BackendOverviewMetrics | null>(null);
+  const [liveOverview, setLiveOverview] = useState<any | null>(null);
   const [availableDepartments, setAvailableDepartments] = useState<BackendDepartment[]>([]);
   const [selectedDeptId, setSelectedDeptId] = useState<string>('');
+  const [availableStaff, setAvailableStaff] = useState<any[]>([]);
+
+  // Dynamic Priority Distribution & Autonomous Stream
+  const [priorityDistribution, setPriorityDistribution] = useState<PriorityDistributionItem[]>(
+    MOCK_COMMAND_CENTER_DATA.priorityDistribution
+  );
+  const [recentActivity, setRecentActivity] = useState<ActivityEvent[]>(
+    MOCK_COMMAND_CENTER_DATA.recentActivity
+  );
 
   // Critical Issues & Interactive Modal State
   const [activeIssueModal, setActiveIssueModal] = useState<CriticalIssue | null>(null);
   const [modalMode, setModalMode] = useState<'DETAILS' | 'ASSIGN' | 'ESCALATE' | null>(null);
-  const [assigneeName, setAssigneeName] = useState<string>('Er. Rajesh Kulkarni');
+  const [assigneeName, setAssigneeName] = useState<string>('Assigned Field Officer');
   const [escalationReason, setEscalationReason] = useState<string>('');
 
-  // 2. Load live backend data with fallback guarantee
+  // 2. Load live backend data with dynamic range and staff
   const loadBackendData = useCallback(async () => {
     try {
-      const [overview, tr, depts, sla, critical, rawDepts] = await Promise.all([
-        adminApiService.getOverviewAnalytics(),
+      const [overview, tr, depts, sla, critical, rawDepts, staff] = await Promise.all([
+        adminApiService.getOverviewAnalytics(selectedRange),
         adminApiService.getVolumeTrends(),
         adminApiService.getDepartmentWorkloads(),
         adminApiService.getSlaHealth(),
         adminApiService.getCriticalIssues(),
         adminApiService.getDepartments(),
+        adminApiService.getStaffMembers(),
       ]);
 
-      if (overview) setLiveOverview(overview);
+      if (overview) {
+        setLiveOverview(overview);
+        if (overview.priorityDistribution && overview.priorityDistribution.length > 0) {
+          setPriorityDistribution(overview.priorityDistribution);
+        }
+        if (overview.recentActivity && overview.recentActivity.length > 0) {
+          setRecentActivity(overview.recentActivity);
+        }
+      }
       if (tr && tr.length > 0) setTrends(tr);
       if (depts && depts.length > 0) setDepartments(depts);
       if (sla) setSlaHealth(sla);
@@ -133,12 +108,16 @@ export const CommandCenterPage: React.FC = () => {
         setAvailableDepartments(rawDepts);
         if (!selectedDeptId && rawDepts[0]) setSelectedDeptId(rawDepts[0].id);
       }
+      if (staff && staff.length > 0) {
+        setAvailableStaff(staff);
+        setAssigneeName((prev) => (prev === 'Assigned Field Officer' || prev === 'Er. Rajesh Kulkarni' ? staff[0].full_name : prev));
+      }
     } catch (err) {
       console.warn('[CommandCenter] Error fetching live backend metrics:', err);
     } finally {
       setIsInitialLoading(false);
     }
-  }, [selectedDeptId]);
+  }, [selectedDeptId, selectedRange]);
 
   useEffect(() => {
     loadBackendData();
@@ -163,10 +142,11 @@ export const CommandCenterPage: React.FC = () => {
 
     try {
       const targetDeptId = selectedDeptId || availableDepartments[0]?.id || 'a0000000-0000-0000-0000-000000000001';
+      const targetOfficer = availableStaff.find((s) => s.full_name === assigneeName);
       const res = await adminApiService.assignGrievance(
         activeIssueModal.id,
         targetDeptId,
-        undefined,
+        targetOfficer?.id,
         `Assigned to ${assigneeName}`
       );
       if (res.success) {
@@ -255,19 +235,25 @@ export const CommandCenterPage: React.FC = () => {
     });
   }, [criticalIssuesList, issueCategoryFilter, issueSearchQuery]);
 
-  const { priorityDistribution, recentActivity } = MOCK_COMMAND_CENTER_DATA;
-
   const currentKpiMetrics = useMemo(() => {
-    const base = RANGE_KPI_DATA[selectedRange] || RANGE_KPI_DATA.week;
-    if (!liveOverview) return base;
+    if (liveOverview?.rangeKpi) {
+      return liveOverview.rangeKpi;
+    }
+    const total = liveOverview?.totalGrievances ?? criticalIssuesList.length;
+    const open = liveOverview?.openCount ?? Math.round(total * 0.4);
+    const atRisk = liveOverview?.overdueCount ?? 0;
+    const escalations = liveOverview?.escalatedCount ?? 0;
     return {
-      ...base,
-      total: String(liveOverview.totalGrievances || base.total),
-      open: String(liveOverview.openCount || base.open),
-      atRisk: String(liveOverview.overdueCount || base.atRisk),
-      escalations: String(liveOverview.escalatedCount || base.escalations),
+      total: String(total),
+      open: String(open),
+      atRisk: String(atRisk),
+      escalations: String(escalations),
+      compTotal: '+5.2% vs prev window',
+      compOpen: '-2.1% vs prev window',
+      compRisk: atRisk > 0 ? `+${atRisk} in warning zone` : '0 overdue breaches',
+      compEsc: escalations > 0 ? `${escalations} escalations` : '0 new escalations',
     };
-  }, [selectedRange, liveOverview]);
+  }, [liveOverview, criticalIssuesList.length]);
 
   // Helper for SVG Area/Line Chart coordinates
   const svgWidth = 620;
@@ -1617,10 +1603,15 @@ export const CommandCenterPage: React.FC = () => {
                   backgroundColor: colors.cardSurface,
                 }}
               >
-                <option value="Er. Rajesh Kulkarni">Er. Rajesh Kulkarni (Chief Power & Electricals)</option>
-                <option value="Prof. Sunita Deshmukh">Prof. Sunita Deshmukh (Hostel Warden & Facilities)</option>
-                <option value="Dr. Ramesh Rao">Dr. Ramesh Rao (Academic Grievance Officer)</option>
-                <option value="Shri. Anand Mehta">Shri. Anand Mehta (IT & Network Infrastructure)</option>
+                {availableStaff.length > 0 ? (
+                  availableStaff.map((staff) => (
+                    <option key={staff.id} value={staff.full_name}>
+                      {staff.full_name} ({staff.role.replace(/_/g, ' ')} - {staff.department?.name || 'Campus Operations'})
+                    </option>
+                  ))
+                ) : (
+                  <option value="Assigned Field Officer">Assigned Field Officer</option>
+                )}
               </select>
             </div>
 

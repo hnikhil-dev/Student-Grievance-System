@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   MOCK_ANALYTICS_OBSERVATIONS,
   MOCK_VOLUME_TIMELINE,
@@ -7,6 +7,7 @@ import {
   MOCK_AI_ANALYTICS,
   MOCK_ESCALATION_ANALYTICS,
 } from '../../services/analyticsData';
+import { adminApiService } from '../../services/adminApiService';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '../../components/ui/Card';
 import { Button } from '../../components/ui/Button';
 import { Badge } from '../../components/ui/Badge';
@@ -25,6 +26,44 @@ export const AnalyticsPage: React.FC = () => {
   const [selectedDatePreset, setSelectedDatePreset] = useState<string>('30d');
   const [selectedDeptFilter, setSelectedDeptFilter] = useState<string>('ALL');
   const [exportFeedback, setExportFeedback] = useState<string | null>(null);
+  const [categories, setCategories] = useState(MOCK_TOP_CATEGORIES);
+  const [deptPerf, setDeptPerf] = useState(MOCK_DEPARTMENT_PERF);
+  const [departments, setDepartments] = useState<any[]>([]);
+
+  useEffect(() => {
+    let mounted = true;
+    Promise.all([
+      adminApiService.getCategoryDistribution(),
+      adminApiService.getDepartmentWorkloads(),
+      adminApiService.getDepartments(),
+    ]).then(([catData, workloads, depts]) => {
+      if (!mounted) return;
+      if (depts && depts.length > 0) setDepartments(depts);
+      if (catData && catData.length > 0) {
+        setCategories(
+          catData.map((c) => ({
+            category: c.category,
+            percentage: c.percentage,
+            count: c.count,
+          }))
+        );
+      }
+      if (workloads && workloads.length > 0) {
+        setDeptPerf(
+          workloads.map((w) => ({
+            department: w.name,
+            avgResponseHours: 2.1,
+            avgResolutionHours: Math.max(3, Math.round(10 - (w.slaPercentage / 12))),
+            slaCompliancePercent: w.slaPercentage,
+            totalVolume: w.totalGrievances || (w.resolved + w.active) || 0,
+          }))
+        );
+      }
+    });
+    return () => {
+      mounted = false;
+    };
+  }, []);
 
   const handleExport = () => {
     setExportFeedback('Exporting institutional report PDF & CSV telemetry...');
@@ -257,11 +296,21 @@ export const AnalyticsPage: React.FC = () => {
                 }}
               >
                 <option value="ALL">All Campus Sectors</option>
-                <option value="Technical">Technical</option>
-                <option value="Academic">Academic</option>
-                <option value="Hostel">Hostel</option>
-                <option value="Accounts">Accounts</option>
-                <option value="Support">Support</option>
+                {departments.length > 0 ? (
+                  departments.map((d) => (
+                    <option key={d.id} value={d.name}>
+                      {d.name}
+                    </option>
+                  ))
+                ) : (
+                  <>
+                    <option value="Technical">Technical</option>
+                    <option value="Academic">Academic</option>
+                    <option value="Hostel">Hostel</option>
+                    <option value="Accounts">Accounts</option>
+                    <option value="Support">Support</option>
+                  </>
+                )}
               </select>
             </div>
           </div>
@@ -297,7 +346,7 @@ export const AnalyticsPage: React.FC = () => {
           </CardHeader>
           <CardContent style={{ padding: '0 1.25rem 1.25rem' }}>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-              {MOCK_DEPARTMENT_PERF.slice(0, 5).map((dp) => (
+              {deptPerf.slice(0, 5).map((dp) => (
                 <div key={dp.department} style={{ borderBottom: `1px solid ${colors.border}`, paddingBottom: '0.5rem' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: typography.fontSize.xs, marginBottom: '0.25rem' }}>
                     <span style={{ fontWeight: 600, color: colors.deepForestGreen }}>{dp.department}</span>
@@ -306,7 +355,7 @@ export const AnalyticsPage: React.FC = () => {
                     </span>
                   </div>
                   <div style={{ height: '6px', backgroundColor: colors.adminBackground, borderRadius: radii.full, overflow: 'hidden' }}>
-                    <div style={{ width: `${(dp.avgResolutionHours / 8) * 100}%`, backgroundColor: dp.avgResolutionHours > 6 ? colors.danger : colors.primaryGreen, height: '100%' }} />
+                    <div style={{ width: `${Math.min(100, (dp.avgResolutionHours / 8) * 100)}%`, backgroundColor: dp.avgResolutionHours > 6 ? colors.danger : colors.primaryGreen, height: '100%' }} />
                   </div>
                 </div>
               ))}
@@ -325,7 +374,7 @@ export const AnalyticsPage: React.FC = () => {
           </CardHeader>
           <CardContent style={{ padding: '0 1.25rem 1.25rem' }}>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-              {MOCK_DEPARTMENT_PERF.map((dp) => (
+              {deptPerf.map((dp) => (
                 <div key={dp.department}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: typography.fontSize.xs, marginBottom: '0.2rem' }}>
                     <span style={{ fontWeight: 600, color: colors.primaryText }}>{dp.department}</span>
@@ -334,7 +383,7 @@ export const AnalyticsPage: React.FC = () => {
                     </strong>
                   </div>
                   <div style={{ height: '7px', backgroundColor: colors.adminBackground, borderRadius: radii.full, overflow: 'hidden' }}>
-                    <div style={{ width: `${dp.slaCompliancePercent}%`, backgroundColor: dp.slaCompliancePercent >= 95 ? colors.primaryGreen : colors.danger, height: '100%' }} />
+                    <div style={{ width: `${Math.min(100, dp.slaCompliancePercent)}%`, backgroundColor: dp.slaCompliancePercent >= 95 ? colors.primaryGreen : colors.danger, height: '100%' }} />
                   </div>
                 </div>
               ))}
@@ -350,14 +399,14 @@ export const AnalyticsPage: React.FC = () => {
           </CardHeader>
           <CardContent style={{ padding: '0 1.25rem 1.25rem' }}>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.65rem' }}>
-              {MOCK_TOP_CATEGORIES.map((cat) => (
+              {categories.map((cat) => (
                 <div key={cat.category}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: typography.fontSize.xs, marginBottom: '0.2rem' }}>
                     <span style={{ color: colors.primaryText, fontWeight: 500 }}>{cat.category}</span>
                     <span style={{ color: colors.secondaryText }}>{cat.percentage}% ({cat.count.toLocaleString()})</span>
                   </div>
                   <div style={{ height: '6px', backgroundColor: colors.adminBackground, borderRadius: radii.full, overflow: 'hidden' }}>
-                    <div style={{ width: `${cat.percentage * 2}%`, backgroundColor: colors.secondaryGreen, height: '100%' }} />
+                    <div style={{ width: `${Math.min(100, cat.percentage * 2)}%`, backgroundColor: colors.secondaryGreen, height: '100%' }} />
                   </div>
                 </div>
               ))}

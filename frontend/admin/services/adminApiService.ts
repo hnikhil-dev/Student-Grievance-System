@@ -99,11 +99,11 @@ export const adminApiService = {
   },
 
   /**
-   * Fetch real admin analytics overview
+   * Fetch real admin analytics overview with dynamic date range
    */
-  async getOverviewAnalytics(): Promise<BackendOverviewMetrics | null> {
+  async getOverviewAnalytics(range = 'week'): Promise<any> {
     try {
-      const res = await fetch('/api/admin/analytics/overview', {
+      const res = await fetch(`/api/admin/analytics/overview?range=${range}`, {
         headers: getDynamicAuthHeaders({
           'x-demo-user-id': DEFAULT_DEMO_ADMIN_ID,
           'x-demo-user-role': DEFAULT_DEMO_ADMIN_ROLE,
@@ -174,6 +174,27 @@ export const adminApiService = {
       console.warn('[adminApiService] Error fetching department workloads:', err);
     }
     return MOCK_COMMAND_CENTER_DATA.departments;
+  },
+
+  /**
+   * Fetch category distribution metrics from backend
+   */
+  async getCategoryDistribution(): Promise<{ category: string; count: number; percentage: number }[]> {
+    try {
+      const res = await fetch('/api/admin/analytics/categories', {
+        headers: getDynamicAuthHeaders({
+          'x-demo-user-id': DEFAULT_DEMO_ADMIN_ID,
+          'x-demo-user-role': DEFAULT_DEMO_ADMIN_ROLE,
+        }),
+      });
+      const data = await res.json();
+      if (data.success && data.data?.categories) {
+        return data.data.categories;
+      }
+    } catch (err) {
+      console.warn('[adminApiService] Error fetching category distribution:', err);
+    }
+    return [];
   },
 
   /**
@@ -388,6 +409,91 @@ export const adminApiService = {
         }),
       },
       body: JSON.stringify(params),
+    });
+    return res.json();
+  },
+
+  /**
+   * Fetch active campus officers and administrative staff dynamically
+   */
+  async getStaffMembers() {
+    try {
+      const res = await fetch('/api/admin/staff', {
+        headers: getDynamicAuthHeaders({
+          'x-demo-user-id': DEFAULT_DEMO_ADMIN_ID,
+          'x-demo-user-role': DEFAULT_DEMO_ADMIN_ROLE,
+        }),
+      });
+      const data = await res.json();
+      if (data.success && Array.isArray(data.data)) {
+        return data.data;
+      }
+    } catch (err) {
+      console.warn('[adminApiService] Error fetching staff:', err);
+    }
+    return [];
+  },
+
+  /**
+   * Fetch active grievance clusters & AI-detected duplicate pairs dynamically
+   */
+  async getClusters() {
+    try {
+      const res = await fetch('/api/admin/clusters', {
+        headers: getDynamicAuthHeaders({
+          'x-demo-user-id': DEFAULT_DEMO_ADMIN_ID,
+          'x-demo-user-role': DEFAULT_DEMO_ADMIN_ROLE,
+        }),
+      });
+      const data = await res.json();
+      if (data.success && data.data) {
+        return data.data;
+      }
+    } catch (err) {
+      console.warn('[adminApiService] Error fetching clusters:', err);
+    }
+    return { clusters: [], duplicatePairs: [], totalDuplicates: 0 };
+  },
+
+  /**
+   * Fetch active escalated tickets dynamically
+   */
+  async getEscalations() {
+    try {
+      const res = await fetch('/api/admin/escalations', {
+        headers: getDynamicAuthHeaders({
+          'x-demo-user-id': DEFAULT_DEMO_ADMIN_ID,
+          'x-demo-user-role': DEFAULT_DEMO_ADMIN_ROLE,
+        }),
+      });
+      const data = await res.json();
+      if (data.success && data.data) {
+        return data.data;
+      }
+    } catch (err) {
+      console.warn('[adminApiService] Error fetching escalations:', err);
+    }
+    return { escalations: [], totalCount: 0, breachedCount: 0 };
+  },
+
+  /**
+   * Merge duplicate ticket into master grievance dynamically
+   */
+  async mergeDuplicates(primaryId: string, candidateId: string, notes?: string) {
+    const res = await fetch('/api/admin/clusters', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        ...getDynamicAuthHeaders({
+          'x-demo-user-id': DEFAULT_DEMO_ADMIN_ID,
+          'x-demo-user-role': DEFAULT_DEMO_ADMIN_ROLE,
+        }),
+      },
+      body: JSON.stringify({
+        primary_id: primaryId,
+        candidate_id: candidateId,
+        notes: notes || 'Merged via Duplicate Review Console',
+      }),
     });
     return res.json();
   },

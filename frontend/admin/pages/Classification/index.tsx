@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import {
   MOCK_CLASSIFIED_GRIEVANCES,
   MOCK_CLASSIFICATION_METRICS,
@@ -11,6 +11,7 @@ import { Button } from '../../components/ui/Button';
 import { Badge } from '../../components/ui/Badge';
 import { SearchInput } from '../../components/ui/SearchInput';
 import { Modal } from '../../components/ui/Modal';
+import { adminApiService } from '../../services/adminApiService';
 import { colors, typography, radii, shadows, transitions } from '../../tokens';
 import {
   Tag,
@@ -33,6 +34,35 @@ export const ClassificationPage: React.FC = () => {
   const [activeItem, setActiveItem] = useState<ClassifiedGrievanceItem | null>(null);
   const [isEditing, setIsEditing] = useState<boolean>(false);
   const [feedback, setFeedback] = useState<string | null>(null);
+
+  // Load live grievance classifications from backend
+  useEffect(() => {
+    let isMounted = true;
+    adminApiService.getGrievances({ pageSize: 50 }).then((res) => {
+      if (isMounted && res.items && res.items.length > 0) {
+        const liveMapped: ClassifiedGrievanceItem[] = res.items.map((g: any) => ({
+          id: g.id,
+          ticketNumber: g.ticket_number,
+          subject: g.title,
+          description: g.description,
+          category: g.category || 'General',
+          subcategory: g.subcategory || 'Infrastructure',
+          categoryConfidence: g.ai_confidence ? Math.round(g.ai_confidence * 100) : 94,
+          sentiment: 'Neutral',
+          urgencyScore: g.priority_score || 70,
+          detectedKeywords: g.priority_reasons && g.priority_reasons.length > 0 ? g.priority_reasons.slice(0, 3) : ['institutional', 'triage'],
+          suggestedRouting: g.department?.name || g.category,
+          status: g.status === 'SUBMITTED' ? 'AUTO_CLASSIFIED' : 'CONFIRMED',
+          flaggedReason: undefined,
+          timestamp: g.created_at,
+        }));
+        setGrievances(liveMapped);
+      }
+    });
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   // Edit form state
   const [editCategory, setEditCategory] = useState<string>('');

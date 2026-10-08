@@ -36,12 +36,19 @@ export const SlaPage: React.FC = () => {
 
   // Quick action states
   const [actionModalMode, setActionModalMode] = useState<'ASSIGN' | 'ESCALATE' | null>(null);
-  const [assignedTechnician, setAssignedTechnician] = useState<string>('Er. Rajesh Kulkarni');
+  const [assignedTechnician, setAssignedTechnician] = useState<string>('Assigned Field Officer');
+  const [availableStaff, setAvailableStaff] = useState<any[]>([]);
   const [escalationNote, setEscalationNote] = useState<string>('');
 
-  // Load live SLA data from backend
+  // Load live SLA data and staff members from backend
   useEffect(() => {
     let isMounted = true;
+    adminApiService.getStaffMembers().then((staff) => {
+      if (isMounted && staff && staff.length > 0) {
+        setAvailableStaff(staff);
+        setAssignedTechnician(staff[0].full_name);
+      }
+    });
     adminApiService.getGrievances({ pageSize: 50 }).then((res) => {
       if (isMounted && res.items && res.items.length > 0) {
         const liveMapped: SlaGrievanceItem[] = res.items.map((g: any) => {
@@ -597,10 +604,15 @@ export const SlaPage: React.FC = () => {
                   color: colors.primaryText,
                 }}
               >
-                <option value="Er. Rajesh Kulkarni">Er. Rajesh Kulkarni (Technical Lead)</option>
-                <option value="Mr. Vikram Joshi">Mr. Vikram Joshi (Maintenance Specialist)</option>
-                <option value="Prof. Arvind Nambiar">Prof. Arvind Nambiar (Residential Warden)</option>
-                <option value="Dr. Meenakshi Iyer">Dr. Meenakshi Iyer (Academic Controller)</option>
+                {availableStaff.length > 0 ? (
+                  availableStaff.map((s) => (
+                    <option key={s.id} value={s.full_name}>
+                      {s.full_name} ({s.role.replace(/_/g, ' ')} - {s.department?.name || 'Central'})
+                    </option>
+                  ))
+                ) : (
+                  <option value="Assigned Field Officer">Assigned Field Officer</option>
+                )}
               </select>
             </div>
 

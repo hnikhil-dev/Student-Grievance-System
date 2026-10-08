@@ -1,10 +1,11 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import {
   MOCK_AI_INSIGHTS,
   AiInsightItem,
   InsightType,
   InsightPriority,
 } from '../../services/insightsData';
+import { adminApiService } from '../../services/adminApiService';
 import { AdminRouteId } from '../../types/navigation';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '../../components/ui/Card';
 import { Button } from '../../components/ui/Button';
@@ -25,12 +26,57 @@ export interface InsightsPageProps {
 }
 
 export const InsightsPage: React.FC<InsightsPageProps> = ({ onNavigate }) => {
-  const [insights] = useState<AiInsightItem[]>(MOCK_AI_INSIGHTS);
+  const [insights, setInsights] = useState<AiInsightItem[]>(MOCK_AI_INSIGHTS);
+  const [departments, setDepartments] = useState<any[]>([]);
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [selectedTypeFilter, setSelectedTypeFilter] = useState<string>('ALL');
   const [selectedPriorityFilter, setSelectedPriorityFilter] = useState<string>('ALL');
   const [selectedDeptFilter, setSelectedDeptFilter] = useState<string>('ALL');
   const [minConfidence, setMinConfidence] = useState<number>(0);
+
+  useEffect(() => {
+    let mounted = true;
+    Promise.all([
+      adminApiService.getDepartments(),
+      adminApiService.getClusters(),
+    ]).then(([depts, clusterData]) => {
+      if (!mounted) return;
+      if (depts && depts.length > 0) setDepartments(depts);
+      if (clusterData && Array.isArray(clusterData.clusters) && clusterData.clusters.length > 0) {
+        const liveInsights: AiInsightItem[] = clusterData.clusters.map((c: any) => ({
+          id: `ins-live-${c.id}`,
+          icon: '⚡',
+          title: c.title || c.name || 'Systemic Cluster Detected',
+          type: 'EMERGING_ISSUE',
+          typeLabel: 'Emerging Pattern',
+          priority: (c.priority || 'HIGH') as any,
+          summary: c.root_cause_summary || `Correlated ${c.affected_count || 10}+ grievances identified in ${c.category || 'campus'} operations.`,
+          whatHappened: `Multiple student reports flagged similar friction points requiring immediate triage.`,
+          whyAiThinksThis: `Semantic pattern matching grouped duplicate and adjacent complaints in the same department sector.`,
+          evidence: [
+            `Impact count: ${c.affected_count || 10} affected students`,
+            `Category: ${c.category || 'Operations'}`,
+            `Status: Actively monitored by Autonomous Sentinel`,
+          ],
+          impactCohort: `${c.affected_count || 10}+ campus students`,
+          confidence: 94,
+          recommendedAction: `Inspect clustered tickets and perform batch dispatch or technician reassignment.`,
+          relatedRoute: 'clusters',
+          relatedActionLabel: 'Inspect Cluster',
+          affectedDepartments: [c.department?.name || c.category || 'Central Administration'],
+          detectedAt: 'Live',
+        }));
+
+        setInsights((prev) => {
+          const liveIds = new Set(liveInsights.map((li) => li.id));
+          return [...liveInsights, ...prev.filter((p) => !liveIds.has(p.id))];
+        });
+      }
+    });
+    return () => {
+      mounted = false;
+    };
+  }, []);
 
   const filteredInsights = useMemo(() => {
     return insights.filter((item) => {
@@ -201,6 +247,31 @@ export const InsightsPage: React.FC<InsightsPageProps> = ({ onNavigate }) => {
                   <option value="HIGH">High</option>
                   <option value="MEDIUM">Medium</option>
                   <option value="INFORMATIONAL">Informational</option>
+                </select>
+              </div>
+
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+                <span style={{ fontSize: typography.fontSize.xs, color: colors.secondaryText }}>Sector:</span>
+                <select
+                  value={selectedDeptFilter}
+                  onChange={(e) => setSelectedDeptFilter(e.target.value)}
+                  style={{
+                    fontFamily: typography.fontFamily,
+                    fontSize: typography.fontSize.xs,
+                    color: colors.primaryText,
+                    backgroundColor: colors.cardSurface,
+                    border: `1px solid ${colors.border}`,
+                    borderRadius: radii.md,
+                    padding: '0.4rem 0.65rem',
+                    cursor: 'pointer',
+                  }}
+                >
+                  <option value="ALL">All Sectors</option>
+                  {departments.map((d) => (
+                    <option key={d.id} value={d.name}>
+                      {d.name}
+                    </option>
+                  ))}
                 </select>
               </div>
 
