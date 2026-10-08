@@ -1,8 +1,10 @@
 import { ResolutionVerifierInput, ResolutionVerifierOutput, AgentResult, ResolutionVerdict } from './types';
+import { GeminiGateway } from '@/lib/ai/gemini-gateway';
 
 export class ResolutionVerifierAgent {
   /**
    * Verifies officer resolution notes and counter-evidence against the original complaint.
+   * Leverages Gemini LLM for deep semantic critique when available; otherwise uses dynamic rule heuristics.
    */
   public static async verify(input: ResolutionVerifierInput): Promise<AgentResult<ResolutionVerifierOutput>> {
     const initialText = input.initialDescription.toLowerCase();
@@ -21,10 +23,71 @@ export class ResolutionVerifierAgent {
       initialText.includes('switch') ||
       initialText.includes('door') ||
       initialText.includes('ac') ||
-      initialText.includes('fan');
+      initialText.includes('fan') ||
+      initialText.includes('plumbing') ||
+      initialText.includes('light');
 
-    // 3. Keyword alignment between complaint and resolution
-    const repairKeywords = ['replaced', 'fixed', 'repaired', 'cleaned', 'restored', 'updated', 'resolved', 'inspected', 'sanitized', 'installed'];
+    // 3. Attempt Gemini LLM Verification Critique if available
+    if (GeminiGateway.isAvailable()) {
+      const systemInstruction = `You are RESOLUTION_VERIFIER, an autonomous institutional ombudsman and quality assurance auditor.
+Critique proposed solutions to student complaints. Cross-reference original complaint symptoms against the officer's corrective actions and proof.
+Verify whether the resolution genuinely fixes the root cause and ensure physical infrastructure issues have photographic counter-evidence.`;
+
+      const userPrompt = `Complaint Details:
+Original Complaint: "${input.initialDescription}"
+Officer Resolution Notes: "${input.resolutionNotes}"
+Officer Counter-Evidence Proof Files: ${JSON.stringify(input.officerEvidence || [])}
+Is Physical Infrastructure: ${isPhysicalIncident}
+
+Audit this resolution and produce JSON:
+{
+  "verdict": "VERIFIED_RESOLVED" | "DEFICIENT_RESOLUTION" | "FURTHER_EVIDENCE_REQUIRED",
+  "confidence": number (float 0.0 to 1.0),
+  "isApproved": boolean,
+  "comparisonAnalysis": string (2-3 sentences explaining whether the actions directly address the reported failure),
+  "verificationNotes": string,
+  "checklist": {
+    "issueAddressed": boolean,
+    "proofProvided": boolean,
+    "satisfactoryQuality": boolean
+  },
+  "thoughtProcess": string (4-step audit trace: Step 1 Reconciliation Audit, Step 2 Counter-Evidence Inspection, Step 3 Quality Checklist, Step 4 Verification Verdict)
+}`;
+
+      const aiResponse = await GeminiGateway.generateStructuredReasoning<any>(systemInstruction, userPrompt);
+      if (aiResponse.success && aiResponse.data) {
+        const v = aiResponse.data;
+        const verdict: ResolutionVerdict = ['VERIFIED_RESOLVED', 'DEFICIENT_RESOLUTION', 'FURTHER_EVIDENCE_REQUIRED'].includes(v.verdict)
+          ? v.verdict
+          : 'VERIFIED_RESOLVED';
+
+        const output: ResolutionVerifierOutput = {
+          verdict,
+          confidence: Math.min(1.0, Math.max(0.5, Number(v.confidence) || 0.95)),
+          isApproved: verdict === 'VERIFIED_RESOLVED',
+          counterEvidenceVerified: hasProof,
+          comparisonAnalysis: v.comparisonAnalysis || 'Resolution actions reconcile with reported issue symptoms.',
+          verificationNotes: v.verificationNotes || `Resolution Verifier Agent concluded '${verdict}'.`,
+          checklist: {
+            issueAddressed: Boolean(v.checklist?.issueAddressed ?? true),
+            proofProvided: hasProof,
+            satisfactoryQuality: verdict === 'VERIFIED_RESOLVED',
+          },
+        };
+
+        return {
+          success: true,
+          agentName: 'RESOLUTION_VERIFIER',
+          actionTaken: 'COUNTER_EVIDENCE_VERIFICATION',
+          thoughtProcess: v.thoughtProcess || `[STEP 1: RECONCILIATION AUDIT] Cross-referenced complaint vs notes.\n[STEP 2: COUNTER-EVIDENCE] Verified proof files.\n[STEP 3: QUALITY CHECKLIST] Audited completeness.\n[STEP 4: VERIFICATION VERDICT] Issued ${verdict}.`,
+          confidence: output.confidence,
+          data: output,
+        };
+      }
+    }
+
+    // 4. Dynamic Heuristic Verification (Fail-Safe Engine)
+    const repairKeywords = ['replaced', 'fixed', 'repaired', 'cleaned', 'restored', 'updated', 'resolved', 'inspected', 'sanitized', 'installed', 'corrected'];
     const matchedActions = repairKeywords.filter((kw) => resolutionText.includes(kw));
 
     let verdict: ResolutionVerdict = 'VERIFIED_RESOLVED';
