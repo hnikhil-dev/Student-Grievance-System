@@ -1,0 +1,429 @@
+{
+  "departments": [
+    {
+      "id": "a0000000-0000-0000-0000-000000000001",
+      "name": "Information Technology",
+      "code": "IT",
+      "description": "Campus network, LMS, lab workstations, Wi-Fi and student portal services",
+      "is_active": true,
+      "created_at": "2026-10-08T20:42:26.124Z",
+      "updated_at": "2026-10-08T20:42:26.125Z"
+    },
+    {
+      "id": "a0000000-0000-0000-0000-000000000002",
+      "name": "Academic Affairs",
+      "code": "ACADEMICS",
+      "description": "Course registration, grading queries, hall tickets, timetable and examinations",
+      "is_active": true,
+      "created_at": "2026-10-08T20:42:26.125Z",
+      "updated_at": "2026-10-08T20:42:26.125Z"
+    },
+    {
+      "id": "a0000000-0000-0000-0000-000000000003",
+      "name": "Hostel & Housing",
+      "code": "HOSTEL",
+      "description": "Hostel rooms, water heaters, hygiene, mess coordination and security",
+      "is_active": true,
+      "created_at": "2026-10-08T20:42:26.125Z",
+      "updated_at": "2026-10-08T20:42:26.125Z"
+    },
+    {
+      "id": "a0000000-0000-0000-0000-000000000004",
+      "name": "Campus Maintenance",
+      "code": "MAINTENANCE",
+      "description": "Civil, electrical, plumbing, sanitation and classroom infrastructure",
+      "is_active": true,
+      "created_at": "2026-10-08T20:42:26.125Z",
+      "updated_at": "2026-10-08T20:42:26.125Z"
+    },
+    {
+      "id": "a0000000-0000-0000-0000-000000000005",
+      "name": "Transport Services",
+      "code": "TRANSPORT",
+      "description": "College shuttle buses, route timings, driver grievances and passes",
+      "is_active": true,
+      "created_at": "2026-10-08T20:42:26.125Z",
+      "updated_at": "2026-10-08T20:42:26.125Z"
+    },
+    {
+      "id": "a0000000-0000-0000-0000-000000000006",
+      "name": "Central Library",
+      "code": "LIBRARY",
+      "description": "Digital repository, book returns, study halls, noise control and journal access",
+      "is_active": true,
+      "created_at": "2026-10-08T20:42:26.125Z",
+      "updated_at": "2026-10-08T20:42:26.125Z"
+    },
+    {
+      "id": "a0000000-0000-0000-0000-000000000007",
+      "name": "Administration",
+      "code": "ADMINISTRATION",
+      "description": "Fee clearance, scholarships, certificates, ID cards and identity documents",
+      "is_active": true,
+      "created_at": "2026-10-08T20:42:26.125Z",
+      "updated_at": "2026-10-08T20:42:26.125Z"
+    },
+    {
+      "id": "a0000000-0000-0000-0000-000000000008",
+      "name": "Canteen & Food Services",
+      "code": "CANTEEN",
+      "description": "Cafeteria food hygiene, nutrition, pricing and cafeteria cleanliness",
+      "is_active": true,
+      "created_at": "2026-10-08T20:42:26.125Z",
+      "updated_at": "2026-10-08T20:42:26.125Z"
+    },
+    {
+      "id": "a0000000-0000-0000-0000-000000000009",
+      "name": "Student Affairs",
+      "code": "STUDENT_AFFAIRS",
+      "description": "Clubs, cultural events, anti-ragging cell, grievance council and welfare",
+      "is_active": true,
+      "created_at": "2026-10-08T20:42:26.125Z",
+      "updated_at": "2026-10-08T20:42:26.125Z"
+    }
+  ],
+  "sla_rules": [
+    {
+      "id": "b0000000-0000-0000-0000-000000000001",
+      "priority": "CRITICAL",
+      "default_hours": 4,
+      "warning_threshold_percent": 75,
+      "escalation_role": "DEPARTMENT_ADMIN",
+      "is_active": true,
+      "created_at": "2026-10-08T20:42:26.125Z",
+      "updated_at": "2026-10-08T20:42:26.125Z"
+    },
+    {
+      "id": "b0000000-0000-0000-0000-000000000002",
+      "priority": "HIGH",
+      "default_hours": 12,
+      "warning_threshold_percent": 75,
+      "escalation_role": "DEPARTMENT_ADMIN",
+      "is_active": true,
+      "created_at": "2026-10-08T20:42:26.125Z",
+      "updated_at": "2026-10-08T20:42:26.125Z"
+    },
+    {
+      "id": "b0000000-0000-0000-0000-000000000003",
+      "priority": "MEDIUM",
+      "default_hours": 24,
+      "warning_threshold_percent": 75,
+      "escalation_role": "DEPARTMENT_ADMIN",
+      "is_active": true,
+      "created_at": "2026-10-08T20:42:26.125Z",
+      "updated_at": "2026-10-08T20:42:26.125Z"
+    },
+    {
+      "id": "b0000000-0000-0000-0000-000000000004",
+      "priority": "LOW",
+      "default_hours": 48,
+      "warning_threshold_percent": 75,
+      "escalation_role": "DEPARTMENT_ADMIN",
+      "is_active": true,
+      "created_at": "2026-10-08T20:42:26.125Z",
+      "updated_at": "2026-10-08T20:42:26.125Z"
+    }
+  ],
+  "profiles": [
+    {
+      "id": "00000000-0000-0000-0000-000000000001",
+      "full_name": "Dr. Sarah Jenkins",
+      "email": "superadmin@campus.edu",
+      "role": "SUPER_ADMIN",
+      "department_id": null,
+      "student_id": null,
+      "phone": "+1-555-0101",
+      "is_active": true,
+      "created_at": "2026-10-08T20:42:26.125Z",
+      "updated_at": "2026-10-08T20:42:26.125Z"
+    },
+    {
+      "id": "00000000-0000-0000-0000-000000000002",
+      "full_name": "Prof. Alan Vance",
+      "email": "admin.it@campus.edu",
+      "role": "DEPARTMENT_ADMIN",
+      "department_id": "a0000000-0000-0000-0000-000000000001",
+      "student_id": null,
+      "phone": "+1-555-0102",
+      "is_active": true,
+      "created_at": "2026-10-08T20:42:26.125Z",
+      "updated_at": "2026-10-08T20:42:26.125Z"
+    },
+    {
+      "id": "00000000-0000-0000-0000-000000000003",
+      "full_name": "Col. Ramesh Roy",
+      "email": "admin.hostel@campus.edu",
+      "role": "DEPARTMENT_ADMIN",
+      "department_id": "a0000000-0000-0000-0000-000000000003",
+      "student_id": null,
+      "phone": "+1-555-0103",
+      "is_active": true,
+      "created_at": "2026-10-08T20:42:26.125Z",
+      "updated_at": "2026-10-08T20:42:26.125Z"
+    },
+    {
+      "id": "00000000-0000-0000-0000-000000000004",
+      "full_name": "Mark Sterling",
+      "email": "officer.it@campus.edu",
+      "role": "OFFICER",
+      "department_id": "a0000000-0000-0000-0000-000000000001",
+      "student_id": null,
+      "phone": "+1-555-0104",
+      "is_active": true,
+      "created_at": "2026-10-08T20:42:26.125Z",
+      "updated_at": "2026-10-08T20:42:26.125Z"
+    },
+    {
+      "id": "00000000-0000-0000-0000-000000000005",
+      "full_name": "Deepa Sharma",
+      "email": "officer.hostel@campus.edu",
+      "role": "OFFICER",
+      "department_id": "a0000000-0000-0000-0000-000000000003",
+      "student_id": null,
+      "phone": "+1-555-0105",
+      "is_active": true,
+      "created_at": "2026-10-08T20:42:26.125Z",
+      "updated_at": "2026-10-08T20:42:26.125Z"
+    },
+    {
+      "id": "00000000-0000-0000-0000-000000000006",
+      "full_name": "Alex Mercer",
+      "email": "student.alex@campus.edu",
+      "role": "STUDENT",
+      "department_id": null,
+      "student_id": "CS-2023-014",
+      "phone": "+1-555-0106",
+      "is_active": true,
+      "created_at": "2026-10-08T20:42:26.125Z",
+      "updated_at": "2026-10-08T20:42:26.125Z"
+    },
+    {
+      "id": "00000000-0000-0000-0000-000000000007",
+      "full_name": "Priya Nair",
+      "email": "student.priya@campus.edu",
+      "role": "STUDENT",
+      "department_id": null,
+      "student_id": "EC-2023-088",
+      "phone": "+1-555-0107",
+      "is_active": true,
+      "created_at": "2026-10-08T20:42:26.125Z",
+      "updated_at": "2026-10-08T20:42:26.125Z"
+    },
+    {
+      "id": "00000000-0000-0000-0000-000000000008",
+      "full_name": "Rahul Verma",
+      "email": "student.rahul@campus.edu",
+      "role": "STUDENT",
+      "department_id": null,
+      "student_id": "ME-2022-032",
+      "phone": "+1-555-0108",
+      "is_active": true,
+      "created_at": "2026-10-08T20:42:26.125Z",
+      "updated_at": "2026-10-08T20:42:26.125Z"
+    }
+  ],
+  "grievances": [
+    {
+      "ticket_number": "GRV-2026-82787",
+      "student_id": "00000000-0000-0000-0000-000000000006",
+      "title": "Broken Water Cooler in Hostel Block C",
+      "description": "The cooler on 2nd floor is leaking and water has accumulated on the walkway.",
+      "category": "HOSTEL",
+      "subcategory": null,
+      "priority": "MEDIUM",
+      "priority_score": 45,
+      "priority_reasons": [
+        "Moderate severity grievance",
+        "Standard operational urgency",
+        "Group impact: 25 students affected",
+        "Critical safety or academic keyword detected: 'water'"
+      ],
+      "status": "CLOSED",
+      "department_id": "a0000000-0000-0000-0000-000000000003",
+      "assigned_to": null,
+      "location": "Block C 2nd Floor",
+      "affected_students": 25,
+      "severity": "MODERATE",
+      "urgency": "MEDIUM",
+      "recurrence": false,
+      "is_confidential": false,
+      "is_anonymous": false,
+      "sla_hours": 24,
+      "due_at": "2026-10-09T20:43:34.304Z",
+      "id": "5ac492e4-2acc-4d0a-9c12-61f96b8a6e6a",
+      "created_at": "2026-10-08T20:43:34.315Z",
+      "updated_at": "2026-10-08T20:49:56.981Z",
+      "resolved_at": "2026-10-08T20:46:28.517Z",
+      "resolution_notes": "Plumbing team replaced the leaking brass valve on the second floor cooler and tested water pressure.",
+      "closed_at": "2026-10-08T20:49:56.981Z"
+    }
+  ],
+  "grievance_status_history": [
+    {
+      "grievance_id": "5ac492e4-2acc-4d0a-9c12-61f96b8a6e6a",
+      "old_status": "STUDENT_VERIFICATION",
+      "new_status": "CLOSED",
+      "changed_by": "00000000-0000-0000-0000-000000000001",
+      "reason": "Verified and solved",
+      "metadata": {},
+      "id": "e06a7273-c360-4c33-9af8-45bab9e3a4a5",
+      "created_at": "2026-10-08T20:49:56.983Z",
+      "updated_at": "2026-10-08T20:49:56.983Z"
+    },
+    {
+      "grievance_id": "5ac492e4-2acc-4d0a-9c12-61f96b8a6e6a",
+      "old_status": "IN_PROGRESS",
+      "new_status": "STUDENT_VERIFICATION",
+      "changed_by": "00000000-0000-0000-0000-000000000001",
+      "reason": "Resolution proposed by officer; awaiting student confirmation",
+      "metadata": {},
+      "id": "0a7cd06e-55d6-4819-a549-f0dd007111a5",
+      "created_at": "2026-10-08T20:46:28.518Z",
+      "updated_at": "2026-10-08T20:46:28.518Z"
+    },
+    {
+      "grievance_id": "5ac492e4-2acc-4d0a-9c12-61f96b8a6e6a",
+      "old_status": "ASSIGNED",
+      "new_status": "IN_PROGRESS",
+      "changed_by": "00000000-0000-0000-0000-000000000001",
+      "reason": "Work initiated by administrative officer prior to resolution proposal",
+      "metadata": {},
+      "id": "243f2442-3e45-47ac-bd14-029df6b54c40",
+      "created_at": "2026-10-08T20:46:28.517Z",
+      "updated_at": "2026-10-08T20:46:28.517Z"
+    },
+    {
+      "grievance_id": "5ac492e4-2acc-4d0a-9c12-61f96b8a6e6a",
+      "old_status": "SUBMITTED",
+      "new_status": "ASSIGNED",
+      "changed_by": "00000000-0000-0000-0000-000000000001",
+      "reason": "Assigned to department officer for resolution triage",
+      "metadata": {},
+      "id": "3c9e7334-011b-450a-b6bc-a85583a34153",
+      "created_at": "2026-10-08T20:46:28.516Z",
+      "updated_at": "2026-10-08T20:46:28.516Z"
+    },
+    {
+      "grievance_id": "5ac492e4-2acc-4d0a-9c12-61f96b8a6e6a",
+      "old_status": null,
+      "new_status": "SUBMITTED",
+      "changed_by": "00000000-0000-0000-0000-000000000006",
+      "reason": "Grievance submitted by student",
+      "metadata": {
+        "initialPriority": "MEDIUM",
+        "priorityScore": 45,
+        "slaHours": 24
+      },
+      "id": "9f0f8ac1-6cfb-4be7-ab19-e833bb406ec2",
+      "created_at": "2026-10-08T20:43:34.316Z",
+      "updated_at": "2026-10-08T20:43:34.316Z"
+    }
+  ],
+  "grievance_comments": [
+    {
+      "grievance_id": "5ac492e4-2acc-4d0a-9c12-61f96b8a6e6a",
+      "user_id": "00000000-0000-0000-0000-000000000006",
+      "message": "Thank you for fixing it quickly!",
+      "is_internal": false,
+      "id": "8f951b35-c4e7-4d0f-86ec-3ae0306b368f",
+      "created_at": "2026-10-08T20:54:50.716Z",
+      "updated_at": "2026-10-08T20:54:50.716Z"
+    }
+  ],
+  "grievance_attachments": [],
+  "grievance_assignments": [],
+  "grievance_escalations": [],
+  "grievance_clusters": [],
+  "notifications": [
+    {
+      "user_id": "00000000-0000-0000-0000-000000000006",
+      "grievance_id": "5ac492e4-2acc-4d0a-9c12-61f96b8a6e6a",
+      "type": "CLOSED",
+      "title": "Grievance Closed",
+      "message": "Ticket GRV-2026-82787 is now officially closed. You may provide feedback.",
+      "is_read": true,
+      "metadata": {},
+      "id": "275828d9-3978-41e5-8b0e-6cccd6caa95a",
+      "created_at": "2026-10-08T20:49:56.984Z",
+      "updated_at": "2026-10-08T20:52:43.906Z"
+    },
+    {
+      "user_id": "00000000-0000-0000-0000-000000000006",
+      "grievance_id": "5ac492e4-2acc-4d0a-9c12-61f96b8a6e6a",
+      "type": "VERIFICATION_REQUIRED",
+      "title": "Resolution Submitted - Verification Required",
+      "message": "A resolution has been proposed for ticket GRV-2026-82787. Please verify if the issue is solved.",
+      "is_read": false,
+      "metadata": {},
+      "id": "ba34cc21-073a-4826-85f5-657689452d66",
+      "created_at": "2026-10-08T20:46:28.521Z",
+      "updated_at": "2026-10-08T20:46:28.521Z"
+    },
+    {
+      "user_id": "00000000-0000-0000-0000-000000000006",
+      "grievance_id": "5ac492e4-2acc-4d0a-9c12-61f96b8a6e6a",
+      "type": "SUBMITTED",
+      "title": "Grievance Registered",
+      "message": "Your grievance has been registered with ticket number GRV-2026-82787. SLA target: 24 hours.",
+      "is_read": false,
+      "metadata": {},
+      "id": "aa75087d-7f65-4794-bc36-f645523dacc2",
+      "created_at": "2026-10-08T20:43:34.316Z",
+      "updated_at": "2026-10-08T20:43:34.316Z"
+    }
+  ],
+  "grievance_feedback": [
+    {
+      "grievance_id": "5ac492e4-2acc-4d0a-9c12-61f96b8a6e6a",
+      "student_id": "00000000-0000-0000-0000-000000000006",
+      "rating": 5,
+      "comment": "Repaired quickly and thoroughly. Very satisfied!",
+      "id": "5a4cc310-8fe0-4f3f-a214-6e584965c5b0",
+      "created_at": "2026-10-08T20:51:48.864Z",
+      "updated_at": "2026-10-08T20:51:48.864Z"
+    }
+  ],
+  "grievance_evidence": [],
+  "agent_execution_logs": [
+    {
+      "grievance_id": "5ac492e4-2acc-4d0a-9c12-61f96b8a6e6a",
+      "agent_name": "RESOLUTION_VERIFIER",
+      "action_taken": "COUNTER_EVIDENCE_VERIFICATION",
+      "thought_process": "[STEP 1: RECONCILIATION AUDIT] Cross-referenced original complaint symptoms against officer corrective notes. Found key action verbs: [replaced].\n[STEP 2: COUNTER-EVIDENCE INSPECTION] Evaluated officer proof assets (0 files). Physical facility requirement checked: MANDATORY_PROOF.\n[STEP 3: INTEGRITY & QUALITY CHECKLIST] Substantive text: true, Proof attached: false, Actionable alignment: true.\n[STEP 4: VERIFICATION VERDICT] Issued determination 'FURTHER_EVIDENCE_REQUIRED' with confidence 88.0%. Ready for student confirmation.",
+      "confidence": 0.88,
+      "metadata": {
+        "verdict": "FURTHER_EVIDENCE_REQUIRED",
+        "confidence": 0.88,
+        "isApproved": false,
+        "counterEvidenceVerified": false,
+        "comparisonAnalysis": "Reported incident involves physical facility infrastructure. High-confidence closure requires photographic counter-evidence from the officer.",
+        "verificationNotes": "Resolution Verifier Agent concluded 'FURTHER_EVIDENCE_REQUIRED'. Reported incident involves physical facility infrastructure. High-confidence closure requires photographic counter-evidence from the officer.",
+        "checklist": {
+          "issueAddressed": true,
+          "proofProvided": false,
+          "satisfactoryQuality": false
+        }
+      },
+      "id": "120b2c12-ea12-4037-99fe-4a489f9dd682",
+      "created_at": "2026-10-08T20:46:28.520Z",
+      "updated_at": "2026-10-08T20:46:28.520Z"
+    },
+    {
+      "grievance_id": "5ac492e4-2acc-4d0a-9c12-61f96b8a6e6a",
+      "agent_name": "TRIAGE_AGENT",
+      "action_taken": "CLASSIFY_AND_SCORE",
+      "thought_process": "[STEP 1: INTENT DECOMPOSITION] Grievance corpus analyzed (\"Broken Water Cooler in Hostel Block C\"). Key entities mapped to category 'HOSTEL'.\n[STEP 2: IMPACT & SEVERITY ASSESSMENT] Impact cohort evaluated at 25 student(s) with urgency 'MEDIUM'.\n[STEP 3: MULTI-FACTOR WEIGHTING] Priority calculated as MEDIUM (45/100). Contributing factors: Moderate severity grievance; Standard operational urgency; Group impact: 25 students affected; Critical safety or academic keyword detected: 'water'.\n[STEP 4: SMART ROUTING] Routed to Department ID 'a0000000-0000-0000-0000-000000000003' with dynamic SLA deadline of 24 hours.",
+      "confidence": 0.965,
+      "metadata": {
+        "category": "HOSTEL",
+        "priority": "MEDIUM",
+        "priorityScore": 45,
+        "slaHours": 24,
+        "ticketNumber": "GRV-2026-82787"
+      },
+      "id": "a3cec078-e8fa-400c-997f-14ac144b0e00",
+      "created_at": "2026-10-08T20:43:34.317Z",
+      "updated_at": "2026-10-08T20:43:34.317Z"
+    }
+  ]
+}

@@ -12,17 +12,34 @@ export async function getCurrentUser(req?: NextRequest): Promise<AuthenticatedUs
   if (process.env.NODE_ENV !== 'production' && demoUserId) {
     const demoRole = (req?.headers.get('x-demo-user-role') as UserRole) || USER_ROLES.STUDENT;
     const demoDeptId = req?.headers.get('x-demo-dept-id') || null;
+
+    const admin = getAdminClient();
+    const { data: dbProfile } = await admin
+      .from('profiles')
+      .select('*')
+      .eq('id', demoUserId)
+      .single();
+
+    if (dbProfile) {
+      return {
+        id: demoUserId,
+        email: dbProfile.email,
+        role: dbProfile.role as UserRole,
+        profile: dbProfile,
+      };
+    }
+
     return {
       id: demoUserId,
       email: `${demoRole.toLowerCase()}@campus.edu`,
       role: demoRole,
       profile: {
         id: demoUserId,
-        full_name: `Demo ${demoRole}`,
+        full_name: demoRole === USER_ROLES.STUDENT ? 'Alex Mercer' : `Campus ${demoRole}`,
         email: `${demoRole.toLowerCase()}@campus.edu`,
         role: demoRole,
         department_id: demoDeptId,
-        student_id: demoRole === USER_ROLES.STUDENT ? 'DEMO-123' : null,
+        student_id: demoRole === USER_ROLES.STUDENT ? 'CS-2023-014' : null,
         phone: '+1-555-0100',
         avatar_url: null,
         is_active: true,
