@@ -34,6 +34,10 @@
 
 ## 🚀 Quickstart for Team Members
 
+### 🖱️ 1-Click Launch (Windows)
+Double-click **`start.bat`** in the root folder. It verifies Node.js, auto-installs packages, configures `.env.local`, launches the server, and automatically opens your browser!
+
+### 💻 Manual CLI Launch
 Run directly from the root workspace:
 
 ```bash

@@ -5,7 +5,12 @@
 
 ## ⚡ 1. 60-Second Quickstart for Team Members
 
-Run these exact commands from the project root:
+### 🖱️ Option A: 1-Click Launch (Recommended for Windows)
+Simply double-click **`start.bat`** in the project root folder.
+> It automatically checks Node.js, auto-installs missing dependencies, creates `.env.local` if missing, checks port 3000, launches the server, and automatically opens your browser to the login page!
+
+### 💻 Option B: Terminal Commands
+Run these commands from the project root:
 
 ```bash
 # 1. Pull the latest dynamic backend and fullstack code
