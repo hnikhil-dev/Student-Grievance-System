@@ -5,6 +5,14 @@ import { Button } from '../ui/Button';
 import { Input } from '../ui/Input';
 import { Card } from '../ui/Card';
 import { Alert } from '../ui/Alert';
+import {
+  getStoredUser,
+  setStoredUser,
+  clearStoredUser,
+  getDynamicAuthHeaders,
+  DEFAULT_DEMO_STUDENT_ID,
+  DEFAULT_DEMO_ADMIN_ID,
+} from '@lib/api';
 
 export const LoginPage: React.FC = () => {
   const [role, setRole] = useState<'STUDENT' | 'ADMIN'>('STUDENT');
@@ -27,20 +35,37 @@ export const LoginPage: React.FC = () => {
   useEffect(() => {
     async function checkExistingSession() {
       try {
+        const stored = getStoredUser();
+        if (stored) {
+          setAlreadyAuthUser({
+            name: stored.name || 'Student',
+            studentId: stored.studentId || '',
+            role: stored.role || 'STUDENT',
+          });
+          setIsCheckingSession(false);
+          return;
+        }
+
         const res = await fetch('/api/auth/me', {
-          headers: {
-            'x-demo-user-id': '00000000-0000-0000-0000-000000000006',
-            'x-demo-user-role': 'STUDENT',
-          },
+          headers: getDynamicAuthHeaders(),
         });
         const data = await res.json();
-        if (data.success && data.data?.user?.profile) {
-          const prof = data.data.user.profile;
-          // Detected active session
+        if (data.success && data.data?.user) {
+          const u = data.data.user;
+          const prof = u.profile || {};
+          const dynamicUser = {
+            id: u.id,
+            role: u.role || 'STUDENT',
+            email: u.email,
+            name: prof.full_name || (u.email ? u.email.split('@')[0] : 'Student'),
+            studentId: prof.student_id || '',
+            profile: prof,
+          };
+          setStoredUser(dynamicUser);
           setAlreadyAuthUser({
-            name: prof.full_name || 'Alex Mercer',
-            studentId: prof.student_id || 'CS-2023-014',
-            role: data.data.user.role || 'STUDENT',
+            name: dynamicUser.name,
+            studentId: dynamicUser.studentId,
+            role: dynamicUser.role,
           });
         }
       } catch (err) {
@@ -93,13 +118,13 @@ export const LoginPage: React.FC = () => {
 
     try {
       // Validate credentials against institutional auth endpoint
+      const targetUserId = role === 'STUDENT' ? DEFAULT_DEMO_STUDENT_ID : DEFAULT_DEMO_ADMIN_ID;
+      const targetUserRole = role === 'STUDENT' ? 'STUDENT' : 'SUPER_ADMIN';
+
       const res = await fetch('/api/auth/me', {
-        headers: role === 'STUDENT' ? {
-          'x-demo-user-id': '00000000-0000-0000-0000-000000000006',
-          'x-demo-user-role': 'STUDENT',
-        } : {
-          'x-demo-user-id': '00000000-0000-0000-0000-000000000001',
-          'x-demo-user-role': 'SUPER_ADMIN',
+        headers: {
+          'x-demo-user-id': targetUserId,
+          'x-demo-user-role': targetUserRole,
         },
       });
 
@@ -115,8 +140,20 @@ export const LoginPage: React.FC = () => {
 
       const data = await res.json();
       if (data.success && data.data?.user) {
-        const studentName = data.data.user.profile?.full_name || 'Student';
-        setSuccessMessage(`Login successful! Welcome back, ${studentName}. Redirecting to Dashboard...`);
+        const u = data.data.user;
+        const prof = u.profile || {};
+        const userName = prof.full_name || (u.email ? u.email.split('@')[0] : 'Student');
+
+        setStoredUser({
+          id: u.id,
+          role: u.role || (role === 'STUDENT' ? 'STUDENT' : 'SUPER_ADMIN'),
+          email: u.email || email,
+          name: userName,
+          studentId: prof.student_id || '',
+          profile: prof,
+        });
+
+        setSuccessMessage(`Login successful! Welcome back, ${userName}. Redirecting to Dashboard...`);
         
         setTimeout(() => {
           if (role === 'STUDENT') {
@@ -144,13 +181,26 @@ export const LoginPage: React.FC = () => {
 
     if (targetRole === 'STUDENT') {
       setEmail('student.alex@campus.edu');
-      setSuccessMessage('Student demo identity authenticated (Alex Mercer • CS-2023-014). Accessing portal...');
+      setStoredUser({
+        id: DEFAULT_DEMO_STUDENT_ID,
+        role: 'STUDENT',
+        email: 'student.alex@campus.edu',
+        name: 'Alex Mercer',
+        studentId: 'CS-2023-014',
+      });
+      setSuccessMessage('Student demo identity authenticated. Accessing portal...');
       setTimeout(() => {
         window.location.href = '/student/page';
       }, 700);
     } else {
       setEmail('superadmin@campus.edu');
-      setSuccessMessage('Administrative demo identity authenticated (Dr. Sarah Jenkins). Accessing portal...');
+      setStoredUser({
+        id: DEFAULT_DEMO_ADMIN_ID,
+        role: 'SUPER_ADMIN',
+        email: 'superadmin@campus.edu',
+        name: 'Super Admin',
+      });
+      setSuccessMessage('Administrative demo identity authenticated. Accessing portal...');
       setTimeout(() => {
         window.location.href = '/admin/page';
       }, 700);
@@ -343,7 +393,10 @@ export const LoginPage: React.FC = () => {
                     variant="outline"
                     size="sm"
                     pill
-                    onClick={() => setAlreadyAuthUser(null)}
+                    onClick={() => {
+                      clearStoredUser();
+                      setAlreadyAuthUser(null);
+                    }}
                   >
                     Switch Account
                   </Button>

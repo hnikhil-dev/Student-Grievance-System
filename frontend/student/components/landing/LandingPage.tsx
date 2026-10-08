@@ -43,7 +43,7 @@ export const LandingPage: React.FC = () => {
       timestamp: 'Today, 10:15 AM',
       description: 'Grievance submitted by student. AI assigned initial Priority score 95 (CRITICAL). SLA target: 4 Hours.',
       actorRole: 'STUDENT' as const,
-      actorName: 'Alex Mercer (CS-2023-014)',
+      actorName: 'Student',
       isCompleted: true,
       isCurrent: false,
     },
@@ -95,7 +95,7 @@ export const LandingPage: React.FC = () => {
   return (
     <div style={{ backgroundColor: '#F8FAF8', minHeight: '100vh', fontFamily: 'system-ui, sans-serif', color: '#111827' }}>
       {/* 1. Header / Navbar */}
-      <Navbar activePath="/" unreadNotificationsCount={2} />
+      <Navbar activePath="/" unreadNotificationsCount={0} />
 
       {/* 2. Hero Section Grounded in Reference Design */}
       <section

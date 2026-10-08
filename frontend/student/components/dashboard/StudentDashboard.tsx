@@ -25,6 +25,7 @@ import {
   AiBadge,
 } from '../index';
 import { useRealtimeGrievances } from '@lib/useRealtime';
+import { getDynamicAuthHeaders } from '@lib/api';
 
 interface GrievanceItem {
   id: string;
@@ -90,10 +91,7 @@ export const StudentDashboardContent: React.FC = () => {
     setError(null);
     try {
       const res = await fetch('/api/grievances/my', {
-        headers: {
-          'x-demo-user-id': '00000000-0000-0000-0000-000000000006',
-          'x-demo-user-role': 'STUDENT',
-        },
+        headers: getDynamicAuthHeaders(),
       });
 
       if (!res.ok) {
@@ -188,11 +186,7 @@ export const StudentDashboardContent: React.FC = () => {
     try {
       const res = await fetch(`/api/grievances/${grievanceId}/verify`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'x-demo-user-id': '00000000-0000-0000-0000-000000000006',
-          'x-demo-user-role': 'STUDENT',
-        },
+        headers: getDynamicAuthHeaders({ 'Content-Type': 'application/json' }),
         body: JSON.stringify({
           accepted,
           reason: accepted ? undefined : reopenReason,
@@ -242,11 +236,7 @@ export const StudentDashboardContent: React.FC = () => {
     try {
       const res = await fetch(`/api/grievances/${feedbackGrievance.id}/feedback`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'x-demo-user-id': '00000000-0000-0000-0000-000000000006',
-          'x-demo-user-role': 'STUDENT',
-        },
+        headers: getDynamicAuthHeaders({ 'Content-Type': 'application/json' }),
         body: JSON.stringify({
           rating: feedbackRating,
           comment: feedbackComment.trim() || undefined,
@@ -307,21 +297,23 @@ export const StudentDashboardContent: React.FC = () => {
                 letterSpacing: '-0.02em',
               }}
             >
-              {greeting}, {user?.full_name || 'Alex Mercer'}!
+              {greeting}, {user?.full_name || 'Student'}!
             </h1>
           </div>
           <p style={{ margin: 0, fontSize: '0.9375rem', color: '#4B5563' }}>
             Live SLA Countdown Tracking & Closed-Loop Resolution Verification Portal.
           </p>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginTop: '0.5rem', flexWrap: 'wrap' }}>
-            <span style={{ fontSize: '0.75rem', backgroundColor: '#E8F5E9', color: '#1B4332', padding: '0.2rem 0.55rem', borderRadius: '6px', fontWeight: 700, border: '1px solid #D8F3DC' }}>
-              🎓 ID: {user?.student_id || 'CS-2023-014'}
-            </span>
+            {user?.student_id && (
+              <span style={{ fontSize: '0.75rem', backgroundColor: '#E8F5E9', color: '#1B4332', padding: '0.2rem 0.55rem', borderRadius: '6px', fontWeight: 700, border: '1px solid #D8F3DC' }}>
+                🎓 ID: {user.student_id}
+              </span>
+            )}
             <span style={{ fontSize: '0.75rem', backgroundColor: '#F0FDF4', color: '#15803D', padding: '0.2rem 0.55rem', borderRadius: '6px', fontWeight: 600, border: '1px solid #BBF7D0' }}>
               ⚡ Realtime WebSocket: Active
             </span>
             <span style={{ fontSize: '0.75rem', backgroundColor: '#F3F4F6', color: '#4B5563', padding: '0.2rem 0.55rem', borderRadius: '6px', fontWeight: 600 }}>
-              Campus: Main Academic Block
+              {user?.role ? `Role: ${user.role}` : 'Campus Student Portal'}
             </span>
           </div>
         </div>
@@ -597,14 +589,14 @@ export const StudentDashboardContent: React.FC = () => {
                 AI Institutional Intelligence Insight
               </h3>
             </div>
-            <AiBadge label="Gemini Priority Engine" confidence={latestAiGrievance.ai_confidence || 0.92} variant="indigo" />
+            <AiBadge label="Gemini Priority Engine" confidence={latestAiGrievance.ai_confidence ?? undefined} variant="indigo" />
           </div>
 
           <p style={{ margin: 0, fontSize: '0.875rem', color: '#334155', lineHeight: 1.6 }}>
             Your latest ticket <strong>{latestAiGrievance.ticket_number}</strong> was classified as{' '}
             <strong style={{ color: '#1B4332' }}>{latestAiGrievance.priority}</strong> priority (Score:{' '}
             {latestAiGrievance.priority_score}/100) with an automated SLA duration of{' '}
-            <strong>{latestAiGrievance.sla_hours || 24} hours</strong>. Routed to{' '}
+            <strong>{latestAiGrievance.sla_hours ? `${latestAiGrievance.sla_hours} hours` : 'Standard 24h SLA'}</strong>. Routed to{' '}
             <strong>{latestAiGrievance.department?.name || latestAiGrievance.category}</strong>.
           </p>
 

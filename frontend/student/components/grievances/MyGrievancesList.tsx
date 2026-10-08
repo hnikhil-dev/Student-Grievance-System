@@ -17,6 +17,7 @@ import {
   Alert,
 } from '../index';
 import { useRealtimeGrievances } from '@lib/useRealtime';
+import { getDynamicAuthHeaders } from '@lib/api';
 import { GrievanceStatusType, PriorityLevel } from '../../types/design-system';
 
 interface GrievanceItem {
@@ -120,10 +121,7 @@ export const MyGrievancesList: React.FC = () => {
       }
 
       const res = await fetch(`/api/grievances/my?${params.toString()}`, {
-        headers: {
-          'x-demo-user-id': '00000000-0000-0000-0000-000000000006',
-          'x-demo-user-role': 'STUDENT',
-        },
+        headers: getDynamicAuthHeaders(),
       });
 
       const json = await res.json();

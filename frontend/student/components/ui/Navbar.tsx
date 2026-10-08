@@ -11,9 +11,9 @@ export interface NavbarProps {
 }
 
 export const Navbar: React.FC<NavbarProps> = ({
-  studentName = 'Alex Mercer',
-  studentId = 'CS-2023-014',
-  unreadNotificationsCount = 2,
+  studentName = 'Student',
+  studentId = '',
+  unreadNotificationsCount = 0,
   onNotificationClick,
   activePath = '/dashboard',
 }) => {

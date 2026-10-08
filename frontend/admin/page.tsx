@@ -1,6 +1,11 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import {
+  getDynamicAuthHeaders,
+  DEFAULT_DEMO_ADMIN_ID,
+  DEFAULT_DEMO_ADMIN_ROLE,
+} from '@lib/api';
 
 interface OverviewMetrics {
   totalGrievances: number;
@@ -42,10 +47,10 @@ export default function AdminDashboard() {
   useEffect(() => {
     async function loadDashboardData() {
       try {
-        const headers = {
-          'x-demo-user-id': '00000000-0000-0000-0000-000000000001',
-          'x-demo-user-role': 'SUPER_ADMIN',
-        };
+        const headers = getDynamicAuthHeaders({
+          'x-demo-user-id': DEFAULT_DEMO_ADMIN_ID,
+          'x-demo-user-role': DEFAULT_DEMO_ADMIN_ROLE,
+        });
 
         const [metricsRes, queueRes] = await Promise.all([
           fetch('/api/admin/analytics/overview', { headers }),
@@ -105,8 +110,10 @@ export default function AdminDashboard() {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'x-demo-user-id': '00000000-0000-0000-0000-000000000001',
-          'x-demo-user-role': 'SUPER_ADMIN',
+          ...getDynamicAuthHeaders({
+            'x-demo-user-id': DEFAULT_DEMO_ADMIN_ID,
+            'x-demo-user-role': DEFAULT_DEMO_ADMIN_ROLE,
+          }),
         },
         body: JSON.stringify({ resolution_notes: notes }),
       });

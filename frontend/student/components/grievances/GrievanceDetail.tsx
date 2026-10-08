@@ -25,6 +25,7 @@ import {
   AiReasoningCard,
 } from '../index';
 import { useRealtimeGrievances } from '@lib/useRealtime';
+import { getDynamicAuthHeaders } from '@lib/api';
 import { GrievanceStatusType, PriorityLevel, TimelineItem } from '../../types/design-system';
 
 interface CommentAuthor {
@@ -161,10 +162,7 @@ export const GrievanceDetail: React.FC<GrievanceDetailProps> = ({ id: propId }) 
 
     try {
       const res = await fetch(`/api/grievances/${grievanceId}`, {
-        headers: {
-          'x-demo-user-id': '00000000-0000-0000-0000-000000000006',
-          'x-demo-user-role': 'STUDENT',
-        },
+        headers: getDynamicAuthHeaders(),
       });
 
       const json = await res.json();
@@ -174,10 +172,7 @@ export const GrievanceDetail: React.FC<GrievanceDetailProps> = ({ id: propId }) 
         // Fetch populated comments with author profile objects
         try {
           const comRes = await fetch(`/api/grievances/${grievanceId}/comments`, {
-            headers: {
-              'x-demo-user-id': '00000000-0000-0000-0000-000000000006',
-              'x-demo-user-role': 'STUDENT',
-            },
+            headers: getDynamicAuthHeaders(),
           });
           const comJson = await comRes.json();
           if (comJson.success && Array.isArray(comJson.data)) {
@@ -222,11 +217,9 @@ export const GrievanceDetail: React.FC<GrievanceDetailProps> = ({ id: propId }) 
     try {
       const res = await fetch(`/api/grievances/${grievanceId}/comments`, {
         method: 'POST',
-        headers: {
+        headers: getDynamicAuthHeaders({
           'Content-Type': 'application/json',
-          'x-demo-user-id': '00000000-0000-0000-0000-000000000006',
-          'x-demo-user-role': 'STUDENT',
-        },
+        }),
         body: JSON.stringify({ message: trimmed }),
       });
 
@@ -260,11 +253,9 @@ export const GrievanceDetail: React.FC<GrievanceDetailProps> = ({ id: propId }) 
     try {
       const res = await fetch(`/api/grievances/${grievanceId}/verify`, {
         method: 'POST',
-        headers: {
+        headers: getDynamicAuthHeaders({
           'Content-Type': 'application/json',
-          'x-demo-user-id': '00000000-0000-0000-0000-000000000006',
-          'x-demo-user-role': 'STUDENT',
-        },
+        }),
         body: JSON.stringify({
           accepted,
           reason: accepted ? undefined : reopenReason.trim(),

@@ -14,6 +14,8 @@ import {
   CardSkeleton,
   Alert,
 } from '../index';
+import { getDynamicAuthHeaders, getStoredUser } from '@lib/api';
+import { useRealtimeNotifications } from '@lib/useRealtime';
 
 export interface NotificationItem {
   id: string;
@@ -119,6 +121,13 @@ export const NotificationsCenter: React.FC = () => {
   const [isMarkingAll, setIsMarkingAll] = useState<boolean>(false);
   const [actionNotice, setActionNotice] = useState<string | null>(null);
 
+  // Dynamic active user session
+  const [activeUser, setActiveUser] = useState(() => getStoredUser());
+
+  useEffect(() => {
+    setActiveUser(getStoredUser());
+  }, []);
+
   // Load Notifications from Real API: GET /api/notifications
   const fetchNotifications = useCallback(async () => {
     setIsLoading(true);
@@ -126,10 +135,7 @@ export const NotificationsCenter: React.FC = () => {
 
     try {
       const res = await fetch('/api/notifications', {
-        headers: {
-          'x-demo-user-id': '00000000-0000-0000-0000-000000000006',
-          'x-demo-user-role': 'STUDENT',
-        },
+        headers: getDynamicAuthHeaders(),
       });
 
       const json = await res.json();
@@ -154,6 +160,11 @@ export const NotificationsCenter: React.FC = () => {
     fetchNotifications();
   }, [fetchNotifications]);
 
+  // Realtime Supabase notifications for the active student
+  useRealtimeNotifications(activeUser?.id, () => {
+    fetchNotifications();
+  });
+
   // Mark single notification as read: POST /api/notifications/[id]/read
   const handleMarkAsRead = async (id: string, e?: React.MouseEvent) => {
     if (e) e.stopPropagation();
@@ -166,10 +177,7 @@ export const NotificationsCenter: React.FC = () => {
 
       await fetch(`/api/notifications/${id}/read`, {
         method: 'POST',
-        headers: {
-          'x-demo-user-id': '00000000-0000-0000-0000-000000000006',
-          'x-demo-user-role': 'STUDENT',
-        },
+        headers: getDynamicAuthHeaders(),
       });
     } catch {
       // Revert if failed
@@ -194,10 +202,7 @@ export const NotificationsCenter: React.FC = () => {
         unreadList.map((n) =>
           fetch(`/api/notifications/${n.id}/read`, {
             method: 'POST',
-            headers: {
-              'x-demo-user-id': '00000000-0000-0000-0000-000000000006',
-              'x-demo-user-role': 'STUDENT',
-            },
+            headers: getDynamicAuthHeaders(),
           })
         )
       );

@@ -1,10 +1,12 @@
 'use client';
 
-import React, { useState, useEffect, createContext, useContext } from 'react';
+import React, { useState, useEffect, createContext, useContext, useCallback } from 'react';
 import { Button } from '../ui/Button';
 import { Dropdown } from '../ui/Dropdown';
 import { Sidebar } from '../ui/Sidebar';
 import { PageSpinner } from '../ui/LoadingState';
+import { getDynamicAuthHeaders, getStoredUser, clearStoredUser } from '@lib/api';
+import { useRealtimeNotifications } from '@lib/useRealtime';
 
 // Authenticated Student Profile Interface
 export interface StudentProfile {
@@ -49,63 +51,15 @@ export const StudentShell: React.FC<StudentShellProps> = ({
 }) => {
   const [user, setUser] = useState<StudentProfile | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [unreadCount, setUnreadCount] = useState<number>(2);
+  const [unreadCount, setUnreadCount] = useState<number>(0);
   const [isMobileDrawerOpen, setIsMobileDrawerOpen] = useState<boolean>(false);
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState<boolean>(false);
 
-  // Fetch session user from actual API /api/auth/me
-  useEffect(() => {
-    async function fetchSession() {
-      try {
-        const res = await fetch('/api/auth/me', {
-          headers: {
-            'x-demo-user-id': '00000000-0000-0000-0000-000000000006',
-            'x-demo-user-role': 'STUDENT',
-          },
-        });
-        const data = await res.json();
-        if (data.success && data.data?.user) {
-          const u = data.data.user;
-          setUser({
-            id: u.id,
-            email: u.email,
-            role: u.role,
-            full_name: u.profile?.full_name || 'Alex Mercer',
-            student_id: u.profile?.student_id || 'CS-2023-014',
-            department_id: u.profile?.department_id,
-            phone: u.profile?.phone,
-          });
-        } else if (requireAuth) {
-          // Unauthenticated redirect to login
-          window.location.href = '/login';
-        }
-      } catch (err) {
-        console.error('Session verification error:', err);
-        if (requireAuth) {
-          // Fallback demo user for local hackathon testing
-          setUser({
-            id: '00000000-0000-0000-0000-000000000006',
-            email: 'student.alex@campus.edu',
-            role: 'STUDENT',
-            full_name: 'Alex Mercer',
-            student_id: 'CS-2023-014',
-          });
-        }
-      } finally {
-        setIsLoading(false);
-      }
-    }
-    fetchSession();
-  }, [requireAuth]);
-
-  // Fetch unread notification count
-  const refreshUnreadCount = async () => {
+  // Fetch unread notification count dynamically from backend
+  const refreshUnreadCount = useCallback(async () => {
     try {
       const res = await fetch('/api/notifications', {
-        headers: {
-          'x-demo-user-id': '00000000-0000-0000-0000-000000000006',
-          'x-demo-user-role': 'STUDENT',
-        },
+        headers: getDynamicAuthHeaders(),
       });
       const data = await res.json();
       const count =
@@ -118,12 +72,77 @@ export const StudentShell: React.FC<StudentShellProps> = ({
       if (count !== undefined) {
         setUnreadCount(count);
       }
-    } catch (err) {
-      // Keep default
+    } catch {
+      // Non-blocking
     }
-  };
+  }, []);
+
+  // Fetch session user dynamically from real API /api/auth/me
+  useEffect(() => {
+    async function fetchSession() {
+      try {
+        const res = await fetch('/api/auth/me', {
+          headers: getDynamicAuthHeaders(),
+        });
+        const data = await res.json();
+        if (data.success && data.data?.user) {
+          const u = data.data.user;
+          const prof = u.profile;
+          setUser({
+            id: u.id,
+            email: u.email,
+            role: u.role,
+            full_name: prof?.full_name || u.email?.split('@')[0] || 'Student',
+            student_id: prof?.student_id || (u.id ? `STU-${u.id.slice(0, 6).toUpperCase()}` : ''),
+            department_id: prof?.department_id,
+            phone: prof?.phone,
+          });
+        } else if (requireAuth) {
+          // Check if local stored user exists before redirecting
+          const stored = getStoredUser();
+          if (stored) {
+            setUser({
+              id: stored.id,
+              email: stored.email || 'student@campus.edu',
+              role: stored.role || 'STUDENT',
+              full_name: stored.name || 'Student',
+              student_id: stored.studentId || `STU-${stored.id.slice(0, 6).toUpperCase()}`,
+              department_id: stored.departmentId,
+            });
+          } else {
+            window.location.href = '/login';
+          }
+        }
+      } catch (err) {
+        console.error('Session verification error:', err);
+        const stored = getStoredUser();
+        if (stored) {
+          setUser({
+            id: stored.id,
+            email: stored.email || 'student@campus.edu',
+            role: stored.role || 'STUDENT',
+            full_name: stored.name || 'Student',
+            student_id: stored.studentId || `STU-${stored.id.slice(0, 6).toUpperCase()}`,
+            department_id: stored.departmentId,
+          });
+        } else if (requireAuth) {
+          window.location.href = '/login';
+        }
+      } finally {
+        setIsLoading(false);
+      }
+    }
+    fetchSession();
+    refreshUnreadCount();
+  }, [requireAuth, refreshUnreadCount]);
+
+  // Subscribe to real-time notification WebSocket events
+  useRealtimeNotifications(user?.id || '', () => {
+    refreshUnreadCount();
+  });
 
   const handleLogout = () => {
+    clearStoredUser();
     setUser(null);
     window.location.href = '/login';
   };
@@ -329,7 +348,7 @@ export const StudentShell: React.FC<StudentShellProps> = ({
                     🎓
                   </div>
                   <span style={{ fontSize: '0.8125rem', fontWeight: 700, color: '#1B4332' }}>
-                    {user?.full_name || 'Alex Mercer'}
+                    {user?.full_name || 'Student'}
                   </span>
                   <span style={{ fontSize: '0.65rem', color: '#6B7280' }}>▼</span>
                 </div>

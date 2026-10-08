@@ -20,6 +20,7 @@ import {
   AiReasoningCard,
   NextActionCard,
 } from '../index';
+import { getDynamicAuthHeaders } from '@lib/api';
 
 interface DepartmentItem {
   id: string;
@@ -143,7 +144,7 @@ export const AiComplaintForm: React.FC = () => {
   // 1. Restore saved draft on mount (Guarantees student never loses their text)
   useEffect(() => {
     try {
-      const saved = sessionStorage.getItem('amit_complaint_draft');
+      const saved = sessionStorage.getItem('sg_complaint_draft');
       if (saved) {
         const parsed = JSON.parse(saved);
         if (parsed.description && !description) setDescription(parsed.description);
@@ -162,7 +163,7 @@ export const AiComplaintForm: React.FC = () => {
     if (step === 1 && description) {
       try {
         sessionStorage.setItem(
-          'amit_complaint_draft',
+          'sg_complaint_draft',
           JSON.stringify({
             description,
             title,
@@ -177,24 +178,20 @@ export const AiComplaintForm: React.FC = () => {
     }
   }, [description, title, category, location, affectedStudents, step]);
 
-  // 3. Load departments from real API
+  // 3. Load departments dynamically from real backend API: GET /api/departments
   useEffect(() => {
     async function loadDepartments() {
       try {
-        const res = await fetch('/api/departments');
+        const res = await fetch('/api/departments', {
+          headers: getDynamicAuthHeaders(),
+        });
         const json = await res.json();
         if (json.success && Array.isArray(json.data) && json.data.length > 0) {
           setDepartments(json.data);
           setSelectedDeptId(json.data[0].id);
         }
-      } catch {
-        // Fallback standard institutional departments
-        setDepartments([
-          { id: 'a0000000-0000-0000-0000-000000000001', name: 'Information Technology', code: 'IT' },
-          { id: 'a0000000-0000-0000-0000-000000000002', name: 'Academic Affairs', code: 'ACADEMICS' },
-          { id: 'a0000000-0000-0000-0000-000000000003', name: 'Hostel & Housing', code: 'HOSTEL' },
-          { id: 'a0000000-0000-0000-0000-000000000004', name: 'Campus Maintenance', code: 'MAINTENANCE' },
-        ]);
+      } catch (err) {
+        console.warn('Dynamic departments fetch notice:', err);
       }
     }
     loadDepartments();
@@ -269,7 +266,10 @@ export const AiComplaintForm: React.FC = () => {
     try {
       const res = await fetch('/api/ai/analyze-grievance', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          ...getDynamicAuthHeaders(),
+        },
         body: JSON.stringify({
           title: derivedTitle.length >= 5 ? derivedTitle : `${derivedTitle} (Grievance)`,
           description: descTrimmed,
@@ -363,11 +363,9 @@ export const AiComplaintForm: React.FC = () => {
 
       const res = await fetch('/api/grievances', {
         method: 'POST',
-        headers: {
+        headers: getDynamicAuthHeaders({
           'Content-Type': 'application/json',
-          'x-demo-user-id': '00000000-0000-0000-0000-000000000006',
-          'x-demo-user-role': 'STUDENT',
-        },
+        }),
         body: JSON.stringify(payload),
       });
 
@@ -386,10 +384,7 @@ export const AiComplaintForm: React.FC = () => {
 
             const evRes = await fetch('/api/evidence/upload-and-verify', {
               method: 'POST',
-              headers: {
-                'x-demo-user-id': '00000000-0000-0000-0000-000000000006',
-                'x-demo-user-role': 'STUDENT',
-              },
+              headers: getDynamicAuthHeaders(),
               body: formData,
             });
 
@@ -411,7 +406,7 @@ export const AiComplaintForm: React.FC = () => {
 
         // Clean up draft on success
         try {
-          sessionStorage.removeItem('amit_complaint_draft');
+          sessionStorage.removeItem('sg_complaint_draft');
         } catch {}
 
         setStep(4);

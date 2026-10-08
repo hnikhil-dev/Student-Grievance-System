@@ -17,6 +17,7 @@ import {
   ErrorState,
   PageSpinner,
 } from '../index';
+import { getDynamicAuthHeaders } from '@lib/api';
 
 interface ClosedGrievanceItem {
   id: string;
@@ -99,10 +100,7 @@ export const StudentFeedback: React.FC<StudentFeedbackProps> = ({ initialGrievan
 
     try {
       const res = await fetch('/api/grievances/my?pageSize=50', {
-        headers: {
-          'x-demo-user-id': '00000000-0000-0000-0000-000000000006',
-          'x-demo-user-role': 'STUDENT',
-        },
+        headers: getDynamicAuthHeaders(),
       });
 
       const json = await res.json();
@@ -184,8 +182,7 @@ export const StudentFeedback: React.FC<StudentFeedbackProps> = ({ initialGrievan
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'x-demo-user-id': '00000000-0000-0000-0000-000000000006',
-          'x-demo-user-role': 'STUDENT',
+          ...getDynamicAuthHeaders(),
         },
         body: JSON.stringify(payload),
       });
