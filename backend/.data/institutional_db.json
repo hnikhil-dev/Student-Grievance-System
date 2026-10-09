@@ -236,6 +236,37 @@
   ],
   "grievances": [
     {
+      "ticket_number": "GRV-2026-78538",
+      "student_id": "00000000-0000-0000-0000-000000000006",
+      "title": "internet connectivity in library",
+      "description": "internet is not woking in library",
+      "category": "IT",
+      "subcategory": null,
+      "priority": "MEDIUM",
+      "priority_score": 55,
+      "priority_reasons": [
+        "Moderate severity grievance",
+        "Standard operational urgency",
+        "Massive campus impact: 100+ students affected",
+        "Repeated / recurring issue indicating systemic failure"
+      ],
+      "status": "SUBMITTED",
+      "department_id": "a0000000-0000-0000-0000-000000000001",
+      "assigned_to": null,
+      "location": "libraray",
+      "affected_students": 100,
+      "severity": "MODERATE",
+      "urgency": "MEDIUM",
+      "recurrence": true,
+      "is_confidential": true,
+      "is_anonymous": true,
+      "sla_hours": 24,
+      "due_at": "2026-10-10T05:39:10.295Z",
+      "id": "1468c6f2-8562-4542-8d7e-2d16b085b263",
+      "created_at": "2026-10-09T05:39:10.306Z",
+      "updated_at": "2026-10-09T05:39:10.306Z"
+    },
+    {
       "ticket_number": "GRV-2026-64993",
       "student_id": "00000000-0000-0000-0000-000000000006",
       "title": "light is not working in c wing",
@@ -377,7 +408,7 @@
         "Affects 35 dual-major students",
         "High institutional impact"
       ],
-      "status": "RESOLUTION_PROPOSED",
+      "status": "CLOSED",
       "department_id": "a0000000-0000-0000-0000-000000000002",
       "assigned_to": null,
       "location": "Examination Hall 2 / Academic Block A",
@@ -391,7 +422,8 @@
       "due_at": "2026-10-09T06:12:01.815Z",
       "resolution_notes": "Examination board approved rescheduling CS-408 (Machine Learning) to Saturday at 2:00 PM in Hall 4. Revised hall ticket issued to all 35 students.",
       "created_at": "2026-10-09T00:12:01.815Z",
-      "updated_at": "2026-10-09T04:12:01.818Z"
+      "updated_at": "2026-10-09T05:39:44.325Z",
+      "closed_at": "2026-10-09T05:39:44.325Z"
     },
     {
       "id": "c0000000-0000-0000-0000-000000000004",
@@ -425,6 +457,32 @@
     }
   ],
   "grievance_status_history": [
+    {
+      "grievance_id": "c0000000-0000-0000-0000-000000000003",
+      "old_status": "RESOLUTION_PROPOSED",
+      "new_status": "CLOSED",
+      "changed_by": "00000000-0000-0000-0000-000000000006",
+      "reason": "Resolution accepted by student",
+      "metadata": {},
+      "id": "fa2937f1-3f53-4368-8b95-7e4933f2a89d",
+      "created_at": "2026-10-09T05:39:44.327Z",
+      "updated_at": "2026-10-09T05:39:44.327Z"
+    },
+    {
+      "grievance_id": "1468c6f2-8562-4542-8d7e-2d16b085b263",
+      "old_status": null,
+      "new_status": "SUBMITTED",
+      "changed_by": "00000000-0000-0000-0000-000000000006",
+      "reason": "Grievance submitted by student",
+      "metadata": {
+        "initialPriority": "MEDIUM",
+        "priorityScore": 55,
+        "slaHours": 24
+      },
+      "id": "64331643-a6a4-46ee-9623-a10c7486b9fb",
+      "created_at": "2026-10-09T05:39:10.308Z",
+      "updated_at": "2026-10-09T05:39:10.308Z"
+    },
     {
       "grievance_id": "dccabe21-f3f1-4682-9f2e-bdf06850c1d1",
       "old_status": null,
@@ -543,6 +601,30 @@
   "notifications": [
     {
       "user_id": "00000000-0000-0000-0000-000000000006",
+      "grievance_id": "c0000000-0000-0000-0000-000000000003",
+      "type": "CLOSED",
+      "title": "Grievance Closed",
+      "message": "Ticket GRV-2026-00003 is now officially closed. You may provide feedback.",
+      "is_read": false,
+      "metadata": {},
+      "id": "a96988b5-e3f5-4864-8252-3d634d490d87",
+      "created_at": "2026-10-09T05:39:44.329Z",
+      "updated_at": "2026-10-09T05:39:44.329Z"
+    },
+    {
+      "user_id": "00000000-0000-0000-0000-000000000006",
+      "grievance_id": "1468c6f2-8562-4542-8d7e-2d16b085b263",
+      "type": "SUBMITTED",
+      "title": "Grievance Registered",
+      "message": "Your grievance has been registered with ticket number GRV-2026-78538. SLA target: 24 hours.",
+      "is_read": false,
+      "metadata": {},
+      "id": "34248890-8f35-4b58-af6a-755f3937c736",
+      "created_at": "2026-10-09T05:39:10.309Z",
+      "updated_at": "2026-10-09T05:39:10.309Z"
+    },
+    {
+      "user_id": "00000000-0000-0000-0000-000000000006",
       "grievance_id": "dccabe21-f3f1-4682-9f2e-bdf06850c1d1",
       "type": "SUBMITTED",
       "title": "Grievance Registered",
@@ -634,8 +716,71 @@
       "updated_at": "2026-10-08T20:51:48.864Z"
     }
   ],
-  "grievance_evidence": [],
+  "grievance_evidence": [
+    {
+      "id": "a90b4572-9f33-41e8-8e72-3972950b3b9c",
+      "grievance_id": "1468c6f2-8562-4542-8d7e-2d16b085b263",
+      "uploaded_by": "00000000-0000-0000-0000-000000000006",
+      "file_path": "evidence/1468c6f2-8562-4542-8d7e-2d16b085b263/1791524351429_back-image-login.png",
+      "file_name": "back-image-login.png",
+      "file_type": "image/png",
+      "file_size": 2110270,
+      "sha256_hash": "5621b1d5d69b5305ed35601268bb47aa367f38f3e79790f3e17a52ea806dc48e",
+      "evidence_type": "PHOTO",
+      "is_resolution_proof": false,
+      "ai_analyzed": true,
+      "ai_description": "Photographic inspection of back-image-login.png shows clear visual corroboration of the reported IT incident.",
+      "relevance_score": 70,
+      "authenticity_status": "VERIFIED",
+      "agent_confidence": 0.94,
+      "verification_notes": "Evidence Agent audited file back-image-login.png. Tamper-proof SHA-256 generated. Authenticity certified as VERIFIED.",
+      "metadata": {
+        "visualChecks": {
+          "integrityValid": true,
+          "fileExtensionValid": true,
+          "sizeWithinBounds": true,
+          "contextualMatch": true
+        },
+        "detectedKeywords": []
+      },
+      "created_at": "2026-10-09T05:39:11.440Z",
+      "updated_at": "2026-10-09T05:39:11.440Z"
+    }
+  ],
   "agent_execution_logs": [
+    {
+      "grievance_id": "1468c6f2-8562-4542-8d7e-2d16b085b263",
+      "agent_name": "EVIDENCE_AGENT",
+      "action_taken": "MULTIMODAL_VERIFICATION",
+      "thought_process": "[STEP 1: CRYPTOGRAPHIC FINGERPRINTING] Computed SHA-256 checksum (5621b1d5d69b5305...). Stamped tamper-proof ledger entry.\n[STEP 2: CONTAINER INTEGRITY] Validated MIME type 'image/png' against allowed institutional whitelist. Payload size 2110270 bytes confirmed within bounds.\n[STEP 3: MULTIMODAL RELEVANCE] Scanned evidence metadata against grievance corpus. Matched semantic tokens: [contextual photograph]. Relevance calculated at 70/100.\n[STEP 4: AUTHENTICITY CERTIFICATION] Evidence status certified as 'VERIFIED' (Agent Confidence: 94.0%). Type: STUDENT_INCIDENT_EVIDENCE.",
+      "confidence": 0.94,
+      "metadata": {
+        "fileName": "back-image-login.png",
+        "sha256": "5621b1d5d69b5305ed35601268bb47aa367f38f3e79790f3e17a52ea806dc48e",
+        "authenticity": "VERIFIED",
+        "relevanceScore": 70
+      },
+      "id": "e192ba7e-ac00-4c4b-827f-d87979f0ffed",
+      "created_at": "2026-10-09T05:39:11.443Z",
+      "updated_at": "2026-10-09T05:39:11.443Z"
+    },
+    {
+      "grievance_id": "1468c6f2-8562-4542-8d7e-2d16b085b263",
+      "agent_name": "TRIAGE_AGENT",
+      "action_taken": "CLASSIFY_AND_SCORE",
+      "thought_process": "[STEP 1: INTENT DECOMPOSITION] Grievance corpus analyzed (\"internet connectivity in library\"). Key entities mapped to category 'IT'.\n[STEP 2: IMPACT & SEVERITY ASSESSMENT] Impact cohort evaluated at 100 student(s) with urgency 'MEDIUM'.\n[STEP 3: MULTI-FACTOR WEIGHTING] Priority calculated as MEDIUM (55/100). Contributing factors: Moderate severity grievance; Standard operational urgency; Massive campus impact: 100+ students affected; Repeated / recurring issue indicating systemic failure.\n[STEP 4: SMART ROUTING] Routed to Department ID 'a0000000-0000-0000-0000-000000000001' with dynamic SLA deadline of 24 hours.",
+      "confidence": 0.965,
+      "metadata": {
+        "category": "IT",
+        "priority": "MEDIUM",
+        "priorityScore": 55,
+        "slaHours": 24,
+        "ticketNumber": "GRV-2026-78538"
+      },
+      "id": "4fe79816-4d93-4690-a88a-402cd063e859",
+      "created_at": "2026-10-09T05:39:10.309Z",
+      "updated_at": "2026-10-09T05:39:10.309Z"
+    },
     {
       "grievance_id": "dccabe21-f3f1-4682-9f2e-bdf06850c1d1",
       "agent_name": "TRIAGE_AGENT",

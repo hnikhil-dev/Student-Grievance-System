@@ -271,21 +271,42 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 .sg-login-grid {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 3rem;
+  gap: 2.5rem;
   align-items: center;
   width: 100%;
-  max-width: 1080px;
+  max-width: 1120px;
+  position: relative;
+  z-index: 10;
+}
+
+.sg-login-hero-panel {
+  background: rgba(255, 255, 255, 0.72);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid rgba(255, 255, 255, 0.85);
+  border-radius: 24px;
+  padding: 2.5rem;
+  box-shadow: 0 16px 36px -10px rgba(20, 54, 39, 0.12);
+}
+
+@media (max-width: 899px) {
+  .sg-login-hero-panel {
+    padding: 1.75rem 1.25rem !important;
+    border-radius: 20px !important;
+  }
 }
 
 @media (min-width: 900px) {
   .sg-login-grid {
     grid-template-columns: 1.15fr 0.85fr !important;
+    gap: 3rem;
   }
 }
 
 @media (max-width: 480px) {
   .sg-login-card {
-    padding: 1.5rem 1rem !important;
+    padding: 1.75rem 1.25rem !important;
+    border-radius: 20px !important;
   }
 }
 
