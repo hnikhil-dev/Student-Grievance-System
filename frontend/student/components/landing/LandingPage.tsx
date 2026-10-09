@@ -130,7 +130,7 @@ export const LandingPage: React.FC = () => {
         </div>
 
         <div style={{ maxWidth: '1140px', margin: '0 auto' }}>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '3rem', alignItems: 'center' }} className="sg-hero-grid">
+          <div style={{ gap: '3rem', alignItems: 'center' }} className="sg-hero-grid">
             
             {/* Left Content */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
@@ -467,14 +467,6 @@ export const LandingPage: React.FC = () => {
           </div>
         </div>
       </footer>
-
-      <style jsx>{`
-        @media (min-width: 900px) {
-          .sg-hero-grid {
-            grid-template-columns: 1.2fr 1fr !important;
-          }
-        }
-      `}</style>
     </div>
   );
 };

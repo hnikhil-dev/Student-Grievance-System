@@ -84,7 +84,7 @@ export const Navbar: React.FC<NavbarProps> = ({
         </a>
 
         {/* Desktop Navigation Links */}
-        <nav style={{ display: 'none', alignItems: 'center', gap: '1.25rem' }} className="sg-desktop-nav">
+        <nav style={{ alignItems: 'center', gap: '1.25rem' }} className="sg-desktop-nav">
           {navItems.map((item) => {
             const isActive = activePath === item.href;
             if (item.highlight) {
@@ -211,19 +211,6 @@ export const Navbar: React.FC<NavbarProps> = ({
           </a>
         </div>
       </div>
-
-      <style jsx global>{`
-        @media (min-width: 768px) {
-          .sg-desktop-nav {
-            display: flex !important;
-          }
-        }
-        @media (max-width: 480px) {
-          .sg-nav-institution {
-            display: none !important;
-          }
-        }
-      `}</style>
     </header>
   );
 };

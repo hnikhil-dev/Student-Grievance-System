@@ -87,42 +87,6 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({
           {children}
         </main>
       </div>
-
-      <style jsx global>{`
-        @media (min-width: 900px) {
-          .admin-mobile-toggle {
-            display: none !important;
-          }
-          .admin-sidebar-desktop {
-            display: flex !important;
-          }
-        }
-        @media (max-width: 899px) {
-          .admin-sidebar-desktop:not(.admin-sidebar-mobile-open) {
-            display: none !important;
-          }
-          .admin-mobile-toggle {
-            display: flex !important;
-          }
-          .admin-main-content {
-            padding: 1.25rem 1rem !important;
-          }
-        }
-        @media (max-width: 600px) {
-          .admin-main-content {
-            padding: 0.85rem 0.65rem !important;
-          }
-          .admin-header-sentinel {
-            display: none !important;
-          }
-          .admin-header-search input {
-            width: 120px !important;
-          }
-          .admin-header-search input:focus {
-            width: 160px !important;
-          }
-        }
-      `}</style>
     </div>
   );
 };

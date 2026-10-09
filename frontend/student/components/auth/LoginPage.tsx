@@ -282,8 +282,6 @@ export const LoginPage: React.FC = () => {
         style={{
           width: '100%',
           maxWidth: '1080px',
-          display: 'grid',
-          gridTemplateColumns: '1fr',
           gap: '3rem',
           alignItems: 'center',
         }}
@@ -639,19 +637,6 @@ export const LoginPage: React.FC = () => {
           </Card>
         </div>
       </div>
-
-      <style jsx>{`
-        @media (min-width: 900px) {
-          .sg-login-grid {
-            grid-template-columns: 1fr 460px !important;
-          }
-        }
-        @media (max-width: 480px) {
-          :global(.sg-login-card) {
-            padding: 1.5rem 1rem !important;
-          }
-        }
-      `}</style>
     </div>
   );
 };

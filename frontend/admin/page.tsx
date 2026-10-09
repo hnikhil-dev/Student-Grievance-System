@@ -35,12 +35,23 @@ export default function AdminPage() {
   const [adminUser, setAdminUser] = useState<any>(null);
   const [realtimeRefreshKey, setRealtimeRefreshKey] = useState<number>(0);
 
-  // Sync hash with activeRoute
+  // Sync pathname & hash with activeRoute
   useEffect(() => {
-    const handleHashChange = () => {
+    const handleRouteChange = () => {
       if (typeof window === 'undefined') return;
+
+      // 1. Check pathname: /admin/departments -> 'departments'
+      const pathSegment = window.location.pathname
+        .replace(/^\/admin\/?/, '')
+        .split('/')[0] as AdminRouteId;
+
+      if (VALID_ROUTES.includes(pathSegment)) {
+        setActiveRoute(pathSegment);
+        return;
+      }
+
+      // 2. Fallback to hash: #departments -> 'departments'
       const rawHash = window.location.hash || '';
-      // Strip leading '#', optional leading slashes, and optional 'admin/' prefix
       const sanitized = rawHash
         .replace(/^#\/?/, '')
         .replace(/^admin\/?/, '')
@@ -52,9 +63,13 @@ export default function AdminPage() {
       }
     };
 
-    handleHashChange();
-    window.addEventListener('hashchange', handleHashChange);
-    return () => window.removeEventListener('hashchange', handleHashChange);
+    handleRouteChange();
+    window.addEventListener('hashchange', handleRouteChange);
+    window.addEventListener('popstate', handleRouteChange);
+    return () => {
+      window.removeEventListener('hashchange', handleRouteChange);
+      window.removeEventListener('popstate', handleRouteChange);
+    };
   }, []);
 
   // Fetch admin session from backend /api/auth/me

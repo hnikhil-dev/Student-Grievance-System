@@ -255,7 +255,7 @@ export const StudentShell: React.FC<StudentShellProps> = ({
           </div>
 
           {/* Center: Search / Quick Navigation Trigger (Desktop) */}
-          <div style={{ display: 'none', alignItems: 'center' }} className="sg-desktop-search">
+          <div style={{ alignItems: 'center' }} className="sg-desktop-search">
             <div
               onClick={() => (window.location.href = '/student/page')}
               style={{
@@ -572,40 +572,6 @@ export const StudentShell: React.FC<StudentShellProps> = ({
           </a>
         </nav>
       </div>
-
-      <style jsx global>{`
-        @media (min-width: 900px) {
-          .sg-mobile-toggle {
-            display: none !important;
-          }
-          .sg-desktop-sidebar {
-            display: flex !important;
-          }
-          .sg-desktop-search {
-            display: flex !important;
-          }
-          .sg-mobile-bottom-bar {
-            display: none !important;
-          }
-        }
-        @media (max-width: 899px) {
-          .sg-desktop-sidebar {
-            display: none !important;
-          }
-          .sg-header-cta {
-            display: none !important;
-          }
-          .sg-main-content {
-            padding-bottom: 5.5rem !important;
-          }
-        }
-        @media (max-width: 600px) {
-          .sg-main-content {
-            padding: 1rem 0.75rem !important;
-            padding-bottom: 5.5rem !important;
-          }
-        }
-      `}</style>
     </StudentShellContext.Provider>
   );
 };

@@ -263,3 +263,135 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
   }
 }
 
+/* ==========================================================================
+   5. RESPONSIVE APPLICATION LAYOUT UTILITIES
+   ========================================================================== */
+
+/* Login Split Layout (Branding Left, Form Right on Desktop) */
+.sg-login-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 3rem;
+  align-items: center;
+  width: 100%;
+  max-width: 1080px;
+}
+
+@media (min-width: 900px) {
+  .sg-login-grid {
+    grid-template-columns: 1.15fr 0.85fr !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .sg-login-card {
+    padding: 1.5rem 1rem !important;
+  }
+}
+
+/* Landing Page Hero Split Grid */
+.sg-hero-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 3rem;
+  align-items: center;
+}
+
+@media (min-width: 900px) {
+  .sg-hero-grid {
+    grid-template-columns: 1.2fr 1fr !important;
+  }
+}
+
+/* Student Top Navbar Responsive Visibility */
+.sg-desktop-nav {
+  display: none !important;
+}
+
+.sg-mobile-nav-toggle {
+  display: flex !important;
+}
+
+@media (min-width: 768px) {
+  .sg-desktop-nav {
+    display: flex !important;
+  }
+  .sg-mobile-nav-toggle {
+    display: none !important;
+  }
+}
+
+/* Student Portal App Shell Responsive Visibility */
+.sg-desktop-sidebar {
+  display: flex;
+}
+
+.sg-desktop-search {
+  display: flex;
+}
+
+.sg-mobile-toggle {
+  display: none;
+}
+
+.sg-mobile-bottom-bar {
+  display: none;
+}
+
+@media (max-width: 899px) {
+  .sg-desktop-sidebar {
+    display: none !important;
+  }
+  .sg-desktop-search {
+    display: none !important;
+  }
+  .sg-mobile-toggle {
+    display: flex !important;
+  }
+  .sg-mobile-bottom-bar {
+    display: flex !important;
+  }
+  .sg-header-cta {
+    display: none !important;
+  }
+  .sg-main-content {
+    padding-bottom: 5.5rem !important;
+  }
+}
+
+@media (max-width: 600px) {
+  .sg-main-content {
+    padding: 1rem 0.75rem !important;
+    padding-bottom: 5.5rem !important;
+  }
+}
+
+/* Admin Portal Layout Responsive Visibility */
+.admin-mobile-toggle {
+  display: none;
+}
+
+.admin-sidebar-desktop {
+  display: flex;
+}
+
+@media (max-width: 899px) {
+  .admin-mobile-toggle {
+    display: flex !important;
+  }
+  .admin-sidebar-desktop:not(.admin-sidebar-mobile-open) {
+    display: none !important;
+  }
+  .admin-main-content {
+    padding: 1.25rem 1rem !important;
+  }
+}
+
+@media (max-width: 600px) {
+  .admin-main-content {
+    padding: 0.85rem 0.65rem !important;
+  }
+}
+
+
+
