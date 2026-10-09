@@ -111,6 +111,12 @@ echo   Press Ctrl + C in this terminal to stop the server at any time.
 echo ===============================================================================
 echo.
 
+:: Clean production cache collision if previous run was next build
+if exist "backend\.next\BUILD_ID" (
+    echo [*] Clearing production bundle cache to ensure clean dev compilation...
+    rmdir /s /q "backend\.next" 2>nul
+)
+
 :: Launch browser in background after brief delay
 start "" cmd /c "timeout /t 3 /nobreak >nul ^& start http://localhost:3000/login"
 
