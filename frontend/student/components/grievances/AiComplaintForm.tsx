@@ -673,7 +673,7 @@ export const AiComplaintForm: React.FC = () => {
                   <span style={{ color: '#DC2626', fontWeight: 800 }}>*</span> Fields marked with asterisk are strictly required
                 </span>
                 <span style={{ fontSize: '0.75rem', color: '#059669', fontWeight: 700, backgroundColor: '#DCFCE7', padding: '0.2rem 0.6rem', borderRadius: '9999px' }}>
-                  Autonomous Triage Agent Active
+                  Fast-Track Smart Routing Active
                 </span>
               </div>
 
@@ -747,7 +747,7 @@ export const AiComplaintForm: React.FC = () => {
                   <Select
                     label="Destination Department"
                     options={[
-                      { value: '', label: '✨ Auto-Detect via AI Multi-Agent Triage (Recommended)' },
+                      { value: '', label: 'Auto-Detect via Institutional Routing (Recommended)' },
                       ...departments.map((d) => ({
                         value: d.id,
                         label: `${d.name} (${d.code})`,
