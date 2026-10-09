@@ -108,6 +108,7 @@ export const AdminHeader: React.FC<AdminHeaderProps> = ({
         {onOpenMobileMenu && (
           <button
             type="button"
+            className="admin-mobile-toggle"
             onClick={onOpenMobileMenu}
             aria-label="Toggle navigation menu"
             style={{
@@ -175,6 +176,7 @@ export const AdminHeader: React.FC<AdminHeaderProps> = ({
       <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
         {/* Realtime Live Sentinel Status Pill */}
         <div
+          className="admin-header-sentinel"
           style={{
             display: 'flex',
             alignItems: 'center',
@@ -206,6 +208,7 @@ export const AdminHeader: React.FC<AdminHeaderProps> = ({
 
         {/* Global Search Bar */}
         <div
+          className="admin-header-search"
           style={{
             position: 'relative',
             display: 'flex',

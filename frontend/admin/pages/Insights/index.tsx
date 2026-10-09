@@ -20,6 +20,24 @@ import {
   Building2,
   Clock,
 } from '../../components/ui/Icons';
+import { AlertOctagon, Lightbulb, Landmark, TrendingUp, Zap } from 'lucide-react';
+
+const renderInsightIcon = (iconName: string) => {
+  switch (iconName) {
+    case 'alert':
+      return <AlertOctagon size={24} color={colors.danger} />;
+    case 'clock':
+      return <Clock size={24} color={colors.warning} />;
+    case 'lightbulb':
+      return <Lightbulb size={24} color={colors.primaryGreen} />;
+    case 'landmark':
+      return <Landmark size={24} color={colors.primaryGreen} />;
+    case 'trending-up':
+      return <TrendingUp size={24} color={colors.success} />;
+    default:
+      return <Zap size={24} color={colors.primaryGreen} />;
+  }
+};
 
 export interface InsightsPageProps {
   onNavigate?: (route: AdminRouteId) => void;
@@ -45,7 +63,7 @@ export const InsightsPage: React.FC<InsightsPageProps> = ({ onNavigate }) => {
       if (clusterData && Array.isArray(clusterData.clusters) && clusterData.clusters.length > 0) {
         const liveInsights: AiInsightItem[] = clusterData.clusters.map((c: any) => ({
           id: `ins-live-${c.id}`,
-          icon: '⚡',
+          icon: 'zap',
           title: c.title || c.name || 'Systemic Cluster Detected',
           type: 'EMERGING_ISSUE',
           typeLabel: 'Emerging Pattern',
@@ -321,7 +339,20 @@ export const InsightsPage: React.FC<InsightsPageProps> = ({ onNavigate }) => {
             {/* Top Row: Icon, Title, Badges */}
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '0.75rem' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                <span style={{ fontSize: '1.75rem' }}>{insight.icon}</span>
+                <div
+                  style={{
+                    width: '42px',
+                    height: '42px',
+                    borderRadius: radii.md,
+                    backgroundColor: colors.lightBotanical,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    flexShrink: 0,
+                  }}
+                >
+                  {renderInsightIcon(insight.icon)}
+                </div>
                 <div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
                     <h3 style={{ margin: 0, fontSize: typography.fontSize.md, fontWeight: typography.fontWeight.bold, color: colors.deepForestGreen }}>

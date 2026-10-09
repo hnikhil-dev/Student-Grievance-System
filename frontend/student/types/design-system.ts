@@ -63,7 +63,7 @@ export interface MetricCardData {
   title: string;
   value: string | number;
   subtitle?: string;
-  icon?: string;
+  icon?: React.ReactNode;
   trend?: {
     value: string;
     isPositive: boolean;

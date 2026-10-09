@@ -33,7 +33,7 @@ export interface AiInsightItem {
 export const MOCK_AI_INSIGHTS: AiInsightItem[] = [
   {
     id: 'ins-01',
-    icon: '🚨',
+    icon: 'alert',
     title: 'Surging SSO Authentication Failures During Midterms',
     type: 'EMERGING_ISSUE',
     typeLabel: 'Emerging Issue',
@@ -56,7 +56,7 @@ export const MOCK_AI_INSIGHTS: AiInsightItem[] = [
   },
   {
     id: 'ins-02',
-    icon: '⏱️',
+    icon: 'clock',
     title: 'Hostel Sector Approaching Severe SLA Breach Risk',
     type: 'SLA_INSIGHT',
     typeLabel: 'SLA Insight',
@@ -79,7 +79,7 @@ export const MOCK_AI_INSIGHTS: AiInsightItem[] = [
   },
   {
     id: 'ins-03',
-    icon: '💡',
+    icon: 'lightbulb',
     title: 'High Duplicate Inflow on Fee Double-Deduction Inquiries',
     type: 'RECOMMENDATION',
     typeLabel: 'Recommendation',
@@ -101,7 +101,7 @@ export const MOCK_AI_INSIGHTS: AiInsightItem[] = [
   },
   {
     id: 'ins-04',
-    icon: '🏛️',
+    icon: 'landmark',
     title: 'Academic Wing Achieving Benchmark Turnaround Velocity',
     type: 'DEPARTMENT_INSIGHT',
     typeLabel: 'Department Insight',
@@ -123,7 +123,7 @@ export const MOCK_AI_INSIGHTS: AiInsightItem[] = [
   },
   {
     id: 'ins-05',
-    icon: '📈',
+    icon: 'trending-up',
     title: 'Library Digital Proxy Renewal Expiry Pattern',
     type: 'TREND_INSIGHT',
     typeLabel: 'Trend Insight',

@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { Button } from './Button';
+import { WifiOff, Lock, AlertTriangle, Bot, FileEdit, ShieldAlert, Search, RotateCcw } from 'lucide-react';
 
 export type ErrorStateVariant =
   | 'network'
@@ -22,45 +23,45 @@ export interface ErrorStateProps {
   onSecondaryAction?: () => void;
 }
 
-const ERROR_PRESETS: Record<Exclude<ErrorStateVariant, 'custom'>, { icon: string; title: string; message: string; retryLabel?: string }> = {
+const ERROR_PRESETS: Record<Exclude<ErrorStateVariant, 'custom'>, { Icon: React.ElementType; title: string; message: string; retryLabel?: string }> = {
   network: {
-    icon: '📡',
+    Icon: WifiOff,
     title: 'Network Connection Issue',
     message: 'Unable to reach the campus grievance servers. Please check your network connection and try again.',
     retryLabel: 'Retry Connection',
   },
   auth: {
-    icon: '🔒',
+    Icon: Lock,
     title: 'Session Expired or Unauthorized',
     message: 'Your authenticated session could not be verified or has timed out. Please sign in to continue.',
     retryLabel: 'Sign In Again',
   },
   api: {
-    icon: '⚠️',
+    Icon: AlertTriangle,
     title: 'Server Error Occurred',
     message: 'The institution server encountered a temporary issue while processing your request. Our technical team has been notified.',
     retryLabel: 'Try Again',
   },
   ai_unavailable: {
-    icon: '🤖',
+    Icon: Bot,
     title: 'AI Analysis Temporarily Unavailable',
     message: 'Automated AI classification is currently experiencing high load. You can continue submitting your grievance manually without interruption.',
     retryLabel: 'Retry AI Analysis',
   },
   validation: {
-    icon: '✏️',
+    Icon: FileEdit,
     title: 'Input Validation Error',
     message: 'Some required fields are missing or improperly formatted. Please review the highlighted form fields and try again.',
     retryLabel: 'Review Fields',
   },
   permission: {
-    icon: '🚫',
+    Icon: ShieldAlert,
     title: 'Access Restricted',
     message: 'You do not have permission to view or modify this grievance record. Only the submitting student or authorized campus officers can access it.',
     retryLabel: 'Return to Dashboard',
   },
   not_found: {
-    icon: '🔍',
+    Icon: Search,
     title: 'Grievance Record Not Found',
     message: 'The requested grievance ticket could not be found. It may have been archived or removed.',
     retryLabel: 'View All Grievances',
@@ -76,8 +77,8 @@ export const ErrorState: React.FC<ErrorStateProps> = ({
   onSecondaryAction,
 }) => {
   const preset = variant !== 'custom' ? ERROR_PRESETS[variant] : null;
+  const PresetIcon = preset?.Icon || AlertTriangle;
 
-  const displayIcon = preset?.icon || '⚠️';
   const displayTitle = title || preset?.title || 'Unable to Load Data';
   const displayMessage = message || preset?.message || 'An unexpected error occurred while communicating with the institution server. Please try again.';
   const retryLabel = preset?.retryLabel || 'Retry';
@@ -98,9 +99,10 @@ export const ErrorState: React.FC<ErrorStateProps> = ({
         justifyContent: 'center',
         textAlign: 'center',
         padding: '2.5rem 1.25rem',
-        backgroundColor: '#FEF2F2',
+        backgroundColor: '#FFFFFF',
         borderRadius: '20px',
-        border: '1px solid #FCA5A5',
+        border: '1px solid #FEE2E2',
+        boxShadow: '0 4px 6px -1px rgba(239, 68, 68, 0.05)',
         margin: '1rem 0',
         width: '100%',
         boxSizing: 'border-box',
@@ -109,44 +111,62 @@ export const ErrorState: React.FC<ErrorStateProps> = ({
       <div
         aria-hidden="true"
         style={{
-          width: '56px',
-          height: '56px',
+          width: '64px',
+          height: '64px',
           borderRadius: '50%',
-          backgroundColor: '#FEE2E2',
+          backgroundColor: '#FEF2F2',
+          border: '1px solid #FECACA',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          fontSize: '1.75rem',
           marginBottom: '1rem',
+          color: '#DC2626',
         }}
       >
-        {displayIcon}
+        <PresetIcon size={28} strokeWidth={1.8} />
       </div>
 
-      <h3 style={{ margin: 0, fontSize: '1.125rem', fontWeight: 700, color: '#991B1B' }}>
+      <h3
+        style={{
+          margin: '0 0 0.5rem 0',
+          fontSize: '1.125rem',
+          fontWeight: 700,
+          color: '#991B1B',
+          letterSpacing: '-0.01em',
+        }}
+      >
         {displayTitle}
       </h3>
+
       <p
         style={{
-          margin: '0.4rem 0 1.5rem 0',
+          margin: '0 0 1.5rem 0',
           fontSize: '0.875rem',
-          color: '#B91C1C',
-          maxWidth: '440px',
-          lineHeight: 1.5,
-          overflowWrap: 'break-word',
+          color: '#6B7280',
+          maxWidth: '480px',
+          lineHeight: 1.6,
         }}
       >
         {sanitizedMessage}
       </p>
 
-      <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap', justifyContent: 'center' }}>
+      <div
+        style={{
+          display: 'flex',
+          flexWrap: 'wrap',
+          gap: '0.75rem',
+          justifyContent: 'center',
+          alignItems: 'center',
+        }}
+      >
         {onRetry && (
-          <Button variant="danger" size="md" onClick={onRetry}>
-            🔄 {retryLabel}
+          <Button variant="danger" size="md" onClick={onRetry} leftIcon={<RotateCcw size={16} />}>
+            {retryLabel}
           </Button>
         )}
+
         {secondaryActionLabel && onSecondaryAction && (
-          <Button variant="secondary" size="md" onClick={onSecondaryAction}>
+          <Button variant="outline" size="md" onClick={onSecondaryAction}>
             {secondaryActionLabel}
           </Button>
         )}

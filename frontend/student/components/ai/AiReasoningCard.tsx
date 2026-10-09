@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import { Sparkles, Check, Landmark, Clock, ShieldCheck } from 'lucide-react';
 import { PriorityBadge } from '../ui/PriorityBadge';
 import { StatusBadge } from '../ui/StatusBadge';
 import { SlaIndicator } from '../ui/SlaIndicator';
@@ -76,7 +77,7 @@ export const AiReasoningCard: React.FC<AiReasoningCardProps> = ({
               boxShadow: '0 2px 6px rgba(79, 70, 229, 0.3)',
             }}
           >
-            ✨
+            <Sparkles size={18} color="#FFFFFF" />
           </div>
           <div>
             <h4 style={{ margin: 0, fontSize: '1rem', fontWeight: 800, color: '#1E1B4B' }}>
@@ -142,7 +143,8 @@ export const AiReasoningCard: React.FC<AiReasoningCardProps> = ({
                 textAlign: 'left',
               }}
             >
-              ✓ Use this category
+              <Check size={14} style={{ display: 'inline', verticalAlign: 'middle', marginRight: '4px' }} />
+              Use this category
             </button>
           )}
         </div>
@@ -162,8 +164,9 @@ export const AiReasoningCard: React.FC<AiReasoningCardProps> = ({
           <span style={{ fontSize: '0.7rem', color: '#64748B', fontWeight: 700, textTransform: 'uppercase', display: 'block', marginBottom: '0.25rem' }}>
             DEPARTMENT ROUTING
           </span>
-          <span style={{ fontSize: '0.9rem', fontWeight: 700, color: '#1B4332', display: 'block', marginTop: '0.2rem' }}>
-            🏛️ {analysis.department || 'IT Services'}
+          <span style={{ fontSize: '0.9rem', fontWeight: 700, color: '#1B4332', display: 'inline-flex', alignItems: 'center', gap: '5px', marginTop: '0.2rem' }}>
+            <Landmark size={14} color="#1B4332" />
+            <span>{analysis.department || 'IT Services'}</span>
           </span>
         </div>
 
@@ -172,8 +175,9 @@ export const AiReasoningCard: React.FC<AiReasoningCardProps> = ({
           <span style={{ fontSize: '0.7rem', color: '#64748B', fontWeight: 700, textTransform: 'uppercase', display: 'block', marginBottom: '0.25rem' }}>
             SLA TARGET WINDOW
           </span>
-          <span style={{ fontSize: '0.9rem', fontWeight: 800, color: '#2D6A4F', display: 'block', marginTop: '0.2rem' }}>
-            ⏱️ {targetHours} Hours
+          <span style={{ fontSize: '0.9rem', fontWeight: 800, color: '#2D6A4F', display: 'inline-flex', alignItems: 'center', gap: '5px', marginTop: '0.2rem' }}>
+            <Clock size={14} color="#2D6A4F" />
+            <span>{targetHours} Hours</span>
           </span>
         </div>
       </div>
@@ -200,8 +204,8 @@ export const AiReasoningCard: React.FC<AiReasoningCardProps> = ({
       )}
 
       {/* Trust & Human Agency Guarantee */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem', fontSize: '0.75rem', color: '#64748B', borderTop: '1px solid #E0E7FF', paddingTop: '0.75rem' }}>
-        <span>🛡️</span>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '0.55rem', fontSize: '0.75rem', color: '#64748B', borderTop: '1px solid #E0E7FF', paddingTop: '0.75rem' }}>
+        <ShieldCheck size={16} color="#4F46E5" />
         <span>
           <strong>Supervised AI:</strong> Suggestions reflect institutional guidelines. You maintain full authority to edit prior to submission.
         </span>

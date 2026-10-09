@@ -23,6 +23,7 @@ import {
   SlidersHorizontal,
   ChevronRight,
 } from '../../components/ui/Icons';
+import { AlertOctagon } from 'lucide-react';
 
 export const SlaPage: React.FC = () => {
   const [grievances, setGrievances] = useState<SlaGrievanceItem[]>(MOCK_SLA_GRIEVANCES);
@@ -115,14 +116,14 @@ export const SlaPage: React.FC = () => {
         );
       case 'AT_RISK':
         return (
-          <span style={{ color: colors.warning, backgroundColor: '#FBF5E9', border: '1px solid #EEDBB9', padding: '0.2rem 0.5rem', borderRadius: radii.sm, fontWeight: 700, fontSize: typography.fontSize.xs }}>
-            ▲ At Risk
+          <span style={{ color: colors.warning, backgroundColor: '#FBF5E9', border: '1px solid #EEDBB9', padding: '0.2rem 0.5rem', borderRadius: radii.sm, fontWeight: 700, fontSize: typography.fontSize.xs, display: 'inline-flex', alignItems: 'center', gap: '3px' }}>
+            <AlertTriangle size={11} /> At Risk
           </span>
         );
       case 'BREACHED':
         return (
-          <span style={{ color: colors.danger, backgroundColor: '#FAECEB', border: '1px solid #ECC7C4', padding: '0.2rem 0.5rem', borderRadius: radii.sm, fontWeight: 700, fontSize: typography.fontSize.xs }}>
-            ✖ Breached
+          <span style={{ color: colors.danger, backgroundColor: '#FAECEB', border: '1px solid #ECC7C4', padding: '0.2rem 0.5rem', borderRadius: radii.sm, fontWeight: 700, fontSize: typography.fontSize.xs, display: 'inline-flex', alignItems: 'center', gap: '3px' }}>
+            <AlertOctagon size={11} /> Breached
           </span>
         );
     }
@@ -284,8 +285,8 @@ export const SlaPage: React.FC = () => {
         {/* At-Risk Callout */}
         <div style={{ backgroundColor: '#FBF5E9', border: '1px solid #EEDBB9', borderRadius: radii.md, padding: '1rem' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
-            <span style={{ fontWeight: 700, color: colors.warning, fontSize: typography.fontSize.sm }}>
-              ⚠️ At-Risk Queue ({atRiskItems.length} Urgent Tickets)
+            <span style={{ fontWeight: 700, color: colors.warning, fontSize: typography.fontSize.sm, display: 'inline-flex', alignItems: 'center', gap: '5px' }}>
+              <AlertTriangle size={15} /> At-Risk Queue ({atRiskItems.length} Urgent Tickets)
             </span>
             <Badge variant="warning" size="sm">Action Priority</Badge>
           </div>
@@ -296,7 +297,9 @@ export const SlaPage: React.FC = () => {
             {atRiskItems.map((it) => (
               <div key={it.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', backgroundColor: colors.cardSurface, padding: '0.4rem 0.6rem', borderRadius: radii.sm, fontSize: typography.fontSize.xs }}>
                 <span style={{ fontWeight: 600, color: colors.deepForestGreen }}>{it.ticketNumber}: {it.title.substring(0, 38)}...</span>
-                <span style={{ color: colors.warning, fontWeight: 700 }}>⏱ {it.timeRemainingFormatted}</span>
+                <span style={{ color: colors.warning, fontWeight: 700, display: 'inline-flex', alignItems: 'center', gap: '3px' }}>
+                  <Clock size={12} /> {it.timeRemainingFormatted}
+                </span>
               </div>
             ))}
           </div>
@@ -305,8 +308,8 @@ export const SlaPage: React.FC = () => {
         {/* Breached Callout */}
         <div style={{ backgroundColor: '#FAECEB', border: '1px solid #ECC7C4', borderRadius: radii.md, padding: '1rem' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
-            <span style={{ fontWeight: 700, color: colors.danger, fontSize: typography.fontSize.sm }}>
-              🚨 Breached Queue ({breachedItems.length} Overdue Incidents)
+            <span style={{ fontWeight: 700, color: colors.danger, fontSize: typography.fontSize.sm, display: 'inline-flex', alignItems: 'center', gap: '5px' }}>
+              <AlertOctagon size={15} /> Breached Queue ({breachedItems.length} Overdue Incidents)
             </span>
             <Badge variant="danger" size="sm">Breach Flagged</Badge>
           </div>
@@ -317,7 +320,9 @@ export const SlaPage: React.FC = () => {
             {breachedItems.map((it) => (
               <div key={it.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', backgroundColor: colors.cardSurface, padding: '0.4rem 0.6rem', borderRadius: radii.sm, fontSize: typography.fontSize.xs }}>
                 <span style={{ fontWeight: 600, color: colors.danger }}>{it.ticketNumber}: {it.title.substring(0, 38)}...</span>
-                <span style={{ color: colors.danger, fontWeight: 700 }}>⚠️ {it.timeRemainingFormatted}</span>
+                <span style={{ color: colors.danger, fontWeight: 700, display: 'inline-flex', alignItems: 'center', gap: '3px' }}>
+                  <AlertOctagon size={12} /> {it.timeRemainingFormatted}
+                </span>
               </div>
             ))}
           </div>
@@ -538,7 +543,7 @@ export const SlaPage: React.FC = () => {
             </div>
 
             {/* Checkpoint Timeline Grid */}
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '0.75rem', fontSize: typography.fontSize.xs }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))', gap: '0.75rem', fontSize: typography.fontSize.xs }}>
               <div style={{ backgroundColor: colors.adminBackground, padding: '0.75rem', borderRadius: radii.md }}>
                 <span style={{ color: colors.secondaryText }}>Submitted At:</span>
                 <div style={{ fontWeight: 600, color: colors.primaryText, marginTop: '0.15rem' }}>{activeItem.createdAt}</div>

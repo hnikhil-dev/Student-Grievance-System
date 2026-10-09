@@ -18,6 +18,21 @@ import {
   PageSpinner,
 } from '../index';
 import { getDynamicAuthHeaders } from '@lib/api';
+import {
+  Check,
+  CheckCircle2,
+  Star,
+  Frown,
+  Meh,
+  Smile,
+  Sparkles,
+  FolderOpen,
+  Landmark,
+  User,
+  Send,
+  LayoutDashboard,
+  RotateCcw,
+} from 'lucide-react';
 
 interface ClosedGrievanceItem {
   id: string;
@@ -43,21 +58,21 @@ interface ClosedGrievanceItem {
   } | null;
 }
 
-const RATING_LABELS: Record<number, { title: string; subtitle: string; icon: string }> = {
-  1: { title: 'Poor Experience', subtitle: 'Issue was poorly addressed or required excessive escalation.', icon: '😞' },
-  2: { title: 'Needs Improvement', subtitle: 'Resolved, but communication or speed was subpar.', icon: '😐' },
-  3: { title: 'Satisfactory', subtitle: 'Standard resolution within acceptable parameters.', icon: '🙂' },
-  4: { title: 'Good Experience', subtitle: 'Prompt resolution with helpful communication from the officer.', icon: '😊' },
-  5: { title: 'Outstanding Service', subtitle: 'Exemplary speed, root-cause resolution, and proactive updates.', icon: '🌟' },
+const RATING_LABELS: Record<number, { title: string; subtitle: string; icon: React.ReactNode }> = {
+  1: { title: 'Poor Experience', subtitle: 'Issue was poorly addressed or required excessive escalation.', icon: <Frown size={20} color="#DC2626" /> },
+  2: { title: 'Needs Improvement', subtitle: 'Resolved, but communication or speed was subpar.', icon: <Meh size={20} color="#EA580C" /> },
+  3: { title: 'Satisfactory', subtitle: 'Standard resolution within acceptable parameters.', icon: <Smile size={20} color="#D97706" /> },
+  4: { title: 'Good Experience', subtitle: 'Prompt resolution with helpful communication from the officer.', icon: <Smile size={20} color="#16A34A" /> },
+  5: { title: 'Outstanding Service', subtitle: 'Exemplary speed, root-cause resolution, and proactive updates.', icon: <Sparkles size={20} color="#2563EB" /> },
 };
 
 const STRUCTURED_REFLECTION_CHIPS = [
-  '⚡ Resolution was prompt & within SLA',
-  '🏛️ Officer communication was clear & helpful',
-  '🔧 Problem was thoroughly solved',
-  '⏱️ Resolution took longer than expected',
-  '🔄 Required multiple follow-up messages',
-  '🎯 Root cause was addressed',
+  'Resolution was prompt & within SLA',
+  'Officer communication was clear & helpful',
+  'Problem was thoroughly solved',
+  'Resolution took longer than expected',
+  'Required multiple follow-up messages',
+  'Root cause was addressed',
 ];
 
 export interface StudentFeedbackProps {
@@ -280,11 +295,10 @@ export const StudentFeedback: React.FC<StudentFeedbackProps> = ({ initialGrievan
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  fontSize: '2.5rem',
                   animation: 'sg-bounce 1s ease',
                 }}
               >
-                ✓
+                <CheckCircle2 size={42} color="#059669" />
               </div>
 
               <div>
@@ -306,7 +320,7 @@ export const StudentFeedback: React.FC<StudentFeedbackProps> = ({ initialGrievan
                   size="md"
                   pill
                   onClick={() => (window.location.href = '/student/page')}
-                  rightIcon="📊"
+                  rightIcon={<LayoutDashboard size={16} />}
                 >
                   Return to Dashboard
                 </Button>
@@ -317,7 +331,7 @@ export const StudentFeedback: React.FC<StudentFeedbackProps> = ({ initialGrievan
                     size="md"
                     pill
                     onClick={handleResetForAnother}
-                    leftIcon="⭐"
+                    leftIcon={<RotateCcw size={16} />}
                   >
                     Rate Another Ticket
                   </Button>
@@ -406,8 +420,8 @@ export const StudentFeedback: React.FC<StudentFeedbackProps> = ({ initialGrievan
                         <PriorityBadge priority={currentGrievance.priority} score={currentGrievance.priority_score} size="sm" />
                       </div>
 
-                      <span style={{ fontSize: '0.75rem', color: '#6B7280' }}>
-                        📂 {currentGrievance.category}
+                      <span style={{ fontSize: '0.75rem', color: '#6B7280', display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                        <FolderOpen size={12} /> {currentGrievance.category}
                       </span>
                     </div>
 
@@ -416,9 +430,13 @@ export const StudentFeedback: React.FC<StudentFeedbackProps> = ({ initialGrievan
                     </h4>
 
                     <div style={{ display: 'flex', gap: '1.25rem', flexWrap: 'wrap', fontSize: '0.78rem', color: '#6B7280' }}>
-                      <span>🏛️ Department: <strong>{currentGrievance.department?.name || 'Assigned'}</strong></span>
+                      <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                        <Landmark size={12} color="#1B4332" /> Department: <strong>{currentGrievance.department?.name || 'Assigned'}</strong>
+                      </span>
                       {currentGrievance.assignee && (
-                        <span>👤 Officer: <strong>{currentGrievance.assignee.full_name}</strong></span>
+                        <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                          <User size={12} /> Officer: <strong>{currentGrievance.assignee.full_name}</strong>
+                        </span>
                       )}
                     </div>
                   </div>
@@ -461,15 +479,21 @@ export const StudentFeedback: React.FC<StudentFeedbackProps> = ({ initialGrievan
                           background: 'none',
                           border: 'none',
                           cursor: 'pointer',
-                          fontSize: '3rem',
-                          color: isFilled ? '#F59E0B' : '#E5E7EB',
-                          transform: isFilled ? 'scale(1.12)' : 'scale(1)',
+                          transform: isFilled ? 'scale(1.15)' : 'scale(1)',
                           transition: 'all 150ms ease',
-                          padding: '0.2rem',
+                          padding: '0.35rem',
                           outline: 'none',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
                         }}
                       >
-                        ★
+                        <Star
+                          size={36}
+                          fill={isFilled ? '#F59E0B' : 'transparent'}
+                          color={isFilled ? '#F59E0B' : '#CBD5E1'}
+                          strokeWidth={1.75}
+                        />
                       </button>
                     );
                   })}
@@ -535,7 +559,13 @@ export const StudentFeedback: React.FC<StudentFeedbackProps> = ({ initialGrievan
                               transition: 'all 120ms ease',
                             }}
                           >
-                            {isSelected ? `✓ ${chip}` : chip}
+                            {isSelected ? (
+                              <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                                <Check size={12} /> {chip}
+                              </span>
+                            ) : (
+                              chip
+                            )}
                           </button>
                         );
                       })}
@@ -562,7 +592,7 @@ export const StudentFeedback: React.FC<StudentFeedbackProps> = ({ initialGrievan
                       size="lg"
                       pill
                       isLoading={isSubmitting}
-                      rightIcon="🚀"
+                      rightIcon={<Send size={16} />}
                     >
                       {isSubmitting ? 'Submitting Feedback...' : 'Submit Resolution Feedback'}
                     </Button>

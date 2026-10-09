@@ -27,6 +27,7 @@ import {
   Eye,
   SlidersHorizontal,
 } from '../../components/ui/Icons';
+import { AlertTriangle, AlertOctagon } from 'lucide-react';
 
 type SortField = 'slaPercentage' | 'resolutionRate' | 'avgResolutionHours' | 'totalGrievances' | 'open';
 type SortDirection = 'asc' | 'desc';
@@ -129,11 +130,29 @@ export const DepartmentDashboardPage: React.FC = () => {
   const getStatusBadge = (status: DepartmentHealthStatus) => {
     switch (status) {
       case 'HEALTHY':
-        return <Badge variant="success" size="sm">● Healthy</Badge>;
+        return (
+          <Badge variant="success" size="sm">
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: '3px' }}>
+              <CheckCircle2 size={11} /> Healthy
+            </span>
+          </Badge>
+        );
       case 'ATTENTION':
-        return <Badge variant="warning" size="sm">▲ Attention</Badge>;
+        return (
+          <Badge variant="warning" size="sm">
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: '3px' }}>
+              <AlertTriangle size={11} /> Attention
+            </span>
+          </Badge>
+        );
       case 'CRITICAL':
-        return <Badge variant="danger" size="sm">✖ Critical</Badge>;
+        return (
+          <Badge variant="danger" size="sm">
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: '3px' }}>
+              <AlertOctagon size={11} /> Critical
+            </span>
+          </Badge>
+        );
       default:
         return <Badge variant="neutral" size="sm">{status}</Badge>;
     }

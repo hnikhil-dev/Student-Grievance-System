@@ -1,6 +1,18 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import {
+  Landmark,
+  ShieldCheck,
+  GraduationCap,
+  UserCheck,
+  Mail,
+  Lock,
+  UserPlus,
+  ArrowRight,
+  ArrowLeft,
+  Check,
+} from 'lucide-react';
 import { Button } from '../ui/Button';
 import { Input } from '../ui/Input';
 import { Card } from '../ui/Card';
@@ -296,7 +308,7 @@ export const LoginPage: React.FC = () => {
                 border: '3px solid #2D6A4F',
               }}
             >
-              🏛️
+              <Landmark size={28} />
             </div>
             <div>
               <div style={{ fontSize: '0.85rem', fontWeight: 800, color: '#1B4332', letterSpacing: '0.05em', textTransform: 'uppercase' }}>
@@ -331,13 +343,13 @@ export const LoginPage: React.FC = () => {
           {/* Institutional Security & Value Highlights */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', marginTop: '0.5rem' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', fontSize: '0.9375rem', fontWeight: 600, color: '#1B4332' }}>
-              <span style={{ color: '#059669', fontSize: '1.1rem' }}>✓</span> Secure Student Access & Encrypted Session
+              <Check size={18} color="#059669" /> Secure Student Access & Encrypted Session
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', fontSize: '0.9375rem', fontWeight: 600, color: '#1B4332' }}>
-              <span style={{ color: '#059669', fontSize: '1.1rem' }}>✓</span> 100% Student Closed-Loop Verification Guarantee
+              <Check size={18} color="#059669" /> 100% Student Closed-Loop Verification Guarantee
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', fontSize: '0.9375rem', fontWeight: 600, color: '#1B4332' }}>
-              <span style={{ color: '#059669', fontSize: '1.1rem' }}>✓</span> AI Priority Scoring & Realtime SLA Timers
+              <Check size={18} color="#059669" /> AI Priority Scoring & Realtime SLA Timers
             </div>
           </div>
 
@@ -355,7 +367,7 @@ export const LoginPage: React.FC = () => {
                 gap: '0.35rem',
               }}
             >
-              ← Back to Institutional Overview
+              <ArrowLeft size={16} /> Back to Institutional Overview
             </a>
           </div>
         </div>
@@ -389,7 +401,7 @@ export const LoginPage: React.FC = () => {
                   fontSize: '1.75rem',
                 }}
               >
-                🌿
+                <ShieldCheck size={32} color="#1B4332" />
               </div>
               <h2 style={{ margin: 0, fontSize: '1.75rem', fontWeight: 800, color: '#1B4332' }}>
                 Welcome Back!
@@ -411,8 +423,8 @@ export const LoginPage: React.FC = () => {
                   textAlign: 'center',
                 }}
               >
-                <div style={{ fontSize: '0.875rem', fontWeight: 700, color: '#1B4332' }}>
-                  ✓ Active Session Detected
+                <div style={{ fontSize: '0.875rem', fontWeight: 700, color: '#1B4332', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.35rem' }}>
+                  <Check size={16} color="#1B4332" /> Active Session Detected
                 </div>
                 <div style={{ fontSize: '0.8125rem', color: '#2D6A4F', marginTop: '0.25rem' }}>
                   Signed in as <strong>{alreadyAuthUser.name}</strong> ({alreadyAuthUser.studentId})
@@ -423,8 +435,9 @@ export const LoginPage: React.FC = () => {
                     size="sm"
                     pill
                     onClick={() => (window.location.href = '/student/page')}
+                    rightIcon={<ArrowRight size={14} />}
                   >
-                    Go to Dashboard →
+                    Go to Dashboard
                   </Button>
                   <Button
                     variant="outline"
@@ -445,7 +458,7 @@ export const LoginPage: React.FC = () => {
             <div
               style={{
                 display: 'grid',
-                gridTemplateColumns: '1fr 1fr',
+                gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))',
                 gap: '0.5rem',
                 marginBottom: '1.5rem',
               }}
@@ -465,11 +478,11 @@ export const LoginPage: React.FC = () => {
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  gap: '0.4rem',
+                  gap: '0.5rem',
                   transition: 'all 200ms ease',
                 }}
               >
-                <span>🎓</span> Student Login →
+                <GraduationCap size={16} /> Student Login
               </button>
 
               <button
@@ -487,11 +500,11 @@ export const LoginPage: React.FC = () => {
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  gap: '0.4rem',
+                  gap: '0.5rem',
                   transition: 'all 200ms ease',
                 }}
               >
-                <span>👤</span> Admin Login →
+                <UserCheck size={16} /> Admin Login
               </button>
             </div>
 
@@ -537,7 +550,7 @@ export const LoginPage: React.FC = () => {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="e.g. student.alex@campus.edu"
-                  leftIcon="✉️"
+                  leftIcon={<Mail size={16} />}
                   aria-invalid={!!validationError || !!authError}
                 />
               </div>
@@ -569,7 +582,7 @@ export const LoginPage: React.FC = () => {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••"
-                  leftIcon="🔒"
+                  leftIcon={<Lock size={16} />}
                   isPasswordToggle
                   aria-invalid={!!validationError || !!authError}
                 />
@@ -597,9 +610,9 @@ export const LoginPage: React.FC = () => {
                 pill
                 fullWidth
                 isLoading={isLoading}
-                rightIcon="→"
+                rightIcon={<ArrowRight size={16} />}
               >
-                {isLoading ? 'Authenticating...' : 'Login →'}
+                {isLoading ? 'Authenticating...' : 'Login'}
               </Button>
             </form>
 
@@ -619,7 +632,7 @@ export const LoginPage: React.FC = () => {
               fullWidth
               disabled={isLoading}
               onClick={() => handleQuickDemoLogin(role)}
-              leftIcon="👤+"
+              leftIcon={<UserPlus size={16} />}
             >
               Instant Demo Access ({role === 'STUDENT' ? 'Student Alex' : 'Admin Master'})
             </Button>

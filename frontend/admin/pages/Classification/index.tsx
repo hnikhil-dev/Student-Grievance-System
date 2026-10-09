@@ -25,6 +25,7 @@ import {
   ChevronRight,
   RefreshCw,
 } from '../../components/ui/Icons';
+import { Search } from 'lucide-react';
 
 export const ClassificationPage: React.FC = () => {
   const [grievances, setGrievances] = useState<ClassifiedGrievanceItem[]>(MOCK_CLASSIFIED_GRIEVANCES);
@@ -503,7 +504,7 @@ export const ClassificationPage: React.FC = () => {
 
             {/* AI Classification vs Manual Edit */}
             {!isEditing ? (
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '0.75rem' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))', gap: '0.75rem' }}>
                 <div style={{ border: `1px solid ${colors.border}`, padding: '0.75rem', borderRadius: radii.md }}>
                   <div style={{ fontSize: typography.fontSize.xs, color: colors.secondaryText }}>Category:</div>
                   <div style={{ fontWeight: 600, color: colors.deepForestGreen, marginTop: '0.15rem' }}>{activeItem.category}</div>
@@ -571,8 +572,8 @@ export const ClassificationPage: React.FC = () => {
 
             {/* Explainable AI Rationale */}
             <div>
-              <div style={{ fontWeight: 600, color: colors.deepForestGreen, marginBottom: '0.5rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-                <span>🔍</span> Why AI Classified This:
+              <div style={{ fontWeight: 600, color: colors.deepForestGreen, marginBottom: '0.5rem', display: 'flex', alignItems: 'center', gap: '0.45rem' }}>
+                <Search size={14} color={colors.deepForestGreen} /> Why AI Classified This:
               </div>
               <ul style={{ margin: '0 0 0.85rem 0', paddingLeft: '1.25rem', color: colors.secondaryText, lineHeight: 1.5 }}>
                 {activeItem.reasons.map((r, i) => (

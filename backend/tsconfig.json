@@ -26,7 +26,8 @@
       "@admin/*": ["../frontend/admin/*"],
       "@lib/*": ["../frontend/lib/*"],
       "@supabase/supabase-js": ["./node_modules/@supabase/supabase-js"],
-      "@supabase/ssr": ["./node_modules/@supabase/ssr"]
+      "@supabase/ssr": ["./node_modules/@supabase/ssr"],
+      "lucide-react": ["./node_modules/lucide-react"]
     }
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "../frontend/**/*.ts", "../frontend/**/*.tsx"],

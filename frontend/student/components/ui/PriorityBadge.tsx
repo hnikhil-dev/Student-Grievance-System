@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { PriorityLevel, BadgeSize } from '../../types/design-system';
+import { ArrowDown, Clock, AlertTriangle, AlertOctagon } from 'lucide-react';
 
 export interface PriorityBadgeProps {
   priority: PriorityLevel | string;
@@ -16,19 +17,20 @@ export const PriorityBadge: React.FC<PriorityBadgeProps> = ({
 }) => {
   const normPriority = (priority || 'MEDIUM').toUpperCase() as PriorityLevel;
 
-  const priorityConfig: Record<PriorityLevel, { label: string; bg: string; text: string; border: string; icon: string }> = {
-    LOW: { label: 'Low', bg: '#F1F5F9', text: '#475569', border: '#CBD5E1', icon: '🟢' },
-    MEDIUM: { label: 'Medium', bg: '#E0F2FE', text: '#0369A1', border: '#BAE6FD', icon: '🔵' },
-    HIGH: { label: 'High', bg: '#FEF3C7', text: '#B45309', border: '#FDE68A', icon: '🟠' },
-    CRITICAL: { label: 'Critical', bg: '#FEE2E2', text: '#B91C1C', border: '#FCA5A5', icon: '🔴' },
+  const priorityConfig: Record<PriorityLevel, { label: string; bg: string; text: string; border: string; Icon: React.ElementType }> = {
+    LOW: { label: 'Low', bg: '#F1F5F9', text: '#475569', border: '#CBD5E1', Icon: ArrowDown },
+    MEDIUM: { label: 'Medium', bg: '#E0F2FE', text: '#0369A1', border: '#BAE6FD', Icon: Clock },
+    HIGH: { label: 'High', bg: '#FEF3C7', text: '#B45309', border: '#FDE68A', Icon: AlertTriangle },
+    CRITICAL: { label: 'Critical', bg: '#FEE2E2', text: '#B91C1C', border: '#FCA5A5', Icon: AlertOctagon },
   };
 
   const config = priorityConfig[normPriority] || priorityConfig.MEDIUM;
+  const IconComponent = config.Icon;
 
-  const sizeStyles: Record<BadgeSize, { padding: string; font: string }> = {
-    sm: { padding: '0.2rem 0.5rem', font: '0.75rem' },
-    md: { padding: '0.3rem 0.75rem', font: '0.8125rem' },
-    lg: { padding: '0.45rem 1rem', font: '0.875rem' },
+  const sizeStyles: Record<BadgeSize, { padding: string; font: string; iconSize: number }> = {
+    sm: { padding: '0.2rem 0.5rem', font: '0.75rem', iconSize: 11 },
+    md: { padding: '0.3rem 0.75rem', font: '0.8125rem', iconSize: 13 },
+    lg: { padding: '0.45rem 1rem', font: '0.875rem', iconSize: 15 },
   };
 
   const sStyle = sizeStyles[size];
@@ -49,7 +51,7 @@ export const PriorityBadge: React.FC<PriorityBadgeProps> = ({
         whiteSpace: 'nowrap',
       }}
     >
-      <span>{config.icon}</span>
+      <IconComponent size={sStyle.iconSize} strokeWidth={2.2} />
       <span>{config.label}</span>
       {score !== undefined && (
         <span
@@ -59,7 +61,9 @@ export const PriorityBadge: React.FC<PriorityBadgeProps> = ({
             borderRadius: '9999px',
             backgroundColor: 'rgba(0,0,0,0.06)',
             fontSize: '0.7rem',
+            fontWeight: 800,
           }}
+          title={`Priority Score: ${score}/100`}
         >
           {score}
         </span>

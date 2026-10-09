@@ -1,4 +1,5 @@
 import React from 'react';
+import { AlertTriangle } from 'lucide-react';
 import { colors, typography, radii } from '../../tokens';
 import { Button } from './Button';
 
@@ -45,11 +46,10 @@ export const ErrorState: React.FC<ErrorStateProps> = ({
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          fontSize: '1.25rem',
           marginBottom: '0.75rem',
         }}
       >
-        ⚠️
+        <AlertTriangle size={22} color={colors.danger} />
       </div>
 
       <h4

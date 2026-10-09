@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import { Landmark, Bell, GraduationCap } from 'lucide-react';
 
 export interface NavbarProps {
   studentName?: string;
@@ -67,7 +68,7 @@ export const Navbar: React.FC<NavbarProps> = ({
               flexShrink: 0,
             }}
           >
-            🏛️
+            <Landmark size={22} />
           </div>
           <div>
             <div className="sg-nav-institution" style={{ fontSize: '0.7rem', fontWeight: 800, color: '#1B4332', letterSpacing: '0.04em', textTransform: 'uppercase' }}>
@@ -144,12 +145,11 @@ export const Navbar: React.FC<NavbarProps> = ({
               alignItems: 'center',
               justifyContent: 'center',
               cursor: 'pointer',
-              fontSize: '1rem',
               flexShrink: 0,
             }}
             title="Notifications"
           >
-            🔔
+            <Bell size={18} color="#374151" />
             {unreadNotificationsCount > 0 && (
               <span
                 style={{
@@ -203,7 +203,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                 flexShrink: 0,
               }}
             >
-              🎓
+              <GraduationCap size={16} />
             </div>
             <span style={{ fontSize: '0.78125rem', fontWeight: 700, color: '#1B4332', whiteSpace: 'nowrap' }}>
               {studentName.split(' ')[0]}

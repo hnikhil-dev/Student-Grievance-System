@@ -912,7 +912,7 @@ export const CommandCenterPage: React.FC = () => {
           </CardHeader>
           <CardContent>
             {/* 3 Main SLA Status Cards */}
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '0.75rem', textAlign: 'center', marginBottom: '1.25rem' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))', gap: '0.75rem', textAlign: 'center', marginBottom: '1.25rem' }}>
               {/* Healthy */}
               <div
                 style={{
@@ -1507,7 +1507,7 @@ export const CommandCenterPage: React.FC = () => {
             <div
               style={{
                 display: 'grid',
-                gridTemplateColumns: '1fr 1fr',
+                gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))',
                 gap: '0.75rem',
                 backgroundColor: colors.adminBackground,
                 padding: '0.85rem',

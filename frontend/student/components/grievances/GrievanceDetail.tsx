@@ -28,6 +28,31 @@ import {
 import { useRealtimeGrievances } from '@lib/useRealtime';
 import { getDynamicAuthHeaders } from '@lib/api';
 import { GrievanceStatusType, PriorityLevel, TimelineItem } from '../../types/design-system';
+import {
+  Printer,
+  ArrowLeft,
+  ArrowRight,
+  FolderOpen,
+  Lock,
+  User,
+  Landmark,
+  Calendar,
+  RefreshCw,
+  AlertTriangle,
+  AlertOctagon,
+  Check,
+  CheckCircle2,
+  X,
+  Image as ImageIcon,
+  FileText,
+  Paperclip,
+  Send,
+  GraduationCap,
+  Star,
+  Lightbulb,
+  Clock,
+  ExternalLink,
+} from 'lucide-react';
 
 interface CommentAuthor {
   id: string;
@@ -267,8 +292,8 @@ export const GrievanceDetail: React.FC<GrievanceDetailProps> = ({ id: propId }) 
       if (json.success) {
         setActionSuccessMessage(
           accepted
-            ? '✓ Resolution accepted! Grievance has been officially closed.'
-            : '✓ Grievance reopened and returned to the responsible department officer.'
+            ? 'Resolution accepted! Grievance has been officially closed.'
+            : 'Grievance reopened and returned to the responsible department officer.'
         );
         setIsReopenModalOpen(false);
         setReopenReason('');
@@ -362,7 +387,7 @@ export const GrievanceDetail: React.FC<GrievanceDetailProps> = ({ id: propId }) 
             variant="ghost"
             size="sm"
             onClick={() => (window.location.href = '/student/grievances')}
-            leftIcon="←"
+            leftIcon={<ArrowLeft size={16} />}
           >
             Back to My Grievances
           </Button>
@@ -374,7 +399,7 @@ export const GrievanceDetail: React.FC<GrievanceDetailProps> = ({ id: propId }) 
                 size="sm"
                 pill
                 onClick={() => window.print()}
-                leftIcon="🖨️"
+                leftIcon={<Printer size={16} />}
               >
                 Print Ticket
               </Button>
@@ -435,9 +460,13 @@ export const GrievanceDetail: React.FC<GrievanceDetailProps> = ({ id: propId }) 
                         color: '#374151',
                         padding: '0.3rem 0.75rem',
                         borderRadius: '8px',
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '5px',
                       }}
                     >
-                      📂 {grievance.category}
+                      <FolderOpen size={13} />
+                      {grievance.category}
                     </span>
 
                     {grievance.is_confidential && (
@@ -449,9 +478,13 @@ export const GrievanceDetail: React.FC<GrievanceDetailProps> = ({ id: propId }) 
                           color: '#991B1B',
                           padding: '0.25rem 0.6rem',
                           borderRadius: '6px',
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: '4px',
                         }}
                       >
-                        🔒 Confidential
+                        <Lock size={12} />
+                        Confidential
                       </span>
                     )}
 
@@ -464,9 +497,13 @@ export const GrievanceDetail: React.FC<GrievanceDetailProps> = ({ id: propId }) 
                           color: '#4B5563',
                           padding: '0.25rem 0.6rem',
                           borderRadius: '6px',
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: '4px',
                         }}
                       >
-                        👤 Anonymous
+                        <User size={12} />
+                        Anonymous
                       </span>
                     )}
                   </div>
@@ -488,10 +525,16 @@ export const GrievanceDetail: React.FC<GrievanceDetailProps> = ({ id: propId }) 
                   </h1>
 
                   <div style={{ display: 'flex', alignItems: 'center', gap: '1.25rem', flexWrap: 'wrap', fontSize: '0.8125rem', color: '#6B7280' }}>
-                    <span>🏛️ Department: <strong>{grievance.department?.name || 'Assigned Department'}</strong></span>
-                    <span>📅 Submitted: <strong>{formatDate(grievance.created_at)}</strong></span>
+                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: '5px' }}>
+                      <Landmark size={14} color="#1B4332" /> Department: <strong>{grievance.department?.name || 'Assigned Department'}</strong>
+                    </span>
+                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: '5px' }}>
+                      <Calendar size={14} /> Submitted: <strong>{formatDate(grievance.created_at)}</strong>
+                    </span>
                     {grievance.updated_at && (
-                      <span>🔄 Last Updated: <strong>{formatDate(grievance.updated_at)}</strong></span>
+                      <span style={{ display: 'inline-flex', alignItems: 'center', gap: '5px' }}>
+                        <RefreshCw size={14} /> Last Updated: <strong>{formatDate(grievance.updated_at)}</strong>
+                      </span>
                     )}
                   </div>
 
@@ -573,12 +616,20 @@ export const GrievanceDetail: React.FC<GrievanceDetailProps> = ({ id: propId }) 
                 <span style={{ fontSize: '0.75rem', color: isVerificationPending ? '#92400E' : '#166534', fontWeight: 700, textTransform: 'uppercase', display: 'block', marginBottom: '0.25rem' }}>
                   4. What Do I Need To Do?
                 </span>
-                <span style={{ fontSize: '0.875rem', fontWeight: 700, color: isVerificationPending ? '#B45309' : '#15803D', lineHeight: 1.4, display: 'block' }}>
-                  {isVerificationPending
-                    ? '⚠️ Review & Verify Resolution'
-                    : grievance.status === 'CLOSED'
-                    ? '✓ No action needed. Ticket closed.'
-                    : '⏳ Awaiting Department Action'}
+                <span style={{ fontSize: '0.875rem', fontWeight: 700, color: isVerificationPending ? '#B45309' : '#15803D', lineHeight: 1.4, display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+                  {isVerificationPending ? (
+                    <>
+                      <AlertTriangle size={15} /> Review & Verify Resolution
+                    </>
+                  ) : grievance.status === 'CLOSED' ? (
+                    <>
+                      <Check size={15} /> No action needed. Ticket closed.
+                    </>
+                  ) : (
+                    <>
+                      <Clock size={15} /> Awaiting Department Action
+                    </>
+                  )}
                 </span>
               </div>
             </div>
@@ -601,8 +652,8 @@ export const GrievanceDetail: React.FC<GrievanceDetailProps> = ({ id: propId }) 
                 }}
               >
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.5rem' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                    <span style={{ fontSize: '1.5rem' }}>💡</span>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
+                    <Lightbulb size={24} color="#D97706" />
                     <div>
                       <h3 style={{ margin: 0, fontSize: '1.15rem', fontWeight: 800, color: '#92400E' }}>
                         Resolution Proposed by Officer - Verification Required
@@ -643,7 +694,7 @@ export const GrievanceDetail: React.FC<GrievanceDetailProps> = ({ id: propId }) 
                     pill
                     isLoading={isSubmittingVerify}
                     onClick={() => handleVerifyResolution(true)}
-                    rightIcon="✓"
+                    rightIcon={<Check size={16} />}
                   >
                     Accept & Close
                   </Button>
@@ -656,7 +707,7 @@ export const GrievanceDetail: React.FC<GrievanceDetailProps> = ({ id: propId }) 
                       setVerifyError(null);
                       setIsReopenModalOpen(true);
                     }}
-                    leftIcon="✕"
+                    leftIcon={<X size={16} />}
                   >
                     Reject & Reopen
                   </Button>
@@ -681,7 +732,7 @@ export const GrievanceDetail: React.FC<GrievanceDetailProps> = ({ id: propId }) 
                 }}
               >
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                  <span style={{ fontSize: '1.75rem' }}>⭐</span>
+                  <Star size={26} color="#059669" />
                   <div>
                     <h4 style={{ margin: 0, fontSize: '1.05rem', fontWeight: 800, color: '#065F46' }}>
                       How was your resolution experience?
@@ -697,7 +748,7 @@ export const GrievanceDetail: React.FC<GrievanceDetailProps> = ({ id: propId }) 
                   size="sm"
                   pill
                   onClick={() => (window.location.href = `/student/feedback?grievanceId=${grievance.id}`)}
-                  rightIcon="⭐"
+                  rightIcon={<Star size={16} />}
                 >
                   Rate & Review Resolution
                 </Button>
@@ -797,7 +848,9 @@ export const GrievanceDetail: React.FC<GrievanceDetailProps> = ({ id: propId }) 
                               }}
                             >
                               <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', overflow: 'hidden' }}>
-                                <span style={{ fontSize: '1.5rem' }}>{isImg ? '🖼️' : isPdf ? '📄' : '📎'}</span>
+                                <div style={{ width: '38px', height: '38px', borderRadius: '8px', backgroundColor: '#FFFFFF', border: '1px solid #E5E7EB', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                                  {isImg ? <ImageIcon size={20} color="#2D6A4F" /> : isPdf ? <FileText size={20} color="#DC2626" /> : <Paperclip size={20} color="#4B5563" />}
+                                </div>
                                 <div>
                                   <span style={{ fontWeight: 700, fontSize: '0.875rem', color: '#1F2937', display: 'block' }}>
                                     {att.file_name}
@@ -821,9 +874,12 @@ export const GrievanceDetail: React.FC<GrievanceDetailProps> = ({ id: propId }) 
                                   backgroundColor: '#E8F5E9',
                                   borderRadius: '6px',
                                   border: '1px solid #D8F3DC',
+                                  display: 'inline-flex',
+                                  alignItems: 'center',
+                                  gap: '4px',
                                 }}
                               >
-                                View File ↗
+                                View File <ExternalLink size={12} />
                               </a>
                             </div>
                           );
@@ -884,7 +940,15 @@ export const GrievanceDetail: React.FC<GrievanceDetailProps> = ({ id: propId }) 
                                       color: isStaff ? '#FFFFFF' : '#374151',
                                     }}
                                   >
-                                    {isStaff ? '🏛️ Officer' : '🎓 Student'}
+                                    {isStaff ? (
+                                      <span style={{ display: 'inline-flex', alignItems: 'center', gap: '3px' }}>
+                                        <Landmark size={11} /> Officer
+                                      </span>
+                                    ) : (
+                                      <span style={{ display: 'inline-flex', alignItems: 'center', gap: '3px' }}>
+                                        <GraduationCap size={11} /> Student
+                                      </span>
+                                    )}
                                   </span>
                                 </div>
                                 <span style={{ fontSize: '0.75rem', color: '#6B7280' }}>
@@ -925,7 +989,7 @@ export const GrievanceDetail: React.FC<GrievanceDetailProps> = ({ id: propId }) 
                           disabled={!newCommentMessage.trim() || grievance.status === 'CLOSED'}
                           isLoading={isSubmittingComment}
                           onClick={handlePostComment}
-                          rightIcon="🚀"
+                          rightIcon={<Send size={15} />}
                         >
                           Post Message
                         </Button>
@@ -955,8 +1019,8 @@ export const GrievanceDetail: React.FC<GrievanceDetailProps> = ({ id: propId }) 
 
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                         <span style={{ fontSize: '0.8125rem', color: '#6B7280' }}>Target Window:</span>
-                        <strong style={{ fontSize: '0.875rem', color: '#111827' }}>
-                          ⏱ {grievance.sla_hours || 24} Hours
+                        <strong style={{ fontSize: '0.875rem', color: '#111827', display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                          <Clock size={13} /> {grievance.sla_hours || 24} Hours
                         </strong>
                       </div>
 
@@ -1011,10 +1075,9 @@ export const GrievanceDetail: React.FC<GrievanceDetailProps> = ({ id: propId }) 
                             display: 'flex',
                             alignItems: 'center',
                             justifyContent: 'center',
-                            fontSize: '1.3rem',
                           }}
                         >
-                          🏛️
+                          <Landmark size={22} color="#1B4332" />
                         </div>
                         <div>
                           <strong style={{ fontSize: '0.9375rem', color: '#111827', display: 'block' }}>
@@ -1030,7 +1093,7 @@ export const GrievanceDetail: React.FC<GrievanceDetailProps> = ({ id: propId }) 
                         <span style={{ color: '#6B7280', display: 'block', marginBottom: '0.25rem' }}>Assigned Officer:</span>
                         {grievance.assignee ? (
                           <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                            <span>👤</span>
+                            <User size={16} color="#4B5563" />
                             <div>
                               <strong style={{ color: '#111827' }}>{grievance.assignee.full_name}</strong>
                               <span style={{ fontSize: '0.75rem', color: '#6B7280', display: 'block' }}>{grievance.assignee.email}</span>

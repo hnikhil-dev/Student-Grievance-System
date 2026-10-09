@@ -103,7 +103,7 @@ export const MOCK_COMMAND_CENTER_DATA = {
       value: '12,482',
       numericValue: 12482,
       subtitle: 'Across all university sectors',
-      icon: '📋',
+      icon: 'file-text',
       comparison: '+12.4% from last period',
       isPositive: true,
       accentColor: '#427B65',
@@ -113,7 +113,7 @@ export const MOCK_COMMAND_CENTER_DATA = {
       value: '348',
       numericValue: 348,
       subtitle: 'Currently in active resolution pipelines',
-      icon: '⏳',
+      icon: 'inbox',
       comparison: '-4.2% from last period',
       isPositive: true, // Lower open is good
       accentColor: '#6A9282',
@@ -123,7 +123,7 @@ export const MOCK_COMMAND_CENTER_DATA = {
       value: '18',
       numericValue: 18,
       subtitle: '14 approaching deadline • 4 breached',
-      icon: '⏱️',
+      icon: 'clock',
       comparison: '+2 from yesterday',
       isPositive: false, // More at risk is bad
       accentColor: '#C99A4A',
@@ -133,7 +133,7 @@ export const MOCK_COMMAND_CENTER_DATA = {
       value: '7',
       numericValue: 7,
       subtitle: 'Level-2 leadership intervention required',
-      icon: '📣',
+      icon: 'alert-triangle',
       comparison: '+1 from yesterday',
       isPositive: false, // More escalations is bad
       accentColor: '#C86B62',

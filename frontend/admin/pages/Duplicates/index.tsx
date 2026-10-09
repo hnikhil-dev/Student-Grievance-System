@@ -23,6 +23,7 @@ import {
   ChevronRight,
   Clock,
 } from '../../components/ui/Icons';
+import { Check } from 'lucide-react';
 
 export const DuplicatesPage: React.FC = () => {
   const [pairs, setPairs] = useState<DuplicatePairItem[]>(MOCK_DUPLICATE_PAIRS);
@@ -454,7 +455,7 @@ export const DuplicatesPage: React.FC = () => {
             </div>
 
             {/* Side-by-Side Comparison Grid */}
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1rem' }}>
               {/* Primary Grievance A */}
               <div style={{ border: `1px solid ${colors.primaryGreen}`, borderRadius: radii.md, padding: '1rem', backgroundColor: colors.cardSurface }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
@@ -519,7 +520,9 @@ export const DuplicatesPage: React.FC = () => {
               </div>
             ) : (
               <div style={{ backgroundColor: '#E7F4EE', padding: '0.65rem 1rem', borderRadius: radii.md, color: colors.success, fontSize: typography.fontSize.xs, fontWeight: 600, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <span>✓ Merged into parent incident by {comparingPair.reviewedBy} at {comparingPair.mergedAt}</span>
+                <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                  <Check size={14} /> Merged into parent incident by {comparingPair.reviewedBy} at {comparingPair.mergedAt}
+                </span>
                 <Button variant="secondary" size="sm" onClick={() => setComparingPair(null)}>Close</Button>
               </div>
             )}

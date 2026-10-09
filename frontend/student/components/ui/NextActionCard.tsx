@@ -1,6 +1,21 @@
 'use client';
 
 import React from 'react';
+import {
+  Settings,
+  ClipboardList,
+  Star,
+  Clock,
+  Search,
+  User,
+  Wrench,
+  RotateCcw,
+  CheckCircle2,
+  Info,
+  AlertTriangle,
+  AlertOctagon,
+  ArrowRight,
+} from 'lucide-react';
 
 export type ActionActor = 'STUDENT' | 'DEPARTMENT' | 'SYSTEM' | 'COMPLETED';
 
@@ -30,7 +45,7 @@ export const NextActionCard: React.FC<NextActionCardProps> = ({
   let badgeLabel = 'Department Action';
   let title = 'Processing Grievance';
   let description = `${departmentName} is actively reviewing this ticket.`;
-  let icon = '⚙️';
+  let icon: React.ReactNode = <Settings size={18} />;
   let themeColor = '#1D4ED8'; // Blue
   let bgGradient = 'linear-gradient(135deg, #EFF6FF 0%, #DBEAFE 100%)';
   let borderColor = '#BFDBFE';
@@ -43,7 +58,7 @@ export const NextActionCard: React.FC<NextActionCardProps> = ({
     title = 'Review Proposed Resolution';
     description =
       'The department has submitted a resolution. Please inspect their resolution notes and confirm if the issue is solved or request a reopen.';
-    icon = '📋';
+    icon = <ClipboardList size={18} />;
     themeColor = '#D97706'; // Amber
     bgGradient = 'linear-gradient(135deg, #FFFBEB 0%, #FEF3C7 100%)';
     borderColor = '#FDE68A';
@@ -53,7 +68,7 @@ export const NextActionCard: React.FC<NextActionCardProps> = ({
     title = 'Verify Resolution & Provide Feedback';
     description =
       'Confirmation from you is needed to mark this grievance officially closed and record your experience feedback.';
-    icon = '⭐';
+    icon = <Star size={18} />;
     themeColor = '#D97706';
     bgGradient = 'linear-gradient(135deg, #FFFBEB 0%, #FEF3C7 100%)';
     borderColor = '#FDE68A';
@@ -62,7 +77,7 @@ export const NextActionCard: React.FC<NextActionCardProps> = ({
     badgeLabel = 'Department Action';
     title = 'Awaiting Officer Triage';
     description = `${departmentName} administration is evaluating parameters to assign the designated handling officer.`;
-    icon = '⏳';
+    icon = <Clock size={18} />;
     themeColor = '#4F46E5';
     bgGradient = 'linear-gradient(135deg, #EEF2FF 0%, #E0E7FF 100%)';
     borderColor = '#C7D2FE';
@@ -71,7 +86,7 @@ export const NextActionCard: React.FC<NextActionCardProps> = ({
     badgeLabel = 'Department Action';
     title = 'Preliminary Investigation';
     description = `${assigneeName ? `${assigneeName} is` : 'Assigned officer is'} examining ticket evidence, location context, and urgency triggers.`;
-    icon = '🔍';
+    icon = <Search size={18} />;
     themeColor = '#2563EB';
     bgGradient = 'linear-gradient(135deg, #EFF6FF 0%, #DBEAFE 100%)';
     borderColor = '#BFDBFE';
@@ -80,7 +95,7 @@ export const NextActionCard: React.FC<NextActionCardProps> = ({
     badgeLabel = 'Department Action';
     title = `Assigned to ${assigneeName || 'Officer'}`;
     description = `Ticket has been queued for immediate investigation by ${assigneeName || 'the assigned officer'}.`;
-    icon = '👤';
+    icon = <User size={18} />;
     themeColor = '#2563EB';
     bgGradient = 'linear-gradient(135deg, #EFF6FF 0%, #DBEAFE 100%)';
     borderColor = '#BFDBFE';
@@ -89,7 +104,7 @@ export const NextActionCard: React.FC<NextActionCardProps> = ({
     badgeLabel = 'Department Action';
     title = 'Active Resolution in Progress';
     description = `${departmentName} is actively working on corrective action. Progress milestones will appear on your timeline.`;
-    icon = '🔧';
+    icon = <Wrench size={18} />;
     themeColor = '#2563EB';
     bgGradient = 'linear-gradient(135deg, #EFF6FF 0%, #DBEAFE 100%)';
     borderColor = '#BFDBFE';
@@ -99,7 +114,7 @@ export const NextActionCard: React.FC<NextActionCardProps> = ({
     title = 'Reopened Ticket Re-investigation';
     description =
       'You requested further resolution. The department has been notified to re-evaluate the corrective action.';
-    icon = '🔄';
+    icon = <RotateCcw size={18} />;
     themeColor = '#EA580C';
     bgGradient = 'linear-gradient(135deg, #FFF7ED 0%, #FFEDD5 100%)';
     borderColor = '#FED7AA';
@@ -108,7 +123,7 @@ export const NextActionCard: React.FC<NextActionCardProps> = ({
     badgeLabel = 'Lifecycle Complete';
     title = 'Grievance Resolved & Verified';
     description = 'The issue has been addressed and confirmed. All audit logs and history are archived.';
-    icon = '✅';
+    icon = <CheckCircle2 size={18} />;
     themeColor = '#059669';
     bgGradient = 'linear-gradient(135deg, #ECFDF5 0%, #D1FAE5 100%)';
     borderColor = '#A7F3D0';
@@ -117,7 +132,7 @@ export const NextActionCard: React.FC<NextActionCardProps> = ({
     badgeLabel = 'Case Concluded';
     title = 'Grievance Not Accepted';
     description = 'The department has provided a rationale why this request cannot proceed under standard procedures.';
-    icon = 'ℹ️';
+    icon = <Info size={18} />;
     themeColor = '#64748B';
     bgGradient = 'linear-gradient(135deg, #F8FAFC 0%, #F1F5F9 100%)';
     borderColor = '#E2E8F0';
@@ -139,7 +154,7 @@ export const NextActionCard: React.FC<NextActionCardProps> = ({
       }}
     >
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.5rem' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', flexWrap: 'wrap' }}>
           <span
             style={{
               padding: '0.25rem 0.65rem',
@@ -155,8 +170,9 @@ export const NextActionCard: React.FC<NextActionCardProps> = ({
           >
             {badgeLabel}
           </span>
-          <h4 style={{ margin: 0, fontSize: '1rem', fontWeight: 700, color: '#0F172A' }}>
-            {icon} {title}
+          <h4 style={{ margin: 0, fontSize: '1rem', fontWeight: 700, color: '#0F172A', display: 'inline-flex', alignItems: 'center', gap: '0.45rem' }}>
+            {icon}
+            <span>{title}</span>
           </h4>
         </div>
 
@@ -177,7 +193,8 @@ export const NextActionCard: React.FC<NextActionCardProps> = ({
               border: '1px solid #FCA5A5',
             }}
           >
-            ⚠️ System: SLA Breached — Escalated
+            <AlertOctagon size={13} />
+            <span>System: SLA Breached — Escalated</span>
           </span>
         )}
         {!isSlaBreached && isSlaWarning && (
@@ -196,7 +213,8 @@ export const NextActionCard: React.FC<NextActionCardProps> = ({
               border: '1px solid #FCD34D',
             }}
           >
-            ⏱️ System: SLA Approaching Deadline
+            <Clock size={13} />
+            <span>System: SLA Approaching Deadline</span>
           </span>
         )}
       </div>
@@ -234,7 +252,8 @@ export const NextActionCard: React.FC<NextActionCardProps> = ({
               e.currentTarget.style.transform = 'translateY(0)';
             }}
           >
-            {actionButtonText || 'Review Resolution Now →'}
+            <span>{actionButtonText || 'Review Resolution Now'}</span>
+            <ArrowRight size={14} />
           </button>
         </div>
       )}

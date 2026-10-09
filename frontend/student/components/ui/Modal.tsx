@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useEffect } from 'react';
+import { X } from 'lucide-react';
 
 export interface ModalProps {
   isOpen: boolean;
@@ -100,7 +101,7 @@ export const Modal: React.FC<ModalProps> = ({
                 minHeight: '36px',
               }}
             >
-              ✕
+              <X size={20} />
             </button>
           </div>
         )}

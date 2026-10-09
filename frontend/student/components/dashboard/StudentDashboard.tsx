@@ -24,6 +24,28 @@ import {
   ErrorState,
   AiBadge,
 } from '../index';
+import {
+  Sparkles,
+  GraduationCap,
+  Activity,
+  RefreshCw,
+  Plus,
+  ArrowRight,
+  ClipboardList,
+  Inbox,
+  Settings,
+  CheckCircle2,
+  AlertTriangle,
+  AlertOctagon,
+  Bell,
+  Check,
+  X,
+  FileText,
+  Bot,
+  Zap,
+  Building2,
+  Star,
+} from 'lucide-react';
 import { useRealtimeGrievances } from '@lib/useRealtime';
 import { getDynamicAuthHeaders } from '@lib/api';
 
@@ -202,7 +224,7 @@ export const StudentDashboardContent: React.FC = () => {
 
         if (accepted) {
           setActionSuccessMessage(
-            '✓ Resolution accepted successfully! Grievance marked as CLOSED. Please rate your experience below.'
+            'Resolution accepted successfully! Grievance marked as CLOSED. Please rate your experience below.'
           );
           // Automatically open the Feedback Star Rating Dialog to complete the loop
           if (targetTicket) {
@@ -213,7 +235,7 @@ export const StudentDashboardContent: React.FC = () => {
           }
         } else {
           setActionSuccessMessage(
-            '✓ Grievance reopened and routed back to the department officer with your explanation.'
+            'Grievance reopened and routed back to the department officer with your explanation.'
           );
         }
 
@@ -246,7 +268,7 @@ export const StudentDashboardContent: React.FC = () => {
       const json = await res.json();
       if (json.success) {
         setActionSuccessMessage(
-          `✓ Thank you! Your ${feedbackRating}-star rating & feedback have been recorded for ${feedbackGrievance.ticket_number}.`
+          `Thank you! Your ${feedbackRating}-star rating & feedback have been recorded for ${feedbackGrievance.ticket_number}.`
         );
         setIsFeedbackModalOpen(false);
         setFeedbackGrievance(null);
@@ -263,11 +285,11 @@ export const StudentDashboardContent: React.FC = () => {
   };
 
   const ratingDescriptions: Record<number, string> = {
-    5: '⭐⭐⭐⭐⭐ Exceptional – Fast, attentive, and fully resolved',
-    4: '⭐⭐⭐⭐ Good – Issue resolved effectively with minor delay',
-    3: '⭐⭐⭐ Satisfactory – Acceptable resolution provided',
-    2: '⭐⭐ Needs Improvement – Slow response or partial solution',
-    1: '⭐ Unsatisfactory – Unresolved or unacceptable handling',
+    5: 'Exceptional (5/5) – Fast, attentive, and fully resolved',
+    4: 'Good (4/5) – Issue resolved effectively with minor delay',
+    3: 'Satisfactory (3/5) – Acceptable resolution provided',
+    2: 'Needs Improvement (2/5) – Slow response or partial solution',
+    1: 'Unsatisfactory (1/5) – Unresolved or unacceptable handling',
   };
 
   return (
@@ -287,7 +309,7 @@ export const StudentDashboardContent: React.FC = () => {
       >
         <div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', marginBottom: '0.35rem' }}>
-            <span style={{ fontSize: '1.75rem' }}>👋</span>
+            <Sparkles size={24} color="#2D6A4F" />
             <h1
               style={{
                 margin: 0,
@@ -305,12 +327,12 @@ export const StudentDashboardContent: React.FC = () => {
           </p>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginTop: '0.5rem', flexWrap: 'wrap' }}>
             {user?.student_id && (
-              <span style={{ fontSize: '0.75rem', backgroundColor: '#E8F5E9', color: '#1B4332', padding: '0.2rem 0.55rem', borderRadius: '6px', fontWeight: 700, border: '1px solid #D8F3DC' }}>
-                🎓 ID: {user.student_id}
+              <span style={{ fontSize: '0.75rem', backgroundColor: '#E8F5E9', color: '#1B4332', padding: '0.2rem 0.55rem', borderRadius: '6px', fontWeight: 700, border: '1px solid #D8F3DC', display: 'inline-flex', alignItems: 'center', gap: '0.3rem' }}>
+                <GraduationCap size={13} /> ID: {user.student_id}
               </span>
             )}
-            <span style={{ fontSize: '0.75rem', backgroundColor: '#F0FDF4', color: '#15803D', padding: '0.2rem 0.55rem', borderRadius: '6px', fontWeight: 600, border: '1px solid #BBF7D0' }}>
-              ⚡ Realtime WebSocket: Active
+            <span style={{ fontSize: '0.75rem', backgroundColor: '#F0FDF4', color: '#15803D', padding: '0.2rem 0.55rem', borderRadius: '6px', fontWeight: 600, border: '1px solid #BBF7D0', display: 'inline-flex', alignItems: 'center', gap: '0.3rem' }}>
+              <Activity size={13} /> Live Realtime: Active
             </span>
             <span style={{ fontSize: '0.75rem', backgroundColor: '#F3F4F6', color: '#4B5563', padding: '0.2rem 0.55rem', borderRadius: '6px', fontWeight: 600 }}>
               {user?.role ? `Role: ${user.role}` : 'Campus Student Portal'}
@@ -325,7 +347,7 @@ export const StudentDashboardContent: React.FC = () => {
             size="md"
             pill
             onClick={() => fetchGrievances(false)}
-            leftIcon="🔄"
+            leftIcon={<RefreshCw size={15} />}
           >
             Refresh Live Data
           </Button>
@@ -334,8 +356,8 @@ export const StudentDashboardContent: React.FC = () => {
             size="lg"
             pill
             onClick={() => (window.location.href = '/student/report')}
-            leftIcon="➕"
-            rightIcon="→"
+            leftIcon={<Plus size={16} />}
+            rightIcon={<ArrowRight size={16} />}
           >
             Report a New Grievance
           </Button>
@@ -373,7 +395,7 @@ export const StudentDashboardContent: React.FC = () => {
               title: 'Total Grievances',
               value: metrics.total,
               subtitle: 'All complaints logged',
-              icon: '📋',
+              icon: <ClipboardList size={18} />,
               variant: 'neutral',
             }}
           />
@@ -382,7 +404,7 @@ export const StudentDashboardContent: React.FC = () => {
               title: 'Open / Review',
               value: metrics.open,
               subtitle: 'Awaiting assignment',
-              icon: '📥',
+              icon: <Inbox size={18} />,
               variant: 'indigo',
             }}
           />
@@ -391,7 +413,7 @@ export const StudentDashboardContent: React.FC = () => {
               title: 'In Progress',
               value: metrics.inProgress,
               subtitle: 'Officers active',
-              icon: '⚙️',
+              icon: <Settings size={18} />,
               variant: 'emerald',
             }}
           />
@@ -400,7 +422,7 @@ export const StudentDashboardContent: React.FC = () => {
               title: 'Closed & Verified',
               value: metrics.resolved,
               subtitle: 'Completed resolutions',
-              icon: '✅',
+              icon: <CheckCircle2 size={18} />,
               variant: 'emerald',
             }}
           />
@@ -409,7 +431,7 @@ export const StudentDashboardContent: React.FC = () => {
               title: 'Needs Attention',
               value: metrics.needsAttention,
               subtitle: metrics.needsAttention > 0 ? 'Verification or SLA risk' : 'All on track',
-              icon: '⚠️',
+              icon: <AlertTriangle size={18} />,
               variant: metrics.needsAttention > 0 ? 'amber' : 'neutral',
             }}
           />
@@ -419,8 +441,8 @@ export const StudentDashboardContent: React.FC = () => {
       {/* 3. CLOSED-LOOP STUDENT VERIFICATION BANNER & ATTENTION AREA */}
       {!isLoading && attentionTickets.length > 0 && (
         <Card
-          variant="floating"
-          style={{
+            variant="floating"
+            style={{
             backgroundColor: '#FFFBEB',
             borderColor: '#F59E0B',
             borderWidth: '2px',
@@ -430,7 +452,7 @@ export const StudentDashboardContent: React.FC = () => {
         >
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.75rem', marginBottom: '1.25rem' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
-              <span style={{ fontSize: '1.5rem' }}>🚨</span>
+              <AlertOctagon size={24} color="#DC2626" />
               <div>
                 <h3 style={{ margin: 0, fontSize: '1.2rem', fontWeight: 800, color: '#92400E' }}>
                   Action Required on Your Grievances ({attentionTickets.length})
@@ -480,7 +502,7 @@ export const StudentDashboardContent: React.FC = () => {
                       }}
                     >
                       <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                        <span style={{ fontSize: '1.5rem' }}>🔔</span>
+                        <Bell size={22} color="#D97706" />
                         <div>
                           <h4 style={{ margin: 0, fontSize: '1rem', fontWeight: 800, color: '#92400E' }}>
                             Resolution Proposed by Officer - Verification Required
@@ -499,7 +521,7 @@ export const StudentDashboardContent: React.FC = () => {
                           pill
                           isLoading={isSubmittingVerify}
                           onClick={() => handleVerifyResolution(ticket.id, true)}
-                          leftIcon="✓"
+                          leftIcon={<Check size={14} />}
                         >
                           Accept & Close
                         </Button>
@@ -513,7 +535,7 @@ export const StudentDashboardContent: React.FC = () => {
                             setSelectedGrievance(ticket);
                             setIsVerifyModalOpen(true);
                           }}
-                          leftIcon="✕"
+                          leftIcon={<X size={14} />}
                         >
                           Reject & Reopen
                         </Button>
@@ -545,8 +567,8 @@ export const StudentDashboardContent: React.FC = () => {
                   {/* Proposed Officer Resolution Details */}
                   {isVerificationNeeded && (
                     <div style={{ backgroundColor: '#F0FDFA', padding: '1rem', borderRadius: '12px', border: '1px solid #99F6E4', fontSize: '0.875rem' }}>
-                      <strong style={{ color: '#0F766E', display: 'block', marginBottom: '0.25rem' }}>
-                        📝 Officer Resolution Summary:
+                      <strong style={{ color: '#0F766E', display: 'flex', alignItems: 'center', gap: '0.4rem', marginBottom: '0.25rem' }}>
+                        <FileText size={15} /> Officer Resolution Summary:
                       </strong>
                       <p style={{ margin: 0, color: '#134E4A', lineHeight: 1.5 }}>
                         {ticket.resolution_notes || 'The assigned department officer has completed corrective action and marked the resolution ready for student inspection.'}
@@ -560,8 +582,9 @@ export const StudentDashboardContent: React.FC = () => {
                       variant="ghost"
                       size="sm"
                       onClick={() => (window.location.href = `/student/grievances/${ticket.id}`)}
+                      rightIcon={<ArrowRight size={14} />}
                     >
-                      View Full Audit Trail & Evidence →
+                      View Full Audit Trail & Evidence
                     </Button>
                   </div>
                 </div>
@@ -584,7 +607,7 @@ export const StudentDashboardContent: React.FC = () => {
         >
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem', flexWrap: 'wrap', gap: '0.5rem' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              <span style={{ fontSize: '1.25rem' }}>🤖</span>
+              <Bot size={22} color="#4F46E5" />
               <h3 style={{ margin: 0, fontSize: '1rem', fontWeight: 800, color: '#1E1B4B' }}>
                 AI Institutional Intelligence Insight
               </h3>
@@ -612,9 +635,12 @@ export const StudentDashboardContent: React.FC = () => {
                     padding: '0.2rem 0.55rem',
                     borderRadius: '6px',
                     border: '1px solid #E0E7FF',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '0.3rem',
                   }}
                 >
-                  ⚡ {r}
+                  <Zap size={12} color="#4F46E5" /> {r}
                 </span>
               ))}
             </div>
@@ -724,8 +750,8 @@ export const StudentDashboardContent: React.FC = () => {
                         {g.category}
                       </span>
                       {g.department && (
-                        <span style={{ fontSize: '0.75rem', color: '#0369A1', backgroundColor: '#F0F9FF', padding: '0.15rem 0.5rem', borderRadius: '4px' }}>
-                          🏛️ {g.department.name}
+                        <span style={{ fontSize: '0.75rem', color: '#0369A1', backgroundColor: '#F0F9FF', padding: '0.15rem 0.5rem', borderRadius: '4px', display: 'inline-flex', alignItems: 'center', gap: '0.25rem' }}>
+                          <Building2 size={12} /> {g.department.name}
                         </span>
                       )}
                     </div>
@@ -746,9 +772,12 @@ export const StudentDashboardContent: React.FC = () => {
                           backgroundColor: '#FEF3C7',
                           color: '#92400E',
                           border: '1px solid #FCD34D',
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: '0.3rem',
                         }}
                       >
-                        👉 Verification Required
+                        <CheckCircle2 size={13} /> Verification Required
                       </span>
                     ) : null}
                     <StatusBadge status={g.status} size="sm" />
@@ -804,9 +833,12 @@ export const StudentDashboardContent: React.FC = () => {
                           fontSize: '0.75rem',
                           fontWeight: 700,
                           cursor: 'pointer',
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: '0.3rem',
                         }}
                       >
-                        ⭐ Rate Resolution
+                        <Star size={12} fill="#D97706" color="#D97706" /> Rate Resolution
                       </button>
                     )}
                   </div>
@@ -815,8 +847,8 @@ export const StudentDashboardContent: React.FC = () => {
                     <span style={{ color: '#9CA3AF', fontSize: '0.75rem' }}>
                       Logged {new Date(g.created_at).toLocaleDateString()}
                     </span>
-                    <span style={{ fontWeight: 700, color: '#2D6A4F', fontSize: '0.85rem' }}>
-                      View Details →
+                    <span style={{ fontWeight: 700, color: '#2D6A4F', fontSize: '0.85rem', display: 'inline-flex', alignItems: 'center', gap: '0.25rem' }}>
+                      View Details <ArrowRight size={14} />
                     </span>
                   </div>
                 </div>
@@ -907,7 +939,7 @@ export const StudentDashboardContent: React.FC = () => {
               disabled={isSubmittingFeedback || feedbackRating < 1}
               isLoading={isSubmittingFeedback}
               onClick={handleSubmitFeedback}
-              rightIcon="⭐"
+              rightIcon={<Star size={16} />}
             >
               Submit Star Rating
             </Button>
@@ -934,15 +966,21 @@ export const StudentDashboardContent: React.FC = () => {
                       background: 'none',
                       border: 'none',
                       cursor: 'pointer',
-                      fontSize: '2.25rem',
-                      color: isFilled ? '#F59E0B' : '#D1D5DB',
-                      transition: 'transform 150ms ease, color 150ms ease',
+                      padding: '0.35rem',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      transition: 'transform 150ms ease',
                       transform: isFilled ? 'scale(1.15)' : 'scale(1)',
-                      padding: '0.2rem',
                     }}
                     aria-label={`${star} Star`}
                   >
-                    ★
+                    <Star
+                      size={28}
+                      fill={isFilled ? '#F59E0B' : 'transparent'}
+                      color={isFilled ? '#F59E0B' : '#D1D5DB'}
+                      strokeWidth={1.5}
+                    />
                   </button>
                 );
               })}

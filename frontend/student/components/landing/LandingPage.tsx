@@ -13,6 +13,22 @@ import {
   Timeline,
   MetricCard,
 } from '../index';
+import {
+  ArrowRight,
+  Search,
+  Landmark,
+  GraduationCap,
+  UserCheck,
+  ShieldCheck,
+  PenTool,
+  Bot,
+  Building2,
+  Clock,
+  CheckCircle2,
+  Star,
+  MapPin,
+  Users,
+} from 'lucide-react';
 
 export const LandingPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'demo' | 'sla'>('demo');
@@ -156,7 +172,7 @@ export const LandingPage: React.FC = () => {
                   size="lg"
                   pill
                   onClick={() => (window.location.href = '/student/page')}
-                  rightIcon="→"
+                  rightIcon={<ArrowRight size={16} />}
                 >
                   Report a Grievance
                 </Button>
@@ -166,7 +182,7 @@ export const LandingPage: React.FC = () => {
                   size="lg"
                   pill
                   onClick={() => (window.location.href = '/student/page')}
-                  leftIcon="🔍"
+                  leftIcon={<Search size={16} />}
                 >
                   Track Grievance
                 </Button>
@@ -219,7 +235,7 @@ export const LandingPage: React.FC = () => {
                       margin: '0 auto 0.75rem auto',
                     }}
                   >
-                    🏛️
+                    <Landmark size={28} />
                   </div>
                   <h3 style={{ margin: 0, fontSize: '1.5rem', fontWeight: 800, color: '#1B4332' }}>
                     Welcome to AMIT Portal
@@ -230,7 +246,7 @@ export const LandingPage: React.FC = () => {
                 </div>
 
                 {/* Role Switcher Pill Tabs matching reference image */}
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.5rem', marginBottom: '1.5rem', backgroundColor: '#F3F4F6', padding: '0.3rem', borderRadius: '9999px' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))', gap: '0.5rem', marginBottom: '1.5rem', backgroundColor: '#F3F4F6', padding: '0.3rem', borderRadius: '9999px' }}>
                   <button
                     onClick={() => (window.location.href = '/student/page')}
                     style={{
@@ -248,7 +264,7 @@ export const LandingPage: React.FC = () => {
                       gap: '0.4rem',
                     }}
                   >
-                    🎓 Student Portal →
+                    <GraduationCap size={16} /> Student Portal <ArrowRight size={14} />
                   </button>
                   <button
                     onClick={() => (window.location.href = '/admin/page')}
@@ -267,14 +283,15 @@ export const LandingPage: React.FC = () => {
                       gap: '0.4rem',
                     }}
                   >
-                    👤 Admin Portal →
+                    <UserCheck size={16} /> Admin Portal <ArrowRight size={14} />
                   </button>
                 </div>
 
                 {/* Quick Info Box */}
                 <div style={{ backgroundColor: '#F0FDF4', padding: '1rem', borderRadius: '14px', border: '1px solid #DCFCE7' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.875rem', fontWeight: 700, color: '#1B4332' }}>
-                    <span>🛡️ Institutional SLA Guarantee</span>
+                    <ShieldCheck size={18} color="#2D6A4F" />
+                    <span>Institutional SLA Guarantee</span>
                   </div>
                   <p style={{ margin: '0.35rem 0 0 0', fontSize: '0.8rem', color: '#2D6A4F', lineHeight: 1.5 }}>
                     Every ticket is tracked by an automated SLA countdown. Officers must propose resolutions within target timeframes or tickets automatically escalate.
@@ -303,16 +320,18 @@ export const LandingPage: React.FC = () => {
 
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '1.5rem' }}>
             {[
-              { step: '01', title: 'Tell us what happened', text: 'Describe the issue, location, severity, and number of affected students in simple words.', icon: '✍️' },
-              { step: '02', title: 'AI understands the complaint', text: 'Gemini AI evaluates urgency, assigns priority score (0-100), and calculates SLA hours.', icon: '🤖' },
-              { step: '03', title: 'Intelligent routing', text: 'Automatically assigned to responsible campus officers (IT, Hostel, Academics, Canteen).', icon: '🏛️' },
-              { step: '04', title: 'Track progress transparently', text: 'Monitor live SLA countdown timers, status transitions, and officer comment updates.', icon: '⏱️' },
-              { step: '05', title: 'Verify resolution', text: 'Closed-loop guarantee: You accept the officer resolution or reopen the ticket with reason.', icon: '✅' },
-              { step: '06', title: 'Give feedback', text: 'Rate resolution quality (1-5★) to hold officers accountable and drive institutional excellence.', icon: '⭐' },
+              { step: '01', title: 'Tell us what happened', text: 'Describe the issue, location, severity, and number of affected students in simple words.', icon: <PenTool size={26} color="#2D6A4F" /> },
+              { step: '02', title: 'AI understands the complaint', text: 'Gemini AI evaluates urgency, assigns priority score (0-100), and calculates SLA hours.', icon: <Bot size={26} color="#4F46E5" /> },
+              { step: '03', title: 'Intelligent routing', text: 'Automatically assigned to responsible campus officers (IT, Hostel, Academics, Canteen).', icon: <Building2 size={26} color="#0369A1" /> },
+              { step: '04', title: 'Track progress transparently', text: 'Monitor live SLA countdown timers, status transitions, and officer comment updates.', icon: <Clock size={26} color="#D97706" /> },
+              { step: '05', title: 'Verify resolution', text: 'Closed-loop guarantee: You accept the officer resolution or reopen the ticket with reason.', icon: <CheckCircle2 size={26} color="#059669" /> },
+              { step: '06', title: 'Give feedback', text: 'Rate resolution quality (1 to 5 stars) to hold officers accountable and drive institutional excellence.', icon: <Star size={26} color="#EAB308" /> },
             ].map((s) => (
               <Card key={s.step} variant="floating" style={{ padding: '1.75rem', position: 'relative' }}>
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1rem' }}>
-                  <span style={{ fontSize: '2rem' }}>{s.icon}</span>
+                  <div style={{ width: '48px', height: '48px', borderRadius: '12px', backgroundColor: '#F8FAFC', border: '1px solid #E2E8F0', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    {s.icon}
+                  </div>
                   <span style={{ fontSize: '1.5rem', fontWeight: 800, color: '#D8F3DC' }}>{s.step}</span>
                 </div>
                 <h3 style={{ margin: '0 0 0.5rem 0', fontSize: '1.125rem', fontWeight: 700, color: '#1B4332' }}>
@@ -352,9 +371,13 @@ export const LandingPage: React.FC = () => {
                 <div style={{ backgroundColor: '#F8FAFC', padding: '1rem', borderRadius: '12px', border: '1px solid #E2E8F0', fontSize: '0.9375rem', lineHeight: 1.6, color: '#1E293B', fontWeight: 500 }}>
                   &ldquo;All 60 workstations in Computer Lab 3 lost internet connectivity right before our capstone project freeze deadline. Needs immediate fix.&rdquo;
                 </div>
-                <div style={{ display: 'flex', gap: '0.5rem', marginTop: '1rem' }}>
-                  <span style={{ fontSize: '0.75rem', backgroundColor: '#E2E8F0', padding: '0.25rem 0.5rem', borderRadius: '6px', color: '#475569' }}>📍 Block B, Lab 3</span>
-                  <span style={{ fontSize: '0.75rem', backgroundColor: '#E2E8F0', padding: '0.25rem 0.5rem', borderRadius: '6px', color: '#475569' }}>👥 60 Students</span>
+                <div style={{ display: 'flex', gap: '0.5rem', marginTop: '1rem', flexWrap: 'wrap' }}>
+                  <span style={{ fontSize: '0.75rem', backgroundColor: '#E2E8F0', padding: '0.25rem 0.5rem', borderRadius: '6px', color: '#475569', display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                    <MapPin size={12} /> Block B, Lab 3
+                  </span>
+                  <span style={{ fontSize: '0.75rem', backgroundColor: '#E2E8F0', padding: '0.25rem 0.5rem', borderRadius: '6px', color: '#475569', display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                    <Users size={12} /> 60 Students
+                  </span>
                 </div>
               </Card>
 
@@ -401,7 +424,7 @@ export const LandingPage: React.FC = () => {
               size="lg"
               pill
               onClick={() => (window.location.href = '/student/page')}
-              rightIcon="→"
+              rightIcon={<ArrowRight size={18} />}
             >
               Submit Grievance Now
             </Button>
@@ -423,7 +446,9 @@ export const LandingPage: React.FC = () => {
         <div style={{ maxWidth: '1140px', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: '2rem' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-              <span style={{ fontSize: '1.5rem' }}>🏛️</span>
+              <div style={{ width: '40px', height: '40px', borderRadius: '10px', backgroundColor: '#143627', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <Landmark size={22} color="#52B788" />
+              </div>
               <div>
                 <div style={{ fontWeight: 800, color: '#FFFFFF', fontSize: '1rem' }}>ATMA MALIK INSTITUTE OF TECHNOLOGY & RESEARCH</div>
                 <div style={{ fontSize: '0.75rem', color: '#D8F3DC' }}>Smart Student Grievance Management System • 24-Hour Hackathon Project</div>

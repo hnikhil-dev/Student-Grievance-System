@@ -424,7 +424,7 @@ export const AnalyticsPage: React.FC = () => {
             <CardDescription>Classification confidence tiers and human acceptance rate</CardDescription>
           </CardHeader>
           <CardContent style={{ padding: '0 1.25rem 1.25rem' }}>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '0.5rem', textAlign: 'center', marginBottom: '1rem' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(110px, 1fr))', gap: '0.5rem', textAlign: 'center', marginBottom: '1rem' }}>
               <div style={{ backgroundColor: colors.lightBotanical, padding: '0.65rem', borderRadius: radii.md }}>
                 <div style={{ fontSize: typography.fontSize.xs, color: colors.secondaryText }}>Avg Confidence</div>
                 <div style={{ fontWeight: 700, color: colors.primaryGreen, fontSize: typography.fontSize.lg }}>{MOCK_AI_ANALYTICS.averageConfidence}%</div>

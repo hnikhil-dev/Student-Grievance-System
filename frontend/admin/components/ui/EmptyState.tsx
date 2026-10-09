@@ -1,4 +1,5 @@
 import React from 'react';
+import { Inbox } from 'lucide-react';
 import { colors, typography, radii } from '../../tokens';
 import { Button } from './Button';
 
@@ -12,7 +13,7 @@ export interface EmptyStateProps {
 }
 
 export const EmptyState: React.FC<EmptyStateProps> = ({
-  icon = '🍃',
+  icon = <Inbox size={26} color={colors.primaryGreen} />,
   title,
   description,
   actionLabel,

@@ -1,6 +1,15 @@
 'use client';
 
 import React, { useEffect } from 'react';
+import {
+  X,
+  Landmark,
+  LayoutDashboard,
+  Sparkles,
+  Folder,
+  Bell,
+  Star,
+} from 'lucide-react';
 
 export interface SidebarProps {
   isOpen: boolean;
@@ -30,12 +39,12 @@ export const Sidebar: React.FC<SidebarProps> = ({
   if (!isOpen) return null;
 
   const menuItems = [
-    { label: '🏛️ Campus Portal Home', href: '/' },
-    { label: '📊 Student Dashboard', href: '/student/page' },
-    { label: '🤖 Report Grievance (AI)', href: '/student/report' },
-    { label: '📂 My Grievances', href: '/student/grievances' },
-    { label: '🔔 Notifications', href: '/student/notifications' },
-    { label: '⭐ Feedback & Ratings', href: '/student/feedback' },
+    { label: 'Campus Portal Home', href: '/', icon: <Landmark size={18} /> },
+    { label: 'Student Dashboard', href: '/student/page', icon: <LayoutDashboard size={18} /> },
+    { label: 'Report Grievance (AI)', href: '/student/report', icon: <Sparkles size={18} /> },
+    { label: 'My Grievances', href: '/student/grievances', icon: <Folder size={18} /> },
+    { label: 'Notifications', href: '/student/notifications', icon: <Bell size={18} /> },
+    { label: 'Feedback & Ratings', href: '/student/feedback', icon: <Star size={18} /> },
   ];
 
   return (
@@ -93,7 +102,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
               justifyContent: 'center',
             }}
           >
-            ✕
+            <X size={20} />
           </button>
         </div>
 
@@ -119,7 +128,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
                   minHeight: '44px',
                 }}
               >
-                {item.label}
+                {item.icon}
+                <span>{item.label}</span>
               </a>
             );
           })}

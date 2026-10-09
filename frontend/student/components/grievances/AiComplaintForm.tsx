@@ -20,6 +20,41 @@ import {
   AiReasoningCard,
   NextActionCard,
 } from '../index';
+import {
+  Sparkles,
+  Check,
+  Laptop,
+  Droplets,
+  Calendar,
+  Zap,
+  Pin,
+  MapPin,
+  Users,
+  Folder,
+  Paperclip,
+  FileText,
+  X,
+  Lock,
+  RefreshCw,
+  UserCheck,
+  UserX,
+  ArrowRight,
+  ArrowLeft,
+  Bot,
+  Lightbulb,
+  Edit3,
+  Clock,
+  Send,
+  ShieldCheck,
+  Copy,
+  Search,
+  BarChart2,
+  Plus,
+  Camera,
+  Receipt,
+  Monitor,
+  Building2,
+} from 'lucide-react';
 import { getDynamicAuthHeaders } from '@lib/api';
 
 interface DepartmentItem {
@@ -64,7 +99,7 @@ interface SelectedAttachment {
 // Pre-packaged realistic hackathon demo scenarios for 1-click evaluation
 const HACKATHON_DEMO_PRESETS = [
   {
-    icon: '💻',
+    icon: <Laptop size={14} />,
     label: 'Lab 3 Wi-Fi Failure',
     title: 'Core Switch Breakdown in Computer Lab 3 during Capstone Freeze',
     description: 'All 60 workstations in Computer Lab 3 lost internet connectivity right before our capstone submission deadline. The rack switches are flashing red and no student can access GitHub or local staging repositories.',
@@ -74,7 +109,7 @@ const HACKATHON_DEMO_PRESETS = [
     recurrence: true,
   },
   {
-    icon: '🚰',
+    icon: <Droplets size={14} />,
     label: 'Hostel Water Leak',
     title: 'Severe Water Pipe Rupture Flooding Corridor and Electrical Conduits',
     description: 'The main overhead water pipe has burst outside washroom 2B on the second floor of Hostel Block 4. High-pressure water is flooding into dormitory rooms and dripping onto electrical switchboards near the staircase.',
@@ -84,7 +119,7 @@ const HACKATHON_DEMO_PRESETS = [
     recurrence: false,
   },
   {
-    icon: '📅',
+    icon: <Calendar size={14} />,
     label: 'Exam Timetable Clash',
     title: 'Exam Conflict: CS-401 and CS-408 Scheduled Simultaneously',
     description: 'Both the mid-term examinations for Distributed Systems (CS-401) and Machine Learning (CS-408) have been scheduled for Friday at 10:00 AM in Examination Hall 2. 35 dual-major students cannot sit for two mandatory papers simultaneously.',
@@ -446,7 +481,7 @@ export const AiComplaintForm: React.FC = () => {
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', marginBottom: '0.25rem' }}>
-              <span style={{ fontSize: '1.6rem' }}>✨</span>
+              <Sparkles size={24} color="#2D6A4F" />
               <h1 style={{ margin: 0, fontSize: 'clamp(1.4rem, 2.5vw, 1.85rem)', fontWeight: 800, color: '#1B4332' }}>
                 AI-Assisted Grievance Submission
               </h1>
@@ -504,7 +539,7 @@ export const AiComplaintForm: React.FC = () => {
                   overflow: 'hidden',
                 }}
               >
-                <span>{isCompleted ? '✓' : s.num}</span>
+                <span>{isCompleted ? <Check size={13} /> : s.num}</span>
                 <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                   {s.label.replace(/^\d+\.\s*/, '')}
                 </span>
@@ -517,7 +552,7 @@ export const AiComplaintForm: React.FC = () => {
             STEP 1: DESCRIBE (Natural Language Input First)
            ========================================================================= */}
         {step === 1 && (
-          <Card variant="floating" style={{ padding: '2rem' }}>
+          <Card variant="floating" style={{ padding: 'clamp(1rem, 3.5vw, 2rem)' }}>
             <CardHeader>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '0.75rem' }}>
                 <div>
@@ -530,8 +565,8 @@ export const AiComplaintForm: React.FC = () => {
 
               {/* Hackathon 1-Click Demo Buttons */}
               <div style={{ marginTop: '1.25rem', backgroundColor: '#F8FAF8', padding: '0.85rem 1rem', borderRadius: '12px', border: '1px solid #E2E8F0' }}>
-                <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#2D6A4F', textTransform: 'uppercase', letterSpacing: '0.04em', display: 'block', marginBottom: '0.5rem' }}>
-                  ⚡ Quick Demo Scenarios (One-Click Evaluation)
+                <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#2D6A4F', textTransform: 'uppercase', letterSpacing: '0.04em', display: 'flex', alignItems: 'center', gap: '0.35rem', marginBottom: '0.5rem' }}>
+                  <Zap size={14} /> Quick Demo Scenarios (One-Click Evaluation)
                 </span>
                 <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
                   {HACKATHON_DEMO_PRESETS.map((p, idx) => (
@@ -562,7 +597,7 @@ export const AiComplaintForm: React.FC = () => {
                         e.currentTarget.style.borderColor = '#D8F3DC';
                       }}
                     >
-                      <span>{p.icon}</span>
+                      <span style={{ display: 'flex', alignItems: 'center' }}>{p.icon}</span>
                       <span>{p.label}</span>
                     </button>
                   ))}
@@ -599,7 +634,7 @@ export const AiComplaintForm: React.FC = () => {
                     value={title}
                     onChange={(e) => setTitle(e.target.value)}
                     placeholder="e.g. Wi-Fi Access Point Dropping in Academic Hall B"
-                    leftIcon="📌"
+                    leftIcon={<Pin size={16} />}
                   />
                 </div>
 
@@ -612,7 +647,7 @@ export const AiComplaintForm: React.FC = () => {
                       value={location}
                       onChange={(e) => setLocation(e.target.value)}
                       placeholder="e.g. Science Block B, Room 304"
-                      leftIcon="📍"
+                      leftIcon={<MapPin size={16} />}
                     />
                   </div>
 
@@ -623,7 +658,7 @@ export const AiComplaintForm: React.FC = () => {
                       min={1}
                       value={affectedStudents}
                       onChange={(e) => setAffectedStudents(Math.max(1, parseInt(e.target.value) || 1))}
-                      leftIcon="👥"
+                      leftIcon={<Users size={16} />}
                       helperText="Feeds into priority formula"
                     />
                   </div>
@@ -632,19 +667,19 @@ export const AiComplaintForm: React.FC = () => {
                     <Select
                       label="Initial Category (Optional)"
                       options={[
-                        { value: 'IT', label: '💻 IT & Network Infrastructure' },
-                        { value: 'ACADEMICS', label: '📚 Academic Affairs & Exams' },
-                        { value: 'HOSTEL', label: '🏠 Hostel & Housing' },
-                        { value: 'MAINTENANCE', label: '🔧 Campus Maintenance & Civil' },
-                        { value: 'TRANSPORT', label: '🚌 Shuttle & Transport' },
-                        { value: 'LIBRARY', label: '📖 Central Library' },
-                        { value: 'ADMINISTRATION', label: '🏛️ Campus Administration' },
-                        { value: 'CANTEEN', label: '🍲 Canteen & Food Quality' },
-                        { value: 'STUDENT_AFFAIRS', label: '🤝 Student Affairs & Welfare' },
+                        { value: 'IT', label: 'IT & Network Infrastructure' },
+                        { value: 'ACADEMICS', label: 'Academic Affairs & Exams' },
+                        { value: 'HOSTEL', label: 'Hostel & Housing' },
+                        { value: 'MAINTENANCE', label: 'Campus Maintenance & Civil' },
+                        { value: 'TRANSPORT', label: 'Shuttle & Transport' },
+                        { value: 'LIBRARY', label: 'Central Library' },
+                        { value: 'ADMINISTRATION', label: 'Campus Administration' },
+                        { value: 'CANTEEN', label: 'Canteen & Food Quality' },
+                        { value: 'STUDENT_AFFAIRS', label: 'Student Affairs & Welfare' },
                       ]}
                       value={category}
                       onChange={(e) => setCategory(e.target.value)}
-                      leftIcon="📂"
+                      leftIcon={<Folder size={16} />}
                     />
                   </div>
                 </div>
@@ -653,7 +688,7 @@ export const AiComplaintForm: React.FC = () => {
                 <div style={{ backgroundColor: '#F9FAFB', padding: '1rem', borderRadius: '12px', border: '1px solid #E5E7EB' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
                     <label style={{ fontSize: '0.85rem', fontWeight: 700, color: '#374151', display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
-                      <span>📎</span>
+                      <Paperclip size={15} />
                       <span>Optional Attachment (Photo, Screenshot, PDF)</span>
                     </label>
                     <span style={{ fontSize: '0.75rem', color: '#6B7280' }}>Max 10 MB (JPG, PNG, PDF, TXT)</span>
@@ -662,7 +697,7 @@ export const AiComplaintForm: React.FC = () => {
                   {attachment ? (
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', backgroundColor: '#FFFFFF', padding: '0.6rem 0.85rem', borderRadius: '8px', border: '1px solid #D1D5DB' }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', overflow: 'hidden' }}>
-                        <span style={{ fontSize: '1.1rem' }}>📄</span>
+                        <FileText size={18} color="#2D6A4F" />
                         <span style={{ fontSize: '0.85rem', fontWeight: 600, color: '#1B4332', textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap' }}>
                           {attachment.file_name}
                         </span>
@@ -677,9 +712,9 @@ export const AiComplaintForm: React.FC = () => {
                           setRawEvidenceFile(null);
                           if (fileInputRef.current) fileInputRef.current.value = '';
                         }}
-                        style={{ background: 'none', border: 'none', color: '#DC2626', cursor: 'pointer', fontSize: '0.8rem', fontWeight: 700 }}
+                        style={{ background: 'none', border: 'none', color: '#DC2626', cursor: 'pointer', fontSize: '0.8rem', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '0.2rem' }}
                       >
-                        ✕ Remove
+                        <X size={14} /> Remove
                       </button>
                     </div>
                   ) : (
@@ -705,13 +740,13 @@ export const AiComplaintForm: React.FC = () => {
                             color: '#1F2937',
                           }}
                         >
-                          <option value="PHOTO">📸 Photo Evidence</option>
-                          <option value="RECEIPT">🧾 Official Receipt / Bill</option>
-                          <option value="DOCUMENT">📄 PDF / Notice Document</option>
-                          <option value="SCREENSHOT">🖥️ Portal / Wi-Fi Screenshot</option>
+                          <option value="PHOTO">Photo Evidence</option>
+                          <option value="RECEIPT">Official Receipt / Bill</option>
+                          <option value="DOCUMENT">PDF / Notice Document</option>
+                          <option value="SCREENSHOT">Portal / Wi-Fi Screenshot</option>
                         </select>
-                        <span style={{ fontSize: '0.7rem', color: '#059669', fontWeight: 600 }}>
-                          🔒 SHA-256 Vault Sealed
+                        <span style={{ fontSize: '0.7rem', color: '#059669', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+                          <Lock size={12} /> SHA-256 Vault Sealed
                         </span>
                       </div>
                     </div>
@@ -733,7 +768,9 @@ export const AiComplaintForm: React.FC = () => {
                       onChange={(e) => setRecurrence(e.target.checked)}
                       style={{ accentColor: '#2D6A4F', width: '16px', height: '16px' }}
                     />
-                    <span>🔄 This issue has occurred repeatedly</span>
+                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.35rem' }}>
+                      <RefreshCw size={14} /> This issue has occurred repeatedly
+                    </span>
                   </label>
 
                   <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.85rem', color: '#374151', cursor: 'pointer' }}>
@@ -743,7 +780,9 @@ export const AiComplaintForm: React.FC = () => {
                       onChange={(e) => setIsConfidential(e.target.checked)}
                       style={{ accentColor: '#2D6A4F', width: '16px', height: '16px' }}
                     />
-                    <span>🔒 Confidential Grievance (Restricted to Officers)</span>
+                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.35rem' }}>
+                      <Lock size={14} /> Confidential Grievance (Restricted to Officers)
+                    </span>
                   </label>
 
                   <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.85rem', color: '#374151', cursor: 'pointer' }}>
@@ -753,7 +792,9 @@ export const AiComplaintForm: React.FC = () => {
                       onChange={(e) => setIsAnonymous(e.target.checked)}
                       style={{ accentColor: '#2D6A4F', width: '16px', height: '16px' }}
                     />
-                    <span>👤 Submit Anonymously to Department</span>
+                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.35rem' }}>
+                      <UserX size={14} /> Submit Anonymously to Department
+                    </span>
                   </label>
                 </div>
 
@@ -765,9 +806,9 @@ export const AiComplaintForm: React.FC = () => {
                     pill
                     onClick={handleAnalyze}
                     disabled={description.trim().length < 10}
-                    rightIcon="✨"
+                    rightIcon={<Sparkles size={16} />}
                   >
-                    Analyze Complaint with AI →
+                    Analyze Complaint with AI
                   </Button>
                 </div>
               </div>
@@ -795,7 +836,7 @@ export const AiComplaintForm: React.FC = () => {
                   animation: 'sg-ai-pulse 1.6s infinite ease-in-out',
                 }}
               >
-                🤖
+                <Bot size={40} color="#4F46E5" />
               </div>
 
               <div>
@@ -855,7 +896,7 @@ export const AiComplaintForm: React.FC = () => {
                 {/* Deep Explainability: "Why was this classified as HIGH?" */}
                 <div style={{ backgroundColor: '#F0FDF4', borderRadius: '16px', border: '1px solid #BBF7D0', padding: '1.25rem' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem' }}>
-                    <span style={{ fontSize: '1.1rem' }}>💡</span>
+                    <Lightbulb size={20} color="#166534" />
                     <h4 style={{ margin: 0, fontSize: '0.9375rem', fontWeight: 800, color: '#1B4332' }}>
                       Why was this classified as {aiAnalysis.priority}?
                     </h4>
@@ -866,7 +907,7 @@ export const AiComplaintForm: React.FC = () => {
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '0.35rem' }}>
                     {aiAnalysis.priorityReasons.map((reason, idx) => (
                       <div key={idx} style={{ display: 'flex', alignItems: 'flex-start', gap: '0.5rem', fontSize: '0.8125rem', color: '#14532D' }}>
-                        <span style={{ color: '#059669', fontWeight: 800 }}>✓</span>
+                        <Check size={14} color="#059669" />
                         <span>{reason}</span>
                       </div>
                     ))}
@@ -880,7 +921,7 @@ export const AiComplaintForm: React.FC = () => {
             )}
 
             {/* Editable Confirmation Form */}
-            <Card variant="floating" style={{ padding: '2rem' }}>
+            <Card variant="floating" style={{ padding: 'clamp(1rem, 3.5vw, 2rem)' }}>
               <CardHeader>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.5rem' }}>
                   <div>
@@ -893,7 +934,7 @@ export const AiComplaintForm: React.FC = () => {
                     variant="ghost"
                     size="sm"
                     onClick={() => setStep(1)}
-                    leftIcon="✏️"
+                    leftIcon={<Edit3 size={14} />}
                   >
                     Edit Description
                   </Button>
@@ -931,7 +972,7 @@ export const AiComplaintForm: React.FC = () => {
                             padding: 0,
                           }}
                         >
-                          ✨ Use AI Suggested Title
+                          <Sparkles size={13} /> Use AI Suggested Title
                         </button>
                       )}
                     </div>
@@ -961,7 +1002,7 @@ export const AiComplaintForm: React.FC = () => {
                         label="Destination Department"
                         options={departments.map((d) => ({
                           value: d.id,
-                          label: `🏛️ ${d.name} (${d.code})`,
+                          label: `${d.name} (${d.code})`,
                         }))}
                         value={selectedDeptId}
                         onChange={(e) => setSelectedDeptId(e.target.value)}
@@ -972,14 +1013,14 @@ export const AiComplaintForm: React.FC = () => {
                       <Select
                         label="Category"
                         options={[
-                          { value: 'IT', label: '💻 IT & Network Infrastructure' },
-                          { value: 'ACADEMICS', label: '📚 Academic Affairs' },
-                          { value: 'HOSTEL', label: '🏠 Hostel & Housing' },
-                          { value: 'MAINTENANCE', label: '🔧 Campus Maintenance' },
-                          { value: 'TRANSPORT', label: '🚌 Transport Services' },
-                          { value: 'CANTEEN', label: '🍲 Canteen & Food' },
-                          { value: 'LIBRARY', label: '📖 Central Library' },
-                          { value: 'STUDENT_AFFAIRS', label: '🤝 Student Affairs' },
+                          { value: 'IT', label: 'IT & Network Infrastructure' },
+                          { value: 'ACADEMICS', label: 'Academic Affairs' },
+                          { value: 'HOSTEL', label: 'Hostel & Housing' },
+                          { value: 'MAINTENANCE', label: 'Campus Maintenance' },
+                          { value: 'TRANSPORT', label: 'Transport Services' },
+                          { value: 'CANTEEN', label: 'Canteen & Food' },
+                          { value: 'LIBRARY', label: 'Central Library' },
+                          { value: 'STUDENT_AFFAIRS', label: 'Student Affairs' },
                         ]}
                         value={category}
                         onChange={(e) => setCategory(e.target.value)}
@@ -1005,8 +1046,8 @@ export const AiComplaintForm: React.FC = () => {
                       <span style={{ fontSize: '0.75rem', color: '#1B4332', fontWeight: 700, textTransform: 'uppercase' }}>
                         COMPUTED SLA RESOLUTION TARGET
                       </span>
-                      <div style={{ fontSize: '1.1rem', fontWeight: 800, color: '#2D6A4F' }}>
-                        ⏱ {aiAnalysis?.priority === 'CRITICAL' ? '4 Hours' : aiAnalysis?.priority === 'HIGH' ? '12 Hours' : '24 Hours'} Target
+                      <div style={{ fontSize: '1.1rem', fontWeight: 800, color: '#2D6A4F', display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+                        <Clock size={16} /> {aiAnalysis?.priority === 'CRITICAL' ? '4 Hours' : aiAnalysis?.priority === 'HIGH' ? '12 Hours' : '24 Hours'} Target
                       </div>
                     </div>
 
@@ -1023,8 +1064,9 @@ export const AiComplaintForm: React.FC = () => {
                       size="md"
                       pill
                       onClick={() => setStep(1)}
+                      leftIcon={<ArrowLeft size={16} />}
                     >
-                      ← Back to Edit
+                      Back to Edit
                     </Button>
 
                     <Button
@@ -1033,9 +1075,9 @@ export const AiComplaintForm: React.FC = () => {
                       pill
                       isLoading={isSubmitting}
                       onClick={handleSubmitGrievance}
-                      rightIcon="🚀"
+                      rightIcon={<Send size={16} />}
                     >
-                      {isSubmitting ? 'Registering Grievance...' : 'Confirm & Submit Grievance →'}
+                      {isSubmitting ? 'Registering Grievance...' : 'Confirm & Submit Grievance'}
                     </Button>
                   </div>
                 </div>
@@ -1062,10 +1104,9 @@ export const AiComplaintForm: React.FC = () => {
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  fontSize: '2.5rem',
                 }}
               >
-                ✓
+                <Check size={38} color="#059669" />
               </div>
 
               <div>
@@ -1098,15 +1139,15 @@ export const AiComplaintForm: React.FC = () => {
                 </div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <span style={{ fontSize: '0.8125rem', color: '#6B7280' }}>Guaranteed Resolution Window:</span>
-                  <span style={{ fontWeight: 700, color: '#2D6A4F', fontSize: '0.875rem' }}>
-                    ⏱ {createdGrievance.sla_hours} Hours Target
+                  <span style={{ fontWeight: 700, color: '#2D6A4F', fontSize: '0.875rem', display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+                    <Clock size={15} /> {createdGrievance.sla_hours} Hours Target
                   </span>
                 </div>
                 {attachment && (
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <span style={{ fontSize: '0.8125rem', color: '#6B7280' }}>Linked Attachment:</span>
-                    <span style={{ fontSize: '0.8125rem', fontWeight: 600, color: '#059669' }}>
-                      📎 {attachment.file_name}
+                    <span style={{ fontSize: '0.8125rem', fontWeight: 600, color: '#059669', display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+                      <Paperclip size={14} /> {attachment.file_name}
                     </span>
                   </div>
                 )}
@@ -1131,7 +1172,7 @@ export const AiComplaintForm: React.FC = () => {
                 >
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.5rem' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                      <span style={{ fontSize: '1.25rem' }}>🛡️</span>
+                      <ShieldCheck size={20} color="#15803D" />
                       <strong style={{ fontSize: '0.95rem', color: '#14532D' }}>
                         Tamper-Proof Evidence Vault Sealed
                       </strong>
@@ -1145,9 +1186,12 @@ export const AiComplaintForm: React.FC = () => {
                         backgroundColor: '#DCFCE7',
                         color: '#15803D',
                         border: '1px solid #86EFAC',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '0.25rem',
                       }}
                     >
-                      ✓ {vaultEvidence.authenticityStatus}
+                      <Check size={12} /> {vaultEvidence.authenticityStatus}
                     </span>
                   </div>
 
@@ -1186,10 +1230,13 @@ export const AiComplaintForm: React.FC = () => {
                           fontSize: '0.75rem',
                           fontWeight: 700,
                           whiteSpace: 'nowrap',
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '0.25rem',
                         }}
                         title="Copy SHA-256 Hash"
                       >
-                        📋 Copy
+                        <Copy size={13} /> Copy
                       </button>
                     </div>
                   </div>
@@ -1228,7 +1275,7 @@ export const AiComplaintForm: React.FC = () => {
                   size="md"
                   pill
                   onClick={() => (window.location.href = `/student/grievances/${createdGrievance.id}`)}
-                  rightIcon="🔍"
+                  rightIcon={<Search size={15} />}
                 >
                   View Grievance
                 </Button>
@@ -1238,7 +1285,7 @@ export const AiComplaintForm: React.FC = () => {
                   size="md"
                   pill
                   onClick={() => (window.location.href = '/student/page')}
-                  rightIcon="📊"
+                  rightIcon={<BarChart2 size={15} />}
                 >
                   Go to Dashboard
                 </Button>
@@ -1248,7 +1295,7 @@ export const AiComplaintForm: React.FC = () => {
                   size="md"
                   pill
                   onClick={handleResetForm}
-                  leftIcon="➕"
+                  leftIcon={<Plus size={15} />}
                 >
                   File Another Grievance
                 </Button>

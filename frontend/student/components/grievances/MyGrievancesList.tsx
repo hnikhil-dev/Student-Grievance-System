@@ -19,6 +19,24 @@ import {
 import { useRealtimeGrievances } from '@lib/useRealtime';
 import { getDynamicAuthHeaders } from '@lib/api';
 import { GrievanceStatusType, PriorityLevel } from '../../types/design-system';
+import {
+  FolderOpen,
+  Plus,
+  ArrowRight,
+  ClipboardList,
+  Wrench,
+  Clock,
+  CheckCircle2,
+  Search,
+  X,
+  Zap,
+  Lock,
+  User,
+  Landmark,
+  MapPin,
+  Calendar,
+  RefreshCw,
+} from 'lucide-react';
 
 interface GrievanceItem {
   id: string;
@@ -255,7 +273,7 @@ export const MyGrievancesList: React.FC = () => {
         >
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', marginBottom: '0.35rem' }}>
-              <span style={{ fontSize: '1.75rem' }}>📂</span>
+              <FolderOpen size={28} color="#1B4332" />
               <h1
                 style={{
                   margin: 0,
@@ -280,8 +298,8 @@ export const MyGrievancesList: React.FC = () => {
               size="md"
               pill
               onClick={() => (window.location.href = '/student/report')}
-              leftIcon="➕"
-              rightIcon="→"
+              leftIcon={<Plus size={16} />}
+              rightIcon={<ArrowRight size={16} />}
             >
               Report a Grievance
             </Button>
@@ -321,7 +339,7 @@ export const MyGrievancesList: React.FC = () => {
                 {summaryCounts.total}
               </div>
             </div>
-            <span style={{ fontSize: '1.5rem', opacity: 0.8 }}>📋</span>
+            <ClipboardList size={24} color="#1B4332" style={{ opacity: 0.8 }} />
           </div>
 
           <div
@@ -347,7 +365,7 @@ export const MyGrievancesList: React.FC = () => {
                 {summaryCounts.open}
               </div>
             </div>
-            <span style={{ fontSize: '1.5rem', opacity: 0.8 }}>⚙️</span>
+            <Wrench size={24} color="#1D4ED8" style={{ opacity: 0.8 }} />
           </div>
 
           <div
@@ -373,7 +391,7 @@ export const MyGrievancesList: React.FC = () => {
                 {summaryCounts.awaitingVerification}
               </div>
             </div>
-            <span style={{ fontSize: '1.5rem' }}>⏳</span>
+            <Clock size={24} color="#B45309" />
           </div>
 
           <div
@@ -399,7 +417,7 @@ export const MyGrievancesList: React.FC = () => {
                 {summaryCounts.resolved}
               </div>
             </div>
-            <span style={{ fontSize: '1.5rem', opacity: 0.8 }}>✅</span>
+            <CheckCircle2 size={24} color="#047857" style={{ opacity: 0.8 }} />
           </div>
         </div>
 
@@ -415,7 +433,7 @@ export const MyGrievancesList: React.FC = () => {
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   placeholder="Search by ticket number, title, or keywords..."
-                  leftIcon="🔍"
+                  leftIcon={<Search size={16} />}
                 />
               </div>
 
@@ -424,7 +442,7 @@ export const MyGrievancesList: React.FC = () => {
                   variant="ghost"
                   size="sm"
                   onClick={handleResetFilters}
-                  leftIcon="✕"
+                  leftIcon={<X size={14} />}
                 >
                   Clear Filters
                 </Button>
@@ -451,15 +469,15 @@ export const MyGrievancesList: React.FC = () => {
                   }}
                   options={[
                     { value: 'ALL', label: 'All Statuses' },
-                    { value: 'SUBMITTED', label: '📥 Submitted' },
-                    { value: 'UNDER_REVIEW', label: '🔍 Under Review' },
-                    { value: 'ASSIGNED', label: '👤 Assigned' },
-                    { value: 'IN_PROGRESS', label: '⚙️ In Progress' },
-                    { value: 'RESOLUTION_PROPOSED', label: '💡 Resolution Proposed' },
-                    { value: 'STUDENT_VERIFICATION', label: '⏳ Awaiting Verification' },
-                    { value: 'RESOLVED', label: '✅ Resolved' },
-                    { value: 'REOPENED', label: '🔄 Reopened' },
-                    { value: 'CLOSED', label: '✔ Closed' },
+                    { value: 'SUBMITTED', label: 'Submitted' },
+                    { value: 'UNDER_REVIEW', label: 'Under Review' },
+                    { value: 'ASSIGNED', label: 'Assigned' },
+                    { value: 'IN_PROGRESS', label: 'In Progress' },
+                    { value: 'RESOLUTION_PROPOSED', label: 'Resolution Proposed' },
+                    { value: 'STUDENT_VERIFICATION', label: 'Awaiting Verification' },
+                    { value: 'RESOLVED', label: 'Resolved' },
+                    { value: 'REOPENED', label: 'Reopened' },
+                    { value: 'CLOSED', label: 'Closed' },
                   ]}
                 />
               </div>
@@ -475,10 +493,10 @@ export const MyGrievancesList: React.FC = () => {
                   }}
                   options={[
                     { value: 'ALL', label: 'All Priorities' },
-                    { value: 'CRITICAL', label: '🚨 Critical Priority' },
-                    { value: 'HIGH', label: '🔥 High Priority' },
-                    { value: 'MEDIUM', label: '⚡ Medium Priority' },
-                    { value: 'LOW', label: '🟢 Low Priority' },
+                    { value: 'CRITICAL', label: 'Critical Priority' },
+                    { value: 'HIGH', label: 'High Priority' },
+                    { value: 'MEDIUM', label: 'Medium Priority' },
+                    { value: 'LOW', label: 'Low Priority' },
                   ]}
                 />
               </div>
@@ -491,14 +509,14 @@ export const MyGrievancesList: React.FC = () => {
                   onChange={(e) => setCategoryFilter(e.target.value)}
                   options={[
                     { value: 'ALL', label: 'All Categories' },
-                    { value: 'IT', label: '💻 IT & Infrastructure' },
-                    { value: 'ACADEMICS', label: '📚 Academic Affairs' },
-                    { value: 'HOSTEL', label: '🏠 Hostel & Housing' },
-                    { value: 'MAINTENANCE', label: '🔧 Campus Maintenance' },
-                    { value: 'TRANSPORT', label: '🚌 Shuttle & Transport' },
-                    { value: 'CANTEEN', label: '🍲 Canteen & Food' },
-                    { value: 'LIBRARY', label: '📖 Library' },
-                    { value: 'STUDENT_AFFAIRS', label: '🤝 Student Affairs' },
+                    { value: 'IT', label: 'IT & Infrastructure' },
+                    { value: 'ACADEMICS', label: 'Academic Affairs' },
+                    { value: 'HOSTEL', label: 'Hostel & Housing' },
+                    { value: 'MAINTENANCE', label: 'Campus Maintenance' },
+                    { value: 'TRANSPORT', label: 'Shuttle & Transport' },
+                    { value: 'CANTEEN', label: 'Canteen & Food' },
+                    { value: 'LIBRARY', label: 'Library' },
+                    { value: 'STUDENT_AFFAIRS', label: 'Student Affairs' },
                   ]}
                 />
               </div>
@@ -510,10 +528,10 @@ export const MyGrievancesList: React.FC = () => {
                   value={sortBy}
                   onChange={(e) => setSortBy(e.target.value as any)}
                   options={[
-                    { value: 'LATEST', label: '🕒 Latest Created' },
-                    { value: 'OLDEST', label: '📅 Oldest Created' },
-                    { value: 'PRIORITY_DESC', label: '⚡ Highest Priority' },
-                    { value: 'SLA_URGENT', label: '⏱ Most Urgent SLA' },
+                    { value: 'LATEST', label: 'Latest Created' },
+                    { value: 'OLDEST', label: 'Oldest Created' },
+                    { value: 'PRIORITY_DESC', label: 'Highest Priority' },
+                    { value: 'SLA_URGENT', label: 'Most Urgent SLA' },
                   ]}
                 />
               </div>
@@ -610,11 +628,11 @@ export const MyGrievancesList: React.FC = () => {
                       }}
                     >
                       <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-                        <span>⚡</span>
+                        <Zap size={14} color="#92400E" />
                         <span>RESOLUTION PROPOSED: Department has marked this resolved. Please verify.</span>
                       </div>
-                      <span style={{ textDecoration: 'underline', cursor: 'pointer' }}>
-                        Verify Now →
+                      <span style={{ textDecoration: 'underline', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                        Verify Now <ArrowRight size={13} />
                       </span>
                     </div>
                   )}
@@ -659,9 +677,13 @@ export const MyGrievancesList: React.FC = () => {
                             backgroundColor: '#FEF3C7',
                             color: '#92400E',
                             border: '1px solid #FCD34D',
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: '4px',
                           }}
                         >
-                          👉 Your Action Needed
+                          <Clock size={11} />
+                          Your Action Needed
                         </span>
                       ) : ['ASSIGNED', 'IN_PROGRESS'].includes(g.status) ? (
                         <span
@@ -673,9 +695,13 @@ export const MyGrievancesList: React.FC = () => {
                             backgroundColor: '#EFF6FF',
                             color: '#1E40AF',
                             border: '1px solid #BFDBFE',
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: '4px',
                           }}
                         >
-                          ⚙️ Dept Active
+                          <Wrench size={11} />
+                          Dept Active
                         </span>
                       ) : null}
 
@@ -687,9 +713,13 @@ export const MyGrievancesList: React.FC = () => {
                           color: '#374151',
                           padding: '0.2rem 0.55rem',
                           borderRadius: '6px',
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: '4px',
                         }}
                       >
-                        📂 {g.category}
+                        <FolderOpen size={11} />
+                        {g.category}
                       </span>
 
                       {g.is_confidential && (
@@ -701,9 +731,13 @@ export const MyGrievancesList: React.FC = () => {
                             color: '#991B1B',
                             padding: '0.2rem 0.5rem',
                             borderRadius: '6px',
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: '4px',
                           }}
                         >
-                          🔒 Confidential
+                          <Lock size={11} />
+                          Confidential
                         </span>
                       )}
 
@@ -716,9 +750,13 @@ export const MyGrievancesList: React.FC = () => {
                             color: '#4B5563',
                             padding: '0.2rem 0.5rem',
                             borderRadius: '6px',
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: '4px',
                           }}
                         >
-                          👤 Anonymous
+                          <User size={11} />
+                          Anonymous
                         </span>
                       )}
                     </div>
@@ -775,29 +813,29 @@ export const MyGrievancesList: React.FC = () => {
                   >
                     <div style={{ display: 'flex', alignItems: 'center', gap: '1.25rem', flexWrap: 'wrap', fontSize: '0.78rem', color: '#6B7280' }}>
                       {/* Department */}
-                      <span style={{ display: 'flex', alignItems: 'center', gap: '0.3rem', fontWeight: 600, color: '#1B4332' }}>
-                        <span>🏛️</span>
+                      <span style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', fontWeight: 600, color: '#1B4332' }}>
+                        <Landmark size={13} color="#1B4332" />
                         <span>{g.department ? `${g.department.name} (${g.department.code})` : 'Unassigned'}</span>
                       </span>
 
                       {/* Location */}
                       {g.location && (
-                        <span style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
-                          <span>📍</span>
+                        <span style={{ display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
+                          <MapPin size={13} />
                           <span>{g.location}</span>
                         </span>
                       )}
 
                       {/* Created Date */}
-                      <span style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
-                        <span>📅</span>
+                      <span style={{ display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
+                        <Calendar size={13} />
                         <span>Created: {formatDate(g.created_at)}</span>
                       </span>
 
                       {/* Last Updated */}
                       {g.updated_at && g.updated_at !== g.created_at && (
-                        <span style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
-                          <span>🔄</span>
+                        <span style={{ display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
+                          <RefreshCw size={13} />
                           <span>Updated: {formatDate(g.updated_at)}</span>
                         </span>
                       )}
@@ -809,7 +847,7 @@ export const MyGrievancesList: React.FC = () => {
                       size="sm"
                       pill
                       onClick={() => (window.location.href = `/student/grievances/${g.id}`)}
-                      rightIcon="→"
+                      rightIcon={<ArrowRight size={14} />}
                     >
                       {isVerificationPending ? 'Review & Verify' : 'View Details'}
                     </Button>

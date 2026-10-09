@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import { TrendingUp, TrendingDown } from 'lucide-react';
 import { MetricCardData } from '../../types/design-system';
 
 export interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
@@ -114,8 +115,8 @@ export const MetricCard: React.FC<{ data: MetricCardData }> = ({ data }) => {
       <div style={{ display: 'flex', alignItems: 'baseline', gap: '0.5rem' }}>
         <span style={{ fontSize: '1.875rem', fontWeight: 800, color: styleConfig.text }}>{data.value}</span>
         {data.trend && (
-          <span style={{ fontSize: '0.75rem', fontWeight: 600, color: data.trend.isPositive ? '#059669' : '#DC2626' }}>
-            {data.trend.isPositive ? '↑' : '↓'} {data.trend.value}
+          <span style={{ fontSize: '0.75rem', fontWeight: 600, color: data.trend.isPositive ? '#059669' : '#DC2626', display: 'inline-flex', alignItems: 'center', gap: '2px' }}>
+            {data.trend.isPositive ? <TrendingUp size={12} /> : <TrendingDown size={12} />} {data.trend.value}
           </span>
         )}
       </div>

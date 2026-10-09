@@ -20,6 +20,7 @@ import {
   Layers,
   Building2,
 } from '../../components/ui/Icons';
+import { Sparkles, TrendingDown, Minus } from 'lucide-react';
 
 export const ClustersPage: React.FC = () => {
   const [clusters, setClusters] = useState<ClusterDetailItem[]>(MOCK_CLUSTERS);
@@ -162,13 +163,37 @@ export const ClustersPage: React.FC = () => {
   const getStatusBadge = (status: ClusterDetailItem['status']) => {
     switch (status) {
       case 'GROWING_RAPIDLY':
-        return <Badge variant="danger" size="sm">▲ Growing Rapidly</Badge>;
+        return (
+          <Badge variant="danger" size="sm">
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: '3px' }}>
+              <TrendingUp size={11} /> Growing Rapidly
+            </span>
+          </Badge>
+        );
       case 'RESOLVING':
-        return <Badge variant="success" size="sm">▼ Resolving</Badge>;
+        return (
+          <Badge variant="success" size="sm">
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: '3px' }}>
+              <TrendingDown size={11} /> Resolving
+            </span>
+          </Badge>
+        );
       case 'NEW':
-        return <Badge variant="warning" size="sm">★ New Cluster</Badge>;
+        return (
+          <Badge variant="warning" size="sm">
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: '3px' }}>
+              <Sparkles size={11} /> New Cluster
+            </span>
+          </Badge>
+        );
       default:
-        return <Badge variant="neutral" size="sm">● Stable</Badge>;
+        return (
+          <Badge variant="neutral" size="sm">
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: '3px' }}>
+              <Minus size={11} /> Stable
+            </span>
+          </Badge>
+        );
     }
   };
 
@@ -314,7 +339,7 @@ export const ClustersPage: React.FC = () => {
       </Card>
 
       {/* 4. Split View: Cluster List & In-Depth Cluster Inspector */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) minmax(0, 1.4fr)', gap: '1.5rem' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '1.5rem' }}>
         {/* Left: Cluster List */}
         <Card variant="default">
           <CardHeader>
@@ -434,7 +459,7 @@ export const ClustersPage: React.FC = () => {
                 <div style={{ fontWeight: 600, fontSize: typography.fontSize.xs, color: colors.deepForestGreen, marginBottom: '0.4rem' }}>
                   Priority Breakdown within Cluster:
                 </div>
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '0.5rem', textAlign: 'center' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(70px, 1fr))', gap: '0.5rem', textAlign: 'center' }}>
                   <div style={{ backgroundColor: '#FAECEB', padding: '0.5rem', borderRadius: radii.sm, border: '1px solid #ECC7C4' }}>
                     <div style={{ fontSize: typography.fontSize.xs, color: colors.danger }}>Critical</div>
                     <div style={{ fontWeight: 700, color: colors.danger }}>{activeCluster.priorityDistribution.critical}</div>

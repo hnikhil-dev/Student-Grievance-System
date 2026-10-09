@@ -1,4 +1,5 @@
 import React from 'react';
+import { ArrowUp, ArrowDown } from 'lucide-react';
 import { StatCardProps } from '../../types/ui';
 import { colors, typography, radii, shadows } from '../../tokens';
 
@@ -78,9 +79,13 @@ export const StatCard: React.FC<StatCardProps> = ({
               style={{
                 color: trend.isPositive ? colors.success : colors.danger,
                 fontWeight: typography.fontWeight.semibold,
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '2px',
               }}
             >
-              {trend.isPositive ? '↑' : '↓'} {trend.value}
+              {trend.isPositive ? <ArrowUp size={12} strokeWidth={2.5} /> : <ArrowDown size={12} strokeWidth={2.5} />}
+              <span>{trend.value}</span>
             </span>
           )}
           {subtitle && (

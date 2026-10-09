@@ -1,6 +1,20 @@
 'use client';
 
 import React, { useState, useEffect, createContext, useContext, useCallback } from 'react';
+import {
+  LayoutDashboard,
+  Folder,
+  Plus,
+  Bell,
+  Star,
+  User,
+  Menu,
+  Landmark,
+  Search,
+  ChevronDown,
+  LogOut,
+  GraduationCap,
+} from 'lucide-react';
 import { Button } from '../ui/Button';
 import { Dropdown } from '../ui/Dropdown';
 import { Sidebar } from '../ui/Sidebar';
@@ -148,12 +162,12 @@ export const StudentShell: React.FC<StudentShellProps> = ({
   };
 
   const navigationItems = [
-    { label: 'Dashboard', href: '/student/page', icon: '📊' },
-    { label: 'My Grievances', href: '/student/grievances', icon: '📂' },
-    { label: 'Report Grievance', href: '/student/report', icon: '➕', isCta: true },
-    { label: 'Notifications', href: '/student/notifications', icon: '🔔', badge: unreadCount },
-    { label: 'Feedback & Ratings', href: '/student/feedback', icon: '⭐' },
-    { label: 'My Profile', href: '/student/page', icon: '👤' },
+    { label: 'Dashboard', href: '/student/page', icon: <LayoutDashboard size={18} /> },
+    { label: 'My Grievances', href: '/student/grievances', icon: <Folder size={18} /> },
+    { label: 'Report Grievance', href: '/student/report', icon: <Plus size={18} />, isCta: true },
+    { label: 'Notifications', href: '/student/notifications', icon: <Bell size={18} />, badge: unreadCount },
+    { label: 'Feedback & Ratings', href: '/student/feedback', icon: <Star size={18} /> },
+    { label: 'My Profile', href: '/student/page', icon: <User size={18} /> },
   ];
 
   if (isLoading) {
@@ -202,9 +216,12 @@ export const StudentShell: React.FC<StudentShellProps> = ({
                 color: '#374151',
                 padding: '0.25rem',
                 display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
               }}
+              aria-label="Toggle navigation drawer"
             >
-              ☰
+              <Menu size={22} />
             </button>
 
             <a href="/" style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', textDecoration: 'none' }}>
@@ -223,7 +240,7 @@ export const StudentShell: React.FC<StudentShellProps> = ({
                   boxShadow: '0 2px 8px rgba(27, 67, 50, 0.2)',
                 }}
               >
-                🏛️
+                <Landmark size={20} />
               </div>
               <div>
                 <span style={{ fontSize: '0.9375rem', fontWeight: 800, color: '#1B4332', letterSpacing: '-0.01em' }}>
@@ -254,7 +271,7 @@ export const StudentShell: React.FC<StudentShellProps> = ({
                 border: '1px solid #E5E7EB',
               }}
             >
-              <span>🔍</span>
+              <Search size={15} />
               <span>Search grievances or ticket ID...</span>
             </div>
           </div>
@@ -267,7 +284,7 @@ export const StudentShell: React.FC<StudentShellProps> = ({
               size="sm"
               pill
               onClick={() => (window.location.href = '/student/report')}
-              leftIcon="➕"
+              leftIcon={<Plus size={14} />}
               className="sg-header-cta"
             >
               Report Grievance
@@ -287,11 +304,11 @@ export const StudentShell: React.FC<StudentShellProps> = ({
                 alignItems: 'center',
                 justifyContent: 'center',
                 cursor: 'pointer',
-                fontSize: '1rem',
               }}
               title="Notifications"
+              aria-label="View notifications"
             >
-              🔔
+              <Bell size={18} color="#374151" />
               {unreadCount > 0 && (
                 <span
                   style={{
@@ -345,37 +362,37 @@ export const StudentShell: React.FC<StudentShellProps> = ({
                       justifyContent: 'center',
                     }}
                   >
-                    🎓
+                    <GraduationCap size={16} />
                   </div>
                   <span style={{ fontSize: '0.8125rem', fontWeight: 700, color: '#1B4332' }}>
                     {user?.full_name || 'Student'}
                   </span>
-                  <span style={{ fontSize: '0.65rem', color: '#6B7280' }}>▼</span>
+                  <ChevronDown size={14} color="#6B7280" />
                 </div>
               }
               items={[
                 {
                   id: 'profile',
                   label: 'My Profile & ID',
-                  icon: '👤',
+                  icon: <User size={15} />,
                   onClick: () => (window.location.href = '/student/page'),
                 },
                 {
                   id: 'my-grievances',
                   label: 'My Grievances',
-                  icon: '📂',
+                  icon: <Folder size={15} />,
                   onClick: () => (window.location.href = '/student/page'),
                 },
                 {
                   id: 'notifications',
                   label: `Notifications (${unreadCount})`,
-                  icon: '🔔',
+                  icon: <Bell size={15} />,
                   onClick: () => (window.location.href = '/student/page'),
                 },
                 {
                   id: 'logout',
                   label: 'Log Out',
-                  icon: '🚪',
+                  icon: <LogOut size={15} />,
                   danger: true,
                   onClick: handleLogout,
                 },
@@ -477,7 +494,9 @@ export const StudentShell: React.FC<StudentShellProps> = ({
             {/* Sidebar Bottom Info Box */}
             {!isSidebarCollapsed && (
               <div style={{ backgroundColor: '#F0FDF4', padding: '0.85rem', borderRadius: '12px', border: '1px solid #DCFCE7' }}>
-                <div style={{ fontSize: '0.75rem', fontWeight: 700, color: '#1B4332' }}>🎓 Active Student</div>
+                <div style={{ fontSize: '0.75rem', fontWeight: 700, color: '#1B4332', display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+                  <GraduationCap size={14} /> Active Student
+                </div>
                 <div style={{ fontSize: '0.8125rem', fontWeight: 600, color: '#2D6A4F', marginTop: '0.15rem' }}>{user?.full_name}</div>
                 <div style={{ fontSize: '0.7rem', color: '#6B7280' }}>ID: {user?.student_id}</div>
               </div>
@@ -510,30 +529,31 @@ export const StudentShell: React.FC<StudentShellProps> = ({
             borderTop: '1px solid #E5E7EB',
             display: 'flex',
             justifyContent: 'space-around',
+            alignItems: 'center',
             padding: '0.5rem 0.25rem',
             zIndex: 1020,
             boxShadow: '0 -4px 10px rgba(0,0,0,0.05)',
           }}
         >
-          <a href="/student/page" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', fontSize: '0.7rem', color: '#1B4332', fontWeight: 700, textDecoration: 'none' }}>
-            <span style={{ fontSize: '1.1rem' }}>📊</span>
-            Dashboard
+          <a href="/student/page" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '2px', fontSize: '0.7rem', color: '#1B4332', fontWeight: 700, textDecoration: 'none' }}>
+            <LayoutDashboard size={18} />
+            <span>Dashboard</span>
           </a>
-          <a href="/student/grievances" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', fontSize: '0.7rem', color: '#4B5563', textDecoration: 'none' }}>
-            <span style={{ fontSize: '1.1rem' }}>📂</span>
-            Complaints
+          <a href="/student/grievances" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '2px', fontSize: '0.7rem', color: '#4B5563', textDecoration: 'none' }}>
+            <Folder size={18} />
+            <span>Complaints</span>
           </a>
-          <a href="/student/report" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', fontSize: '0.75rem', color: '#FFFFFF', backgroundColor: '#2D6A4F', padding: '0.3rem 0.8rem', borderRadius: '9999px', fontWeight: 700, textDecoration: 'none' }}>
-            <span style={{ fontSize: '1rem' }}>➕</span>
-            Report
+          <a href="/student/report" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '2px', fontSize: '0.75rem', color: '#FFFFFF', backgroundColor: '#2D6A4F', padding: '0.35rem 0.85rem', borderRadius: '9999px', fontWeight: 700, textDecoration: 'none' }}>
+            <Plus size={16} />
+            <span>Report</span>
           </a>
-          <a href="/student/notifications" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', fontSize: '0.7rem', color: '#4B5563', textDecoration: 'none' }}>
-            <span style={{ fontSize: '1.1rem' }}>🔔</span>
-            Alerts
+          <a href="/student/notifications" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '2px', fontSize: '0.7rem', color: '#4B5563', textDecoration: 'none' }}>
+            <Bell size={18} />
+            <span>Alerts</span>
           </a>
-          <a href="/student/page" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', fontSize: '0.7rem', color: '#4B5563', textDecoration: 'none' }}>
-            <span style={{ fontSize: '1.1rem' }}>👤</span>
-            Profile
+          <a href="/student/page" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '2px', fontSize: '0.7rem', color: '#4B5563', textDecoration: 'none' }}>
+            <User size={18} />
+            <span>Profile</span>
           </a>
         </nav>
       </div>

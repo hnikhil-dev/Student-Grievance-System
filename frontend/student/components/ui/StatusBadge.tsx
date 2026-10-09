@@ -2,29 +2,43 @@
 
 import React from 'react';
 import { GrievanceStatusType, BadgeSize } from '../../types/design-system';
+import {
+  Inbox,
+  Search,
+  User,
+  Cog,
+  Lightbulb,
+  Hourglass,
+  CheckCircle2,
+  CheckCheck,
+  RotateCcw,
+  XCircle,
+  AlertOctagon,
+} from 'lucide-react';
 
 export interface StatusBadgeProps {
   status: GrievanceStatusType | string;
   size?: BadgeSize;
   showDot?: boolean;
+  showIcon?: boolean;
 }
 
 export const StatusBadge: React.FC<StatusBadgeProps> = ({
   status,
   size = 'md',
-  showDot = true,
+  showDot = false,
+  showIcon = true,
 }) => {
   const normStatus = (status || 'SUBMITTED').toUpperCase() as GrievanceStatusType;
 
-  // Visual mapping for all 10 canonical statuses
-  const statusConfig: Record<string, { label: string; bg: string; text: string; border: string; dot: string; icon: string }> = {
+  const statusConfig: Record<string, { label: string; bg: string; text: string; border: string; dot: string; Icon: React.ElementType }> = {
     SUBMITTED: {
       label: 'Submitted',
       bg: '#F0F9FF',
       text: '#0369A1',
       border: '#BAE6FD',
       dot: '#0284C7',
-      icon: '📥',
+      Icon: Inbox,
     },
     UNDER_REVIEW: {
       label: 'Under Review',
@@ -32,7 +46,7 @@ export const StatusBadge: React.FC<StatusBadgeProps> = ({
       text: '#B45309',
       border: '#FDE68A',
       dot: '#D97706',
-      icon: '🔍',
+      Icon: Search,
     },
     ASSIGNED: {
       label: 'Assigned',
@@ -40,7 +54,7 @@ export const StatusBadge: React.FC<StatusBadgeProps> = ({
       text: '#6D28D9',
       border: '#DDD6FE',
       dot: '#7C3AED',
-      icon: '👤',
+      Icon: User,
     },
     IN_PROGRESS: {
       label: 'In Progress',
@@ -48,7 +62,7 @@ export const StatusBadge: React.FC<StatusBadgeProps> = ({
       text: '#1D4ED8',
       border: '#BFDBFE',
       dot: '#2563EB',
-      icon: '⚙️',
+      Icon: Cog,
     },
     RESOLUTION_PROPOSED: {
       label: 'Resolution Proposed',
@@ -56,7 +70,7 @@ export const StatusBadge: React.FC<StatusBadgeProps> = ({
       text: '#0F766E',
       border: '#99F6E4',
       dot: '#0D9488',
-      icon: '💡',
+      Icon: Lightbulb,
     },
     STUDENT_VERIFICATION: {
       label: 'Awaiting Verification',
@@ -64,7 +78,7 @@ export const StatusBadge: React.FC<StatusBadgeProps> = ({
       text: '#92400E',
       border: '#FDE68A',
       dot: '#D97706',
-      icon: '⏳',
+      Icon: Hourglass,
     },
     AWAITING_VERIFICATION: {
       label: 'Awaiting Verification',
@@ -72,7 +86,7 @@ export const StatusBadge: React.FC<StatusBadgeProps> = ({
       text: '#92400E',
       border: '#FDE68A',
       dot: '#D97706',
-      icon: '⏳',
+      Icon: Hourglass,
     },
     RESOLVED: {
       label: 'Resolved',
@@ -80,7 +94,7 @@ export const StatusBadge: React.FC<StatusBadgeProps> = ({
       text: '#047857',
       border: '#A7F3D0',
       dot: '#059669',
-      icon: '✅',
+      Icon: CheckCircle2,
     },
     CLOSED: {
       label: 'Closed & Verified',
@@ -88,7 +102,7 @@ export const StatusBadge: React.FC<StatusBadgeProps> = ({
       text: '#047857',
       border: '#A7F3D0',
       dot: '#059669',
-      icon: '✔',
+      Icon: CheckCheck,
     },
     REOPENED: {
       label: 'Reopened',
@@ -96,7 +110,7 @@ export const StatusBadge: React.FC<StatusBadgeProps> = ({
       text: '#BE123C',
       border: '#FECDD3',
       dot: '#E11D48',
-      icon: '🔄',
+      Icon: RotateCcw,
     },
     REJECTED: {
       label: 'Rejected',
@@ -104,7 +118,7 @@ export const StatusBadge: React.FC<StatusBadgeProps> = ({
       text: '#475569',
       border: '#E2E8F0',
       dot: '#64748B',
-      icon: '🚫',
+      Icon: XCircle,
     },
     ESCALATED: {
       label: 'Escalated',
@@ -112,16 +126,17 @@ export const StatusBadge: React.FC<StatusBadgeProps> = ({
       text: '#B91C1C',
       border: '#FCA5A5',
       dot: '#DC2626',
-      icon: '🚨',
+      Icon: AlertOctagon,
     },
   };
 
   const config = statusConfig[normStatus] || statusConfig.SUBMITTED;
+  const IconComponent = config.Icon;
 
-  const sizeStyles: Record<BadgeSize, { padding: string; font: string; dotSize: string }> = {
-    sm: { padding: '0.2rem 0.5rem', font: '0.75rem', dotSize: '6px' },
-    md: { padding: '0.3rem 0.75rem', font: '0.8125rem', dotSize: '8px' },
-    lg: { padding: '0.45rem 1rem', font: '0.875rem', dotSize: '10px' },
+  const sizeStyles: Record<BadgeSize, { padding: string; font: string; iconSize: number; dotSize: string }> = {
+    sm: { padding: '0.2rem 0.5rem', font: '0.75rem', iconSize: 11, dotSize: '6px' },
+    md: { padding: '0.3rem 0.75rem', font: '0.8125rem', iconSize: 13, dotSize: '8px' },
+    lg: { padding: '0.45rem 1rem', font: '0.875rem', iconSize: 15, dotSize: '10px' },
   };
 
   const sStyle = sizeStyles[size];
@@ -131,7 +146,7 @@ export const StatusBadge: React.FC<StatusBadgeProps> = ({
       style={{
         display: 'inline-flex',
         alignItems: 'center',
-        gap: '0.4rem',
+        gap: '0.35rem',
         padding: sStyle.padding,
         fontSize: sStyle.font,
         fontWeight: 600,
@@ -153,6 +168,7 @@ export const StatusBadge: React.FC<StatusBadgeProps> = ({
           }}
         />
       )}
+      {showIcon && <IconComponent size={sStyle.iconSize} strokeWidth={2} />}
       <span>{config.label}</span>
     </span>
   );

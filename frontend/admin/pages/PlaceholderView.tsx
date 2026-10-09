@@ -1,4 +1,19 @@
 import React, { useState } from 'react';
+import {
+  SlidersHorizontal,
+  Landmark,
+  Tag,
+  Zap,
+  GitMerge,
+  Boxes,
+  Clock,
+  Megaphone,
+  BarChart2,
+  Lightbulb,
+  Check,
+  ClipboardList,
+  AlertTriangle,
+} from 'lucide-react';
 import { AdminRouteId } from '../types/navigation';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '../components/ui/Card';
 import { Badge } from '../components/ui/Badge';
@@ -15,7 +30,7 @@ import { colors, typography } from '../tokens';
 interface ModuleMetadata {
   title: string;
   phase: number;
-  icon: string;
+  icon: React.ReactNode;
   description: string;
   plannedFeatures: string[];
 }
@@ -24,7 +39,7 @@ const MODULE_DATA: Record<AdminRouteId, ModuleMetadata> = {
   'command-center': {
     title: 'Admin Command Center',
     phase: 1,
-    icon: '🎛️',
+    icon: <SlidersHorizontal size={24} color={colors.primaryGreen} />,
     description: 'Executive triage queue, real-time grievance pulse, and immediate action dispatcher.',
     plannedFeatures: [
       'Institutional live incident feed',
@@ -36,7 +51,7 @@ const MODULE_DATA: Record<AdminRouteId, ModuleMetadata> = {
   'departments': {
     title: 'Department Dashboard',
     phase: 2,
-    icon: '🏛️',
+    icon: <Landmark size={24} color={colors.primaryGreen} />,
     description: 'Departmental workload balance, officer queues, and unit-level SLA compliance.',
     plannedFeatures: [
       'IT, Hostel, Maintenance, Academics workload distribution',
@@ -48,7 +63,7 @@ const MODULE_DATA: Record<AdminRouteId, ModuleMetadata> = {
   'classification': {
     title: 'AI Classification',
     phase: 3,
-    icon: '🏷️',
+    icon: <Tag size={24} color={colors.primaryGreen} />,
     description: 'Autonomous symptom tagging, natural language intent extraction, and department routing.',
     plannedFeatures: [
       'Multi-class complaint taxonomy classifier',
@@ -60,7 +75,7 @@ const MODULE_DATA: Record<AdminRouteId, ModuleMetadata> = {
   'priority': {
     title: 'Priority Engine',
     phase: 4,
-    icon: '⚡',
+    icon: <Zap size={24} color={colors.primaryGreen} />,
     description: 'Deterministic and AI-assisted multi-factor priority scoring matrix.',
     plannedFeatures: [
       'Severity (Low, Moderate, High, Critical) calculation',
@@ -72,7 +87,7 @@ const MODULE_DATA: Record<AdminRouteId, ModuleMetadata> = {
   'duplicates': {
     title: 'Duplicate Detection',
     phase: 5,
-    icon: '🔗',
+    icon: <GitMerge size={24} color={colors.primaryGreen} />,
     description: 'Semantic vector similarity analysis to detect repeat and related complaints.',
     plannedFeatures: [
       'Embedding-based semantic text matching',
@@ -84,7 +99,7 @@ const MODULE_DATA: Record<AdminRouteId, ModuleMetadata> = {
   'clusters': {
     title: 'Clustering',
     phase: 6,
-    icon: '🧩',
+    icon: <Boxes size={24} color={colors.primaryGreen} />,
     description: 'Automated grouping of systemic campus issues to diagnose root causes.',
     plannedFeatures: [
       'Unsupervised incident cluster formation',
@@ -96,7 +111,7 @@ const MODULE_DATA: Record<AdminRouteId, ModuleMetadata> = {
   'sla': {
     title: 'SLA Monitoring',
     phase: 7,
-    icon: '⏱️',
+    icon: <Clock size={24} color={colors.primaryGreen} />,
     description: 'Continuous watchdog tracking resolution timeframes against institutional SLAs.',
     plannedFeatures: [
       'Priority-based resolution countdown timers',
@@ -108,7 +123,7 @@ const MODULE_DATA: Record<AdminRouteId, ModuleMetadata> = {
   'escalation': {
     title: 'Escalation',
     phase: 8,
-    icon: '📣',
+    icon: <Megaphone size={24} color={colors.primaryGreen} />,
     description: 'Hierarchical intervention engine for unresolved and critical grievances.',
     plannedFeatures: [
       'Automated multi-tier escalation hierarchy (Officer -> HOD -> Dean)',
@@ -120,7 +135,7 @@ const MODULE_DATA: Record<AdminRouteId, ModuleMetadata> = {
   'analytics': {
     title: 'Analytics',
     phase: 9,
-    icon: '📊',
+    icon: <BarChart2 size={24} color={colors.primaryGreen} />,
     description: 'Comprehensive historical reports, resolution velocity, and satisfaction metrics.',
     plannedFeatures: [
       '14-day & 90-day grievance intake vs resolution trends',
@@ -132,7 +147,7 @@ const MODULE_DATA: Record<AdminRouteId, ModuleMetadata> = {
   'insights': {
     title: 'AI Insights',
     phase: 10,
-    icon: '💡',
+    icon: <Lightbulb size={24} color={colors.primaryGreen} />,
     description: 'Predictive intelligence, bottleneck diagnosis, and preventive recommendations.',
     plannedFeatures: [
       'Campus infrastructure failure pattern prediction',
@@ -263,7 +278,7 @@ export const PlaceholderView: React.FC<PlaceholderViewProps> = ({ routeId }) => 
 
       {/* Tab 1: Module Scope Overview */}
       {activeTab === 'OVERVIEW' && (
-        <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1.4fr) minmax(0, 1fr)', gap: '1.5rem' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1.5rem' }}>
           <Card>
             <CardHeader>
               <CardTitle>Planned Implementation Scope</CardTitle>
@@ -287,7 +302,7 @@ export const PlaceholderView: React.FC<PlaceholderViewProps> = ({ routeId }) => 
                       fontSize: typography.fontSize.sm,
                     }}
                   >
-                    <span style={{ color: colors.primaryGreen, fontWeight: 'bold' }}>✓</span>
+                    <Check size={14} color={colors.primaryGreen} strokeWidth={2.5} style={{ flexShrink: 0 }} />
                     <span style={{ color: colors.primaryText }}>{feat}</span>
                   </div>
                 ))}
@@ -333,7 +348,7 @@ export const PlaceholderView: React.FC<PlaceholderViewProps> = ({ routeId }) => 
                 title="Total Grievances"
                 value="148"
                 subtitle="Institutional aggregate"
-                icon="📋"
+                icon={<ClipboardList size={18} color={colors.primaryGreen} />}
                 trend={{ value: '12% this month', isPositive: true }}
                 accentColor={colors.primaryGreen}
               />
@@ -341,14 +356,14 @@ export const PlaceholderView: React.FC<PlaceholderViewProps> = ({ routeId }) => 
                 title="Active Triage"
                 value="24"
                 subtitle="In-progress investigations"
-                icon="⏳"
+                icon={<Clock size={18} color={colors.secondaryGreen} />}
                 accentColor={colors.secondaryGreen}
               />
               <StatCard
                 title="SLA Compliance"
                 value="94.6%"
                 subtitle="Target: > 90%"
-                icon="⏱️"
+                icon={<Clock size={18} color={colors.success} />}
                 trend={{ value: '1.4% improvement', isPositive: true }}
                 accentColor={colors.success}
               />
@@ -356,7 +371,7 @@ export const PlaceholderView: React.FC<PlaceholderViewProps> = ({ routeId }) => 
                 title="SLA Breached"
                 value="3"
                 subtitle="Requiring escalation"
-                icon="⚠️"
+                icon={<AlertTriangle size={18} color={colors.danger} />}
                 trend={{ value: '2 resolved', isPositive: false }}
                 accentColor={colors.danger}
               />

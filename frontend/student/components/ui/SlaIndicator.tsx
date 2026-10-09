@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { SlaHealthStatus, BadgeSize } from '../../types/design-system';
+import { Clock, AlertTriangle, AlertOctagon } from 'lucide-react';
 
 export interface SlaIndicatorProps {
   slaStatus?: {
@@ -23,7 +24,9 @@ export const SlaIndicator: React.FC<SlaIndicatorProps> = ({
 }) => {
   if (!slaStatus) {
     return (
-      <span style={{ fontSize: '0.8125rem', color: '#6B7280' }}>⏱ SLA 24h</span>
+      <span style={{ fontSize: '0.8125rem', color: '#6B7280', display: 'inline-flex', alignItems: 'center', gap: '0.35rem' }}>
+        <Clock size={13} /> SLA 24h
+      </span>
     );
   }
 
@@ -33,43 +36,44 @@ export const SlaIndicator: React.FC<SlaIndicatorProps> = ({
   if (isOverdue || elapsedPercent >= 100) health = 'BREACHED';
   else if (isWarning || elapsedPercent > 75) health = 'WARNING';
 
-  const slaConfig: Record<SlaHealthStatus, { label: string; bg: string; text: string; border: string; icon: string }> = {
+  const slaConfig: Record<SlaHealthStatus, { label: string; bg: string; text: string; border: string; Icon: React.ElementType }> = {
     ON_TRACK: {
       label: remainingMinutes > 60 ? `${Math.floor(remainingMinutes / 60)}h ${remainingMinutes % 60}m remaining` : `${Math.max(0, remainingMinutes)}m remaining`,
       bg: '#ECFDF5',
       text: '#047857',
       border: '#A7F3D0',
-      icon: '⏱',
+      Icon: Clock,
     },
     WARNING: {
-      label: remainingMinutes > 0 ? `⚠️ SLA Warning: ${remainingMinutes > 60 ? `${Math.floor(remainingMinutes / 60)}h ${remainingMinutes % 60}m` : `${remainingMinutes}m`} remaining (${Math.round(elapsedPercent)}%)` : '⚠️ SLA Threshold Nearing',
+      label: remainingMinutes > 0 ? `SLA Warning: ${remainingMinutes > 60 ? `${Math.floor(remainingMinutes / 60)}h ${remainingMinutes % 60}m` : `${remainingMinutes}m`} remaining (${Math.round(elapsedPercent)}%)` : 'SLA Threshold Nearing',
       bg: '#FFFBEB',
       text: '#B45309',
       border: '#FDE68A',
-      icon: '⚠️',
+      Icon: AlertTriangle,
     },
     BREACHED: {
-      label: '🚨 Overdue (SLA Breached)',
+      label: 'Overdue (SLA Breached)',
       bg: '#FEF2F2',
       text: '#B91C1C',
       border: '#FCA5A5',
-      icon: '🚨',
+      Icon: AlertOctagon,
     },
     OVERDUE: {
-      label: '🚨 Overdue (SLA Breached)',
+      label: 'Overdue (SLA Breached)',
       bg: '#FEF2F2',
       text: '#B91C1C',
       border: '#FCA5A5',
-      icon: '🚨',
+      Icon: AlertOctagon,
     },
   };
 
   const config = slaConfig[health];
+  const IconComponent = config.Icon;
 
-  const sizeStyles: Record<BadgeSize, { padding: string; font: string }> = {
-    sm: { padding: '0.2rem 0.5rem', font: '0.75rem' },
-    md: { padding: '0.35rem 0.75rem', font: '0.8125rem' },
-    lg: { padding: '0.5rem 1rem', font: '0.875rem' },
+  const sizeStyles: Record<BadgeSize, { padding: string; font: string; iconSize: number }> = {
+    sm: { padding: '0.2rem 0.5rem', font: '0.75rem', iconSize: 11 },
+    md: { padding: '0.35rem 0.75rem', font: '0.8125rem', iconSize: 13 },
+    lg: { padding: '0.5rem 1rem', font: '0.875rem', iconSize: 15 },
   };
 
   const sStyle = sizeStyles[size];
@@ -92,25 +96,34 @@ export const SlaIndicator: React.FC<SlaIndicatorProps> = ({
           width: 'fit-content',
         }}
       >
-        <span>{config.icon}</span>
+        <IconComponent size={sStyle.iconSize} strokeWidth={2.2} />
         <span>{config.label}</span>
       </span>
 
       {showProgress && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.2rem', width: '100%' }}>
-          <div style={{ width: '100%', height: '6px', backgroundColor: '#E5E7EB', borderRadius: '9999px', overflow: 'hidden' }}>
+          <div
+            style={{
+              height: '6px',
+              width: '100%',
+              backgroundColor: '#E5E7EB',
+              borderRadius: '9999px',
+              overflow: 'hidden',
+            }}
+          >
             <div
               style={{
                 height: '100%',
                 width: `${Math.min(100, Math.max(0, elapsedPercent))}%`,
-                backgroundColor: isOverdue || elapsedPercent >= 100 ? '#DC2626' : (isWarning || elapsedPercent > 75) ? '#D97706' : '#059669',
-                transition: 'width 300ms ease',
+                backgroundColor: health === 'BREACHED' ? '#EF4444' : health === 'WARNING' ? '#F59E0B' : '#10B981',
+                borderRadius: '9999px',
+                transition: 'width 0.5s ease-out',
               }}
             />
           </div>
-          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.7rem', color: '#6B7280' }}>
-            <span>{Math.round(elapsedPercent)}% consumed</span>
-            <span>{isOverdue ? 'Overdue' : `${Math.max(0, remainingMinutes)}m left`}</span>
+          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.6875rem', color: '#6B7280' }}>
+            <span>Target: {slaStatus.slaHours || 24}h</span>
+            <span>{Math.round(elapsedPercent)}% used</span>
           </div>
         </div>
       )}
@@ -130,38 +143,29 @@ export interface DynamicSlaBarProps {
   compact?: boolean;
 }
 
-/**
- * Dynamic SLA Countdown Bar
- * Live visual progress bar showing:
- * - Remaining time (sla_status.remainingMinutes)
- * - Percentage consumed (sla_status.elapsedPercent)
- * - Warning state (yellow if >75%) and Breach state (red if overdue)
- */
 export const DynamicSlaBar: React.FC<DynamicSlaBarProps> = ({
   slaStatus,
   compact = false,
 }) => {
-  const [ticker, setTicker] = useState(0);
+  const [, setTick] = useState(0);
 
-  // Live minute ticker to refresh remaining visual countdown
   useEffect(() => {
     const interval = setInterval(() => {
-      setTicker((prev) => prev + 1);
+      setTick((t) => t + 1);
     }, 60000);
     return () => clearInterval(interval);
   }, []);
 
   if (!slaStatus) {
     return (
-      <div style={{ fontSize: '0.8rem', color: '#6B7280' }}>
-        ⏱ Standard SLA Target (24 hours)
+      <div style={{ fontSize: '0.8rem', color: '#6B7280', display: 'inline-flex', alignItems: 'center', gap: '0.35rem' }}>
+        <Clock size={13} /> Standard SLA Target (24 hours)
       </div>
     );
   }
 
   const { remainingMinutes, elapsedPercent = 0, isOverdue, isWarning, dueAt, slaHours } = slaStatus;
 
-  // Warning state if > 75% or isWarning; Breach state if overdue or elapsedPercent >= 100
   const isBreached = isOverdue || elapsedPercent >= 100;
   const isWarn = !isBreached && (isWarning || elapsedPercent > 75);
 
@@ -172,7 +176,7 @@ export const DynamicSlaBar: React.FC<DynamicSlaBarProps> = ({
         text: '#B91C1C',
         barColor: '#EF4444',
         statusLabel: 'BREACHED',
-        icon: '🚨',
+        Icon: AlertOctagon,
       }
     : isWarn
     ? {
@@ -181,7 +185,7 @@ export const DynamicSlaBar: React.FC<DynamicSlaBarProps> = ({
         text: '#B45309',
         barColor: '#F59E0B',
         statusLabel: 'WARNING (>75% Consumed)',
-        icon: '⚠️',
+        Icon: AlertTriangle,
       }
     : {
         bg: '#ECFDF5',
@@ -189,7 +193,7 @@ export const DynamicSlaBar: React.FC<DynamicSlaBarProps> = ({
         text: '#047857',
         barColor: '#10B981',
         statusLabel: 'ON TRACK',
-        icon: '⏱',
+        Icon: Clock,
       };
 
   const formattedRemaining =
@@ -199,14 +203,7 @@ export const DynamicSlaBar: React.FC<DynamicSlaBarProps> = ({
       ? `${Math.floor(remainingMinutes / 60)}h ${remainingMinutes % 60}m remaining`
       : `${Math.max(0, remainingMinutes)}m remaining`;
 
-  const formattedDueAt = dueAt
-    ? new Date(dueAt).toLocaleTimeString('en-US', {
-        month: 'short',
-        day: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit',
-      })
-    : null;
+  const ProgressIcon = theme.Icon;
 
   return (
     <div
@@ -214,58 +211,33 @@ export const DynamicSlaBar: React.FC<DynamicSlaBarProps> = ({
         backgroundColor: theme.bg,
         border: `1px solid ${theme.border}`,
         borderRadius: '12px',
-        padding: compact ? '0.6rem 0.85rem' : '0.85rem 1rem',
+        padding: compact ? '0.65rem 0.85rem' : '0.85rem 1rem',
         display: 'flex',
         flexDirection: 'column',
-        gap: '0.45rem',
+        gap: '0.5rem',
         width: '100%',
         boxSizing: 'border-box',
       }}
     >
-      {/* Header Info */}
-      <div
-        style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          flexWrap: 'wrap',
-          gap: '0.4rem',
-        }}
-      >
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-          <span style={{ fontSize: '0.95rem' }}>{theme.icon}</span>
-          <span style={{ fontSize: '0.78rem', fontWeight: 800, color: theme.text, letterSpacing: '0.02em' }}>
-            SLA: {theme.statusLabel}
-          </span>
-          <span style={{ fontSize: '0.75rem', color: theme.text, fontWeight: 600 }}>
-            • {formattedRemaining}
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.25rem' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem' }}>
+          <ProgressIcon size={14} color={theme.text} />
+          <span style={{ fontSize: '0.75rem', fontWeight: 700, color: theme.text, textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+            {theme.statusLabel}
           </span>
         </div>
-
-        <span
-          style={{
-            fontSize: '0.75rem',
-            fontWeight: 700,
-            color: theme.text,
-            backgroundColor: '#FFFFFF',
-            padding: '0.15rem 0.45rem',
-            borderRadius: '6px',
-            border: `1px solid ${theme.border}`,
-          }}
-        >
-          {Math.min(100, Math.round(elapsedPercent))}% consumed
+        <span style={{ fontSize: '0.8125rem', fontWeight: 700, color: theme.text }}>
+          {formattedRemaining}
         </span>
       </div>
 
-      {/* Visual Progress Bar Track */}
       <div
         style={{
+          height: '7px',
           width: '100%',
-          height: compact ? '6px' : '8px',
-          backgroundColor: '#E5E7EB',
+          backgroundColor: 'rgba(0, 0, 0, 0.06)',
           borderRadius: '9999px',
           overflow: 'hidden',
-          position: 'relative',
         }}
       >
         <div
@@ -274,25 +246,15 @@ export const DynamicSlaBar: React.FC<DynamicSlaBarProps> = ({
             width: `${Math.min(100, Math.max(0, elapsedPercent))}%`,
             backgroundColor: theme.barColor,
             borderRadius: '9999px',
-            transition: 'width 400ms cubic-bezier(0.4, 0, 0.2, 1)',
+            transition: 'width 0.6s cubic-bezier(0.4, 0, 0.2, 1)',
           }}
         />
       </div>
 
-      {/* Subtext info */}
-      {!compact && (
-        <div
-          style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            fontSize: '0.72rem',
-            color: '#6B7280',
-          }}
-        >
-          <span>Target: {slaHours || 24}h SLA standard</span>
-          {formattedDueAt && <span>Due by: {formattedDueAt}</span>}
-        </div>
-      )}
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.72rem', color: theme.text, opacity: 0.85 }}>
+        <span>Institutional SLA Target: <strong>{slaHours || 24} hours</strong></span>
+        {dueAt && <span>Due: {new Date(dueAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', month: 'short', day: 'numeric' })}</span>}
+      </div>
     </div>
   );
 };

@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import { Sparkles } from 'lucide-react';
 import { BadgeSize } from '../../types/design-system';
 
 export interface AiBadgeProps {
@@ -71,10 +72,9 @@ export const AiBadge: React.FC<AiBadgeProps> = ({
           display: 'inline-flex',
           alignItems: 'center',
           justifyContent: 'center',
-          fontSize: '0.75rem',
         }}
       >
-        ✨
+        <Sparkles size={sStyle.iconSize === '12px' ? 11 : sStyle.iconSize === '14px' ? 13 : 15} color={styleConfig.text} />
       </span>
       <span>{label}</span>
       {confidencePercent !== null && (

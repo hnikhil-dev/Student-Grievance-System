@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import { Eye, EyeOff } from 'lucide-react';
 
 export interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   label?: string;
@@ -114,7 +115,7 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(({
               borderRadius: '6px',
             }}
           >
-            {showPassword ? '👁️' : '👁️‍🗨️'}
+            {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
           </button>
         ) : (
           rightIcon && <span aria-hidden="true" style={{ color: '#6B7280', display: 'flex', marginLeft: '0.25rem' }}>{rightIcon}</span>

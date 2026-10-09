@@ -169,8 +169,9 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({
 
       {/* Main Sidebar Element */}
       <aside
+        className={`admin-sidebar-desktop ${isMobileOpen ? 'admin-sidebar-mobile-open' : ''}`}
         style={{
-          width: isCollapsed ? '72px' : '264px',
+          width: isMobileOpen ? '280px' : (isCollapsed ? '72px' : '264px'),
           backgroundColor: colors.deepForestGreen,
           color: '#FFFFFF',
           display: 'flex',

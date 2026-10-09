@@ -24,6 +24,7 @@ import {
   Clock,
   ChevronRight,
 } from '../../components/ui/Icons';
+import { Edit3 } from 'lucide-react';
 
 export const PriorityPage: React.FC = () => {
   const [items, setItems] = useState<PriorityGrievanceItem[]>(MOCK_PRIORITY_GRIEVANCES);
@@ -390,9 +391,12 @@ export const PriorityPage: React.FC = () => {
                           fontSize: typography.fontSize.xs,
                           fontWeight: 600,
                           color: item.slaMinutesRemaining < 0 ? colors.danger : item.slaMinutesRemaining < 60 ? colors.warning : colors.success,
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: '4px',
                         }}
                       >
-                        ⏱ {item.slaRemaining}
+                        <Clock size={12} /> {item.slaRemaining}
                       </span>
                     </td>
                     <td style={{ padding: '0.85rem 0.75rem', maxWidth: '300px', fontSize: typography.fontSize.xs, color: colors.secondaryText }}>
@@ -400,8 +404,8 @@ export const PriorityPage: React.FC = () => {
                         {item.reason}
                       </div>
                       {item.overriddenBy && (
-                        <div style={{ color: colors.warning, fontWeight: 600, marginTop: '0.15rem' }}>
-                          ✎ Manually Overridden
+                        <div style={{ color: colors.warning, fontWeight: 600, marginTop: '0.15rem', display: 'inline-flex', alignItems: 'center', gap: '3px' }}>
+                          <Edit3 size={11} /> Manually Overridden
                         </div>
                       )}
                     </td>

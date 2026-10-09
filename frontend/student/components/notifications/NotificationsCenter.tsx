@@ -17,6 +17,22 @@ import {
 import { getDynamicAuthHeaders, getStoredUser } from '@lib/api';
 import { useRealtimeNotifications } from '@lib/useRealtime';
 
+import {
+  Bell,
+  Inbox,
+  User,
+  RefreshCw,
+  MessageSquare,
+  AlertTriangle,
+  AlertOctagon,
+  CheckCircle2,
+  Clock,
+  RotateCcw,
+  TrendingUp,
+  Check,
+  Bookmark,
+} from 'lucide-react';
+
 export interface NotificationItem {
   id: string;
   user_id: string;
@@ -32,81 +48,81 @@ export interface NotificationItem {
 // Visual mappings for canonical backend notification types
 const NOTIFICATION_TYPE_CONFIG: Record<
   string,
-  { label: string; icon: string; bg: string; text: string; border: string }
+  { label: string; icon: React.ReactNode; bg: string; text: string; border: string }
 > = {
   SUBMITTED: {
     label: 'Grievance Registered',
-    icon: '📥',
+    icon: <Inbox size={20} color="#0369A1" />,
     bg: '#F0F9FF',
     text: '#0369A1',
     border: '#BAE6FD',
   },
   ASSIGNED: {
     label: 'Officer Assigned',
-    icon: '👤',
+    icon: <User size={20} color="#6D28D9" />,
     bg: '#F5F3FF',
     text: '#6D28D9',
     border: '#DDD6FE',
   },
   STATUS_UPDATE: {
     label: 'Status Changed',
-    icon: '🔄',
+    icon: <RefreshCw size={20} color="#1D4ED8" />,
     bg: '#EFF6FF',
     text: '#1D4ED8',
     border: '#BFDBFE',
   },
   COMMENT_ADDED: {
     label: 'New Message',
-    icon: '💬',
+    icon: <MessageSquare size={20} color="#047857" />,
     bg: '#ECFDF5',
     text: '#047857',
     border: '#A7F3D0',
   },
   SLA_WARNING: {
     label: 'SLA Warning',
-    icon: '⚠️',
+    icon: <AlertTriangle size={20} color="#B45309" />,
     bg: '#FFFBEB',
     text: '#B45309',
     border: '#FDE68A',
   },
   SLA_BREACH: {
     label: 'SLA Breached',
-    icon: '🚨',
+    icon: <AlertOctagon size={20} color="#B91C1C" />,
     bg: '#FEF2F2',
     text: '#B91C1C',
     border: '#FCA5A5',
   },
   RESOLUTION_PROPOSED: {
     label: 'Resolution Proposed',
-    icon: '💡',
+    icon: <CheckCircle2 size={20} color="#92400E" />,
     bg: '#FEFCE8',
     text: '#92400E',
     border: '#FEF08A',
   },
   VERIFICATION_REQUIRED: {
     label: 'Verification Required',
-    icon: '⏳',
+    icon: <Clock size={20} color="#92400E" />,
     bg: '#FEFCE8',
     text: '#92400E',
     border: '#FEF08A',
   },
   REOPENED: {
     label: 'Grievance Reopened',
-    icon: '🔁',
+    icon: <RotateCcw size={20} color="#BE123C" />,
     bg: '#FFF1F2',
     text: '#BE123C',
     border: '#FECDD3',
   },
   CLOSED: {
     label: 'Resolution Accepted',
-    icon: '✅',
+    icon: <CheckCircle2 size={20} color="#047857" />,
     bg: '#ECFDF5',
     text: '#047857',
     border: '#A7F3D0',
   },
   ESCALATED: {
     label: 'Grievance Escalated',
-    icon: '🔺',
+    icon: <TrendingUp size={20} color="#B91C1C" />,
     bg: '#FEF2F2',
     text: '#B91C1C',
     border: '#FCA5A5',
@@ -293,7 +309,7 @@ export const NotificationsCenter: React.FC = () => {
         >
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', marginBottom: '0.25rem' }}>
-              <span style={{ fontSize: '1.75rem' }}>🔔</span>
+              <Bell size={26} color="#1B4332" />
               <h1
                 style={{
                   margin: 0,
@@ -335,7 +351,7 @@ export const NotificationsCenter: React.FC = () => {
                 pill
                 isLoading={isMarkingAll}
                 onClick={handleMarkAllAsRead}
-                leftIcon="✓"
+                leftIcon={<Check size={14} />}
               >
                 Mark All as Read
               </Button>
@@ -371,7 +387,7 @@ export const NotificationsCenter: React.FC = () => {
           {[
             { id: 'ALL', label: `All Alerts (${notifications.length})` },
             { id: 'UNREAD', label: `Unread (${unreadCount})` },
-            { id: 'ACTION', label: 'Action Required ⚡' },
+            { id: 'ACTION', label: 'Action Required' },
           ].map((tab) => {
             const isActive = filterTab === tab.id;
             return (
@@ -414,7 +430,7 @@ export const NotificationsCenter: React.FC = () => {
           />
         ) : filteredNotifications.length === 0 ? (
           <EmptyState
-            icon="🔔"
+            icon={<Bell size={28} />}
             title={filterTab === 'UNREAD' ? 'No Unread Notifications' : 'No New Notifications'}
             description={
               filterTab === 'UNREAD'
@@ -433,7 +449,7 @@ export const NotificationsCenter: React.FC = () => {
             {filteredNotifications.map((n) => {
               const cfg = NOTIFICATION_TYPE_CONFIG[n.type] || {
                 label: 'General Alert',
-                icon: '📌',
+                icon: <Bookmark size={20} color="#374151" />,
                 bg: '#F3F4F6',
                 text: '#374151',
                 border: '#E5E7EB',
