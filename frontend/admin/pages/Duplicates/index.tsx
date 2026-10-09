@@ -26,7 +26,8 @@ import {
 import { Check } from 'lucide-react';
 
 export const DuplicatesPage: React.FC = () => {
-  const [pairs, setPairs] = useState<DuplicatePairItem[]>(MOCK_DUPLICATE_PAIRS);
+  const [pairs, setPairs] = useState<DuplicatePairItem[]>([]);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [selectedSimilarityTier, setSelectedSimilarityTier] = useState<string>('ALL');
   const [selectedStatusFilter, setSelectedStatusFilter] = useState<string>('ALL');
@@ -36,14 +37,32 @@ export const DuplicatesPage: React.FC = () => {
   useEffect(() => {
     let isMounted = true;
     adminApiService.getClusters().then((res) => {
-      if (isMounted && res.duplicatePairs && res.duplicatePairs.length > 0) {
+      if (!isMounted) return;
+      setIsLoading(false);
+      if (res.duplicatePairs && Array.isArray(res.duplicatePairs) && res.duplicatePairs.length > 0) {
         setPairs(res.duplicatePairs);
       }
+    }).catch(() => {
+      if (isMounted) setIsLoading(false);
     });
     return () => {
       isMounted = false;
     };
   }, []);
+
+  // Live duplicate metrics dynamically derived
+  const liveDuplicateMetrics = useMemo(() => {
+    const potentialDuplicates = pairs.length;
+    const highSimilarity = pairs.filter((p) => p.similarityScore >= 80).length;
+    const awaitingReview = pairs.filter((p) => p.status === 'AWAITING_REVIEW').length;
+    const mergedToday = pairs.filter((p) => p.status === 'MERGED').length;
+    return {
+      potentialDuplicates,
+      highSimilarity,
+      awaitingReview,
+      mergedToday,
+    };
+  }, [pairs]);
 
   // Comparison & Merge modal states
   const [comparingPair, setComparingPair] = useState<DuplicatePairItem | null>(null);
@@ -228,7 +247,7 @@ export const DuplicatesPage: React.FC = () => {
         <div style={{ backgroundColor: colors.cardSurface, border: `1px solid ${colors.border}`, borderRadius: radii.md, padding: '1.25rem', position: 'relative' }}>
           <span style={{ fontSize: typography.fontSize.xs, color: colors.secondaryText, fontWeight: 500 }}>Potential Duplicates</span>
           <div style={{ fontSize: typography.fontSize['2xl'], fontWeight: 700, color: colors.deepForestGreen, margin: '0.25rem 0' }}>
-            {MOCK_DUPLICATE_METRICS.potentialDuplicates}
+            {liveDuplicateMetrics.potentialDuplicates}
           </div>
           <span style={{ fontSize: typography.fontSize.xs, color: colors.secondaryText }}>Clustered candidates</span>
           <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: '3px', backgroundColor: colors.primaryGreen }} />
@@ -237,7 +256,7 @@ export const DuplicatesPage: React.FC = () => {
         <div style={{ backgroundColor: colors.cardSurface, border: `1px solid ${colors.border}`, borderRadius: radii.md, padding: '1.25rem', position: 'relative' }}>
           <span style={{ fontSize: typography.fontSize.xs, color: colors.secondaryText, fontWeight: 500 }}>High Similarity (≥80%)</span>
           <div style={{ fontSize: typography.fontSize['2xl'], fontWeight: 700, color: colors.primaryGreen, margin: '0.25rem 0' }}>
-            {MOCK_DUPLICATE_METRICS.highSimilarity}
+            {liveDuplicateMetrics.highSimilarity}
           </div>
           <span style={{ fontSize: typography.fontSize.xs, color: colors.primaryGreen }}>Strong semantic overlap</span>
           <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: '3px', backgroundColor: colors.secondaryGreen }} />
@@ -246,7 +265,7 @@ export const DuplicatesPage: React.FC = () => {
         <div style={{ backgroundColor: colors.cardSurface, border: `1px solid ${colors.border}`, borderRadius: radii.md, padding: '1.25rem', position: 'relative' }}>
           <span style={{ fontSize: typography.fontSize.xs, color: colors.secondaryText, fontWeight: 500 }}>Awaiting Review</span>
           <div style={{ fontSize: typography.fontSize['2xl'], fontWeight: 700, color: colors.warning, margin: '0.25rem 0' }}>
-            {MOCK_DUPLICATE_METRICS.awaitingReview}
+            {liveDuplicateMetrics.awaitingReview}
           </div>
           <span style={{ fontSize: typography.fontSize.xs, color: colors.warning }}>Pending admin approval</span>
           <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: '3px', backgroundColor: colors.warning }} />
@@ -255,7 +274,7 @@ export const DuplicatesPage: React.FC = () => {
         <div style={{ backgroundColor: colors.cardSurface, border: `1px solid ${colors.border}`, borderRadius: radii.md, padding: '1.25rem', position: 'relative' }}>
           <span style={{ fontSize: typography.fontSize.xs, color: colors.secondaryText, fontWeight: 500 }}>Merged Today</span>
           <div style={{ fontSize: typography.fontSize['2xl'], fontWeight: 700, color: colors.success, margin: '0.25rem 0' }}>
-            {MOCK_DUPLICATE_METRICS.mergedToday}
+            {liveDuplicateMetrics.mergedToday}
           </div>
           <span style={{ fontSize: typography.fontSize.xs, color: colors.success }}>Consolidated tickets</span>
           <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: '3px', backgroundColor: colors.success }} />
@@ -354,8 +373,21 @@ export const DuplicatesPage: React.FC = () => {
                 </tr>
               </thead>
               <tbody>
-                {filteredPairs.map((pair, idx) => (
-                  <tr
+                {filteredPairs.length === 0 ? (
+                  <tr>
+                    <td colSpan={7} style={{ padding: '3rem 1rem', textAlign: 'center', color: colors.secondaryText }}>
+                      <Copy size={32} color={colors.secondaryGreen} style={{ margin: '0 auto 0.5rem', opacity: 0.6 }} />
+                      <div style={{ fontWeight: 600, color: colors.deepForestGreen, marginBottom: '0.25rem' }}>
+                        No Duplicate Grievance Pairs Detected
+                      </div>
+                      <div style={{ fontSize: typography.fontSize.xs }}>
+                        No cross-cohort duplicates have been flagged or match the active filters.
+                      </div>
+                    </td>
+                  </tr>
+                ) : (
+                  filteredPairs.map((pair, idx) => (
+                    <tr
                     key={pair.id}
                     onClick={() => setComparingPair(pair)}
                     style={{
@@ -413,7 +445,7 @@ export const DuplicatesPage: React.FC = () => {
                       </Button>
                     </td>
                   </tr>
-                ))}
+                )))}
               </tbody>
             </table>
           </div>

@@ -26,7 +26,8 @@ import {
 import { AlertOctagon } from 'lucide-react';
 
 export const SlaPage: React.FC = () => {
-  const [grievances, setGrievances] = useState<SlaGrievanceItem[]>(MOCK_SLA_GRIEVANCES);
+  const [grievances, setGrievances] = useState<SlaGrievanceItem[]>([]);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [selectedDeptFilter, setSelectedDeptFilter] = useState<string>('ALL');
   const [selectedPriorityFilter, setSelectedPriorityFilter] = useState<string>('ALL');
@@ -51,7 +52,9 @@ export const SlaPage: React.FC = () => {
       }
     });
     adminApiService.getGrievances({ pageSize: 50 }).then((res) => {
-      if (isMounted && res.items && res.items.length > 0) {
+      if (!isMounted) return;
+      setIsLoading(false);
+      if (res.items && res.items.length > 0) {
         const liveMapped: SlaGrievanceItem[] = res.items.map((g: any) => {
           const remaining = g.sla_status?.remainingMinutes ?? 60;
           const isBreached = g.sla_status?.isOverdue ?? false;
@@ -76,11 +79,31 @@ export const SlaPage: React.FC = () => {
         });
         setGrievances(liveMapped);
       }
+    }).catch(() => {
+      if (isMounted) setIsLoading(false);
     });
     return () => {
       isMounted = false;
     };
   }, []);
+
+  // Compute live SLA metrics dynamically
+  const liveSlaMetrics = useMemo(() => {
+    const total = grievances.length;
+    const withinSlaCount = grievances.filter((g) => g.health === 'HEALTHY').length;
+    const atRiskCount = grievances.filter((g) => g.health === 'AT_RISK').length;
+    const breachedCount = grievances.filter((g) => g.health === 'BREACHED').length;
+    const overallSlaPercentage = total > 0 ? Math.round(((withinSlaCount + atRiskCount) / total) * 100) : 100;
+    const criticalAtRisk30m = grievances.filter((g) => g.health === 'AT_RISK' && g.timeRemainingMinutes <= 30 && g.timeRemainingMinutes >= 0).length;
+
+    return {
+      overallSlaPercentage,
+      withinSlaCount,
+      atRiskCount,
+      breachedCount,
+      criticalAtRisk30m,
+    };
+  }, [grievances]);
 
   const filteredItems = useMemo(() => {
     return grievances.filter((item) => {
@@ -246,7 +269,7 @@ export const SlaPage: React.FC = () => {
         <div style={{ backgroundColor: colors.cardSurface, border: `1px solid ${colors.border}`, borderRadius: radii.lg, padding: '1.25rem', position: 'relative' }}>
           <span style={{ fontSize: typography.fontSize.xs, color: colors.secondaryText, fontWeight: 500 }}>Overall SLA %</span>
           <div style={{ fontSize: typography.fontSize['2xl'], fontWeight: 700, color: colors.primaryGreen, margin: '0.25rem 0' }}>
-            {MOCK_SLA_METRICS.overallSlaPercentage}%
+            {liveSlaMetrics.overallSlaPercentage}%
           </div>
           <span style={{ fontSize: typography.fontSize.xs, color: colors.secondaryText }}>Target: 95.0% institutional goal</span>
           <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: '3px', backgroundColor: colors.primaryGreen }} />
@@ -255,7 +278,7 @@ export const SlaPage: React.FC = () => {
         <div style={{ backgroundColor: colors.cardSurface, border: `1px solid ${colors.border}`, borderRadius: radii.lg, padding: '1.25rem', position: 'relative' }}>
           <span style={{ fontSize: typography.fontSize.xs, color: colors.secondaryText, fontWeight: 500 }}>Within SLA (Healthy)</span>
           <div style={{ fontSize: typography.fontSize['2xl'], fontWeight: 700, color: colors.success, margin: '0.25rem 0' }}>
-            {MOCK_SLA_METRICS.withinSlaCount}
+            {liveSlaMetrics.withinSlaCount}
           </div>
           <span style={{ fontSize: typography.fontSize.xs, color: colors.success }}>On scheduled delivery track</span>
           <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: '3px', backgroundColor: colors.success }} />
@@ -264,16 +287,16 @@ export const SlaPage: React.FC = () => {
         <div style={{ backgroundColor: colors.cardSurface, border: `1px solid ${colors.border}`, borderRadius: radii.lg, padding: '1.25rem', position: 'relative' }}>
           <span style={{ fontSize: typography.fontSize.xs, color: colors.secondaryText, fontWeight: 500 }}>At Risk (&lt; 2 Hours)</span>
           <div style={{ fontSize: typography.fontSize['2xl'], fontWeight: 700, color: colors.warning, margin: '0.25rem 0' }}>
-            {MOCK_SLA_METRICS.atRiskCount}
+            {liveSlaMetrics.atRiskCount}
           </div>
-          <span style={{ fontSize: typography.fontSize.xs, color: colors.warning }}>{MOCK_SLA_METRICS.criticalAtRisk30m} imminent within 30 mins</span>
+          <span style={{ fontSize: typography.fontSize.xs, color: colors.warning }}>{liveSlaMetrics.criticalAtRisk30m} imminent within 30 mins</span>
           <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: '3px', backgroundColor: colors.warning }} />
         </div>
 
         <div style={{ backgroundColor: colors.cardSurface, border: `1px solid ${colors.border}`, borderRadius: radii.lg, padding: '1.25rem', position: 'relative' }}>
           <span style={{ fontSize: typography.fontSize.xs, color: colors.secondaryText, fontWeight: 500 }}>Breached (Overdue)</span>
           <div style={{ fontSize: typography.fontSize['2xl'], fontWeight: 700, color: colors.danger, margin: '0.25rem 0' }}>
-            {MOCK_SLA_METRICS.breachedCount}
+            {liveSlaMetrics.breachedCount}
           </div>
           <span style={{ fontSize: typography.fontSize.xs, color: colors.danger }}>Immediate Dean escalation triggered</span>
           <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: '3px', backgroundColor: colors.danger }} />
@@ -447,8 +470,21 @@ export const SlaPage: React.FC = () => {
                 </tr>
               </thead>
               <tbody>
-                {filteredItems.map((item, idx) => (
-                  <tr
+                {filteredItems.length === 0 ? (
+                  <tr>
+                    <td colSpan={8} style={{ padding: '3rem 1rem', textAlign: 'center', color: colors.secondaryText }}>
+                      <Clock size={32} color={colors.secondaryGreen} style={{ margin: '0 auto 0.5rem', opacity: 0.6 }} />
+                      <div style={{ fontWeight: 600, color: colors.deepForestGreen, marginBottom: '0.25rem' }}>
+                        No Active SLA Tickets Found
+                      </div>
+                      <div style={{ fontSize: typography.fontSize.xs }}>
+                        All tracked tickets have been resolved, or none match current filters.
+                      </div>
+                    </td>
+                  </tr>
+                ) : (
+                  filteredItems.map((item, idx) => (
+                    <tr
                     key={item.id}
                     onClick={() => setActiveItem(item)}
                     style={{
@@ -498,7 +534,7 @@ export const SlaPage: React.FC = () => {
                       </Button>
                     </td>
                   </tr>
-                ))}
+                )))}
               </tbody>
             </table>
           </div>

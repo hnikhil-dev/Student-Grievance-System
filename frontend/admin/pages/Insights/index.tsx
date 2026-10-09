@@ -44,52 +44,83 @@ export interface InsightsPageProps {
 }
 
 export const InsightsPage: React.FC<InsightsPageProps> = ({ onNavigate }) => {
-  const [insights, setInsights] = useState<AiInsightItem[]>(MOCK_AI_INSIGHTS);
+  const [insights, setInsights] = useState<AiInsightItem[]>([]);
   const [departments, setDepartments] = useState<any[]>([]);
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [selectedTypeFilter, setSelectedTypeFilter] = useState<string>('ALL');
   const [selectedPriorityFilter, setSelectedPriorityFilter] = useState<string>('ALL');
   const [selectedDeptFilter, setSelectedDeptFilter] = useState<string>('ALL');
   const [minConfidence, setMinConfidence] = useState<number>(0);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
 
   useEffect(() => {
     let mounted = true;
     Promise.all([
       adminApiService.getDepartments(),
       adminApiService.getClusters(),
-    ]).then(([depts, clusterData]) => {
+      adminApiService.getOverviewAnalytics(),
+    ]).then(([depts, clusterData, overview]) => {
       if (!mounted) return;
+      setIsLoading(false);
       if (depts && depts.length > 0) setDepartments(depts);
-      if (clusterData && Array.isArray(clusterData.clusters) && clusterData.clusters.length > 0) {
-        const liveInsights: AiInsightItem[] = clusterData.clusters.map((c: any) => ({
-          id: `ins-live-${c.id}`,
-          icon: 'zap',
-          title: c.title || c.name || 'Systemic Cluster Detected',
-          type: 'EMERGING_ISSUE',
-          typeLabel: 'Emerging Pattern',
-          priority: (c.priority || 'HIGH') as any,
-          summary: c.root_cause_summary || `Correlated ${c.affected_count || 10}+ grievances identified in ${c.category || 'campus'} operations.`,
-          whatHappened: `Multiple student reports flagged similar friction points requiring immediate triage.`,
-          whyAiThinksThis: `Semantic pattern matching grouped duplicate and adjacent complaints in the same department sector.`,
-          evidence: [
-            `Impact count: ${c.affected_count || 10} affected students`,
-            `Category: ${c.category || 'Operations'}`,
-            `Status: Actively monitored by Autonomous Sentinel`,
-          ],
-          impactCohort: `${c.affected_count || 10}+ campus students`,
-          confidence: 94,
-          recommendedAction: `Inspect clustered tickets and perform batch dispatch or technician reassignment.`,
-          relatedRoute: 'clusters',
-          relatedActionLabel: 'Inspect Cluster',
-          affectedDepartments: [c.department?.name || c.category || 'Central Administration'],
-          detectedAt: 'Live',
-        }));
+      const generatedInsights: AiInsightItem[] = [];
 
-        setInsights((prev) => {
-          const liveIds = new Set(liveInsights.map((li) => li.id));
-          return [...liveInsights, ...prev.filter((p) => !liveIds.has(p.id))];
+      if (clusterData && Array.isArray(clusterData.clusters) && clusterData.clusters.length > 0) {
+        clusterData.clusters.forEach((c: any) => {
+          generatedInsights.push({
+            id: `ins-live-${c.id}`,
+            icon: 'zap',
+            title: c.title || c.name || 'Systemic Cluster Detected',
+            type: 'EMERGING_ISSUE',
+            typeLabel: 'Emerging Pattern',
+            priority: (c.priority || 'HIGH') as any,
+            summary: c.root_cause_summary || `Correlated ${c.affected_count || 10}+ grievances identified in ${c.category || 'campus'} operations.`,
+            whatHappened: `Multiple student reports flagged similar friction points requiring immediate triage.`,
+            whyAiThinksThis: `Semantic pattern matching grouped duplicate and adjacent complaints in the same department sector.`,
+            evidence: [
+              `Impact count: ${c.affected_count || 10} affected students`,
+              `Category: ${c.category || 'Operations'}`,
+              `Status: Actively monitored by Autonomous Sentinel`,
+            ],
+            impactCohort: `${c.affected_count || 10}+ campus students`,
+            confidence: 94,
+            recommendedAction: `Inspect clustered tickets and perform batch dispatch or technician reassignment.`,
+            relatedRoute: 'clusters',
+            relatedActionLabel: 'Inspect Cluster',
+            affectedDepartments: [c.department?.name || c.category || 'Central Administration'],
+            detectedAt: 'Live',
+          });
         });
       }
+
+      if (overview?.overdueCount > 0) {
+        generatedInsights.push({
+          id: 'ins-sla-risk',
+          icon: 'clock',
+          title: 'SLA Milestone Watchdog Warning',
+          type: 'SLA_INSIGHT',
+          typeLabel: 'SLA Surveillance',
+          priority: 'CRITICAL',
+          summary: `${overview.overdueCount} grievances have breached or are nearing SLA deadline thresholds.`,
+          whatHappened: `Multiple student submissions have approached turnaround deadlines without resolution assignment.`,
+          whyAiThinksThis: `Real-time timestamp elapsed duration passed the department service contract limit.`,
+          evidence: [
+            `${overview.overdueCount} tickets overdue`,
+            `Executive dean review required`,
+          ],
+          impactCohort: `${overview.overdueCount} students affected`,
+          confidence: 99,
+          recommendedAction: `Reassign high-priority tickets to active administrative officers immediately.`,
+          relatedRoute: 'sla',
+          relatedActionLabel: 'Open SLA Radar',
+          affectedDepartments: ['Campus Wide'],
+          detectedAt: 'Live',
+        });
+      }
+
+      setInsights(generatedInsights);
+    }).catch(() => {
+      if (mounted) setIsLoading(false);
     });
     return () => {
       mounted = false;
@@ -321,8 +352,28 @@ export const InsightsPage: React.FC<InsightsPageProps> = ({ onNavigate }) => {
 
       {/* 4. AI Insight Cards Feed */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
-        {filteredInsights.map((insight) => (
+        {filteredInsights.length === 0 ? (
           <div
+            style={{
+              backgroundColor: colors.cardSurface,
+              border: `1px solid ${colors.border}`,
+              borderRadius: radii.lg,
+              padding: '3rem 1.5rem',
+              textAlign: 'center',
+              color: colors.secondaryText,
+            }}
+          >
+            <Sparkles size={36} color={colors.secondaryGreen} style={{ margin: '0 auto 0.75rem', opacity: 0.6 }} />
+            <div style={{ fontWeight: 600, color: colors.deepForestGreen, marginBottom: '0.25rem', fontSize: typography.fontSize.md }}>
+              No Operational AI Insights Found
+            </div>
+            <div style={{ fontSize: typography.fontSize.xs, maxWidth: '480px', margin: '0 auto' }}>
+              The system has not identified any anomalous clusters, severe SLA bottlenecks, or recurring trends matching the selected filters.
+            </div>
+          </div>
+        ) : (
+          filteredInsights.map((insight) => (
+            <div
             key={insight.id}
             style={{
               backgroundColor: colors.cardSurface,
@@ -482,7 +533,7 @@ export const InsightsPage: React.FC<InsightsPageProps> = ({ onNavigate }) => {
               }}
             />
           </div>
-        ))}
+        )))}
       </div>
     </div>
   );

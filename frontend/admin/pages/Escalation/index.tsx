@@ -27,7 +27,8 @@ import {
 } from '../../components/ui/Icons';
 
 export const EscalationPage: React.FC = () => {
-  const [escalations, setEscalations] = useState<EscalationItem[]>(MOCK_ESCALATIONS);
+  const [escalations, setEscalations] = useState<EscalationItem[]>([]);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
   const [availableStaff, setAvailableStaff] = useState<any[]>([]);
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [selectedLevelFilter, setSelectedLevelFilter] = useState<string>('ALL');
@@ -48,6 +49,7 @@ export const EscalationPage: React.FC = () => {
       adminApiService.getStaffMembers(),
     ]).then(([escData, staff]) => {
       if (!mounted) return;
+      setIsLoading(false);
       if (staff && staff.length > 0) {
         setAvailableStaff(staff);
         if (staff[0]?.full_name) {
@@ -83,11 +85,10 @@ export const EscalationPage: React.FC = () => {
           ],
         }));
 
-        setEscalations((prev) => {
-          const existingIds = new Set(liveItems.map((li) => li.id));
-          return [...liveItems, ...prev.filter((p) => !existingIds.has(p.id))];
-        });
+        setEscalations(liveItems);
       }
+    }).catch(() => {
+      if (mounted) setIsLoading(false);
     });
     return () => {
       mounted = false;
@@ -412,8 +413,21 @@ export const EscalationPage: React.FC = () => {
                 </tr>
               </thead>
               <tbody>
-                {filteredEscalations.map((item, idx) => (
-                  <tr
+                {filteredEscalations.length === 0 ? (
+                  <tr>
+                    <td colSpan={9} style={{ padding: '3rem 1rem', textAlign: 'center', color: colors.secondaryText }}>
+                      <AlertTriangle size={32} color={colors.secondaryGreen} style={{ margin: '0 auto 0.5rem', opacity: 0.6 }} />
+                      <div style={{ fontWeight: 600, color: colors.deepForestGreen, marginBottom: '0.25rem' }}>
+                        No Active Escalations
+                      </div>
+                      <div style={{ fontSize: typography.fontSize.xs }}>
+                        All critical tickets are being resolved within standard SLAs. No executive intervention required.
+                      </div>
+                    </td>
+                  </tr>
+                ) : (
+                  filteredEscalations.map((item, idx) => (
+                    <tr
                     key={item.id}
                     onClick={() => setActiveItem(item)}
                     style={{
@@ -476,7 +490,7 @@ export const EscalationPage: React.FC = () => {
                       </Button>
                     </td>
                   </tr>
-                ))}
+                )))}
               </tbody>
             </table>
           </div>

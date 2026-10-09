@@ -27,7 +27,8 @@ import {
 import { Edit3 } from 'lucide-react';
 
 export const PriorityPage: React.FC = () => {
-  const [items, setItems] = useState<PriorityGrievanceItem[]>(MOCK_PRIORITY_GRIEVANCES);
+  const [items, setItems] = useState<PriorityGrievanceItem[]>([]);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [selectedPriorityFilter, setSelectedPriorityFilter] = useState<string>('ALL');
   const [selectedDeptFilter, setSelectedDeptFilter] = useState<string>('ALL');
@@ -37,32 +38,67 @@ export const PriorityPage: React.FC = () => {
   useEffect(() => {
     let isMounted = true;
     adminApiService.getGrievances({ pageSize: 50 }).then((res) => {
-      if (isMounted && res.items && res.items.length > 0) {
-        const liveMapped: PriorityGrievanceItem[] = res.items.map((g: any) => ({
-          id: g.id,
-          ticketNumber: g.ticket_number,
-          subject: g.title,
-          category: g.category || 'General',
-          department: g.department?.name || 'Operations',
-          priority: g.priority || 'MEDIUM',
-          score: g.priority_score || 55,
-          factors: {
-            severity: g.severity === 'CRITICAL' ? 30 : g.severity === 'HIGH' ? 22 : 15,
-            urgency: g.urgency === 'IMMEDIATE' ? 30 : g.urgency === 'HIGH' ? 22 : 15,
-            impactCohort: Math.min(25, (g.affected_students || 1) * 3),
-            recurrenceBonus: g.recurrence ? 15 : 0,
-          },
-          contributingSignals: g.priority_reasons || ['Evaluated via multi-factor weighting algorithm'],
-          calculatedAt: g.created_at,
-          overrideStatus: 'SYSTEM_CALCULATED',
-        }));
+      if (!isMounted) return;
+      setIsLoading(false);
+      if (res.items && res.items.length > 0) {
+        const liveMapped: PriorityGrievanceItem[] = res.items.map((g: any) => {
+          const remainingMinutes = g.sla_status?.remainingMinutes ?? 120;
+          const slaRemaining = remainingMinutes < 0
+            ? 'Breached'
+            : remainingMinutes < 60
+            ? `${remainingMinutes}m`
+            : `${Math.round(remainingMinutes / 60)}h`;
+
+          return {
+            id: g.id,
+            ticketNumber: g.ticket_number,
+            subject: g.title,
+            category: g.category || 'General',
+            department: g.department?.name || 'Operations',
+            priority: (g.priority || 'MEDIUM') as PriorityLevel,
+            score: g.priority_score || 55,
+            slaRemaining,
+            slaMinutesRemaining: remainingMinutes,
+            factors: {
+              severity: g.severity === 'CRITICAL' ? 30 : g.severity === 'HIGH' ? 22 : 15,
+              urgency: g.urgency === 'IMMEDIATE' ? 30 : g.urgency === 'HIGH' ? 22 : 15,
+              impactCohort: Math.min(25, (g.affected_students || 1) * 3),
+              recurrenceBonus: g.recurrence ? 15 : 0,
+            },
+            contributingSignals: g.priority_reasons || ['Evaluated via multi-factor weighting algorithm'],
+            calculatedAt: g.created_at,
+            overrideStatus: 'SYSTEM_CALCULATED',
+          };
+        });
         setItems(liveMapped);
       }
+    }).catch(() => {
+      if (isMounted) setIsLoading(false);
     });
     return () => {
       isMounted = false;
     };
   }, []);
+
+  // Compute live priority metrics dynamically
+  const livePriorityMetrics = useMemo(() => {
+    const criticalCount = items.filter((i) => i.priority === 'CRITICAL').length;
+    const highCount = items.filter((i) => i.priority === 'HIGH').length;
+    const mediumCount = items.filter((i) => i.priority === 'MEDIUM').length;
+    const lowCount = items.filter((i) => i.priority === 'LOW').length;
+    const avgScore = items.length > 0 ? Math.round(items.reduce((acc, i) => acc + i.score, 0) / items.length) : 0;
+    const criticalUnresolved = items.filter((i) => i.priority === 'CRITICAL' && i.slaMinutesRemaining >= 0).length;
+
+    return {
+      criticalCount,
+      highCount,
+      mediumCount,
+      lowCount,
+      priorityChangesToday: 0,
+      averagePriorityScore: avgScore,
+      criticalUnresolved,
+    };
+  }, [items]);
 
   // Detail & Override state
   const [activeItem, setActiveItem] = useState<PriorityGrievanceItem | null>(null);
@@ -198,7 +234,7 @@ export const PriorityPage: React.FC = () => {
         <div style={{ backgroundColor: colors.cardSurface, border: `1px solid ${colors.border}`, borderRadius: radii.md, padding: '1rem', position: 'relative' }}>
           <span style={{ fontSize: typography.fontSize.xs, color: colors.secondaryText, fontWeight: 500 }}>Critical</span>
           <div style={{ fontSize: typography.fontSize.xl, fontWeight: 700, color: colors.danger, marginTop: '0.2rem' }}>
-            {MOCK_PRIORITY_METRICS.criticalCount}
+            {livePriorityMetrics.criticalCount}
           </div>
           <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: '3px', backgroundColor: colors.danger }} />
         </div>
@@ -207,7 +243,7 @@ export const PriorityPage: React.FC = () => {
         <div style={{ backgroundColor: colors.cardSurface, border: `1px solid ${colors.border}`, borderRadius: radii.md, padding: '1rem', position: 'relative' }}>
           <span style={{ fontSize: typography.fontSize.xs, color: colors.secondaryText, fontWeight: 500 }}>High</span>
           <div style={{ fontSize: typography.fontSize.xl, fontWeight: 700, color: colors.warning, marginTop: '0.2rem' }}>
-            {MOCK_PRIORITY_METRICS.highCount}
+            {livePriorityMetrics.highCount}
           </div>
           <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: '3px', backgroundColor: colors.warning }} />
         </div>
@@ -216,7 +252,7 @@ export const PriorityPage: React.FC = () => {
         <div style={{ backgroundColor: colors.cardSurface, border: `1px solid ${colors.border}`, borderRadius: radii.md, padding: '1rem', position: 'relative' }}>
           <span style={{ fontSize: typography.fontSize.xs, color: colors.secondaryText, fontWeight: 500 }}>Medium</span>
           <div style={{ fontSize: typography.fontSize.xl, fontWeight: 700, color: colors.primaryGreen, marginTop: '0.2rem' }}>
-            {MOCK_PRIORITY_METRICS.mediumCount}
+            {livePriorityMetrics.mediumCount}
           </div>
           <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: '3px', backgroundColor: colors.primaryGreen }} />
         </div>
@@ -225,7 +261,7 @@ export const PriorityPage: React.FC = () => {
         <div style={{ backgroundColor: colors.cardSurface, border: `1px solid ${colors.border}`, borderRadius: radii.md, padding: '1rem', position: 'relative' }}>
           <span style={{ fontSize: typography.fontSize.xs, color: colors.secondaryText, fontWeight: 500 }}>Low</span>
           <div style={{ fontSize: typography.fontSize.xl, fontWeight: 700, color: colors.secondaryGreen, marginTop: '0.2rem' }}>
-            {MOCK_PRIORITY_METRICS.lowCount}
+            {livePriorityMetrics.lowCount}
           </div>
           <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: '3px', backgroundColor: colors.secondaryGreen }} />
         </div>
@@ -234,7 +270,7 @@ export const PriorityPage: React.FC = () => {
         <div style={{ backgroundColor: colors.cardSurface, border: `1px solid ${colors.border}`, borderRadius: radii.md, padding: '1rem', position: 'relative' }}>
           <span style={{ fontSize: typography.fontSize.xs, color: colors.secondaryText, fontWeight: 500 }}>Changes Today</span>
           <div style={{ fontSize: typography.fontSize.xl, fontWeight: 700, color: colors.deepForestGreen, marginTop: '0.2rem' }}>
-            {MOCK_PRIORITY_METRICS.priorityChangesToday}
+            {livePriorityMetrics.priorityChangesToday}
           </div>
           <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: '3px', backgroundColor: colors.primaryGreen }} />
         </div>
@@ -243,7 +279,7 @@ export const PriorityPage: React.FC = () => {
         <div style={{ backgroundColor: colors.cardSurface, border: `1px solid ${colors.border}`, borderRadius: radii.md, padding: '1rem', position: 'relative' }}>
           <span style={{ fontSize: typography.fontSize.xs, color: colors.secondaryText, fontWeight: 500 }}>Avg Score</span>
           <div style={{ fontSize: typography.fontSize.xl, fontWeight: 700, color: colors.deepForestGreen, marginTop: '0.2rem' }}>
-            {MOCK_PRIORITY_METRICS.averagePriorityScore} <span style={{ fontSize: typography.fontSize.xs, color: colors.secondaryText }}>/ 100</span>
+            {livePriorityMetrics.averagePriorityScore} <span style={{ fontSize: typography.fontSize.xs, color: colors.secondaryText }}>/ 100</span>
           </div>
           <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: '3px', backgroundColor: colors.primaryGreen }} />
         </div>
@@ -252,7 +288,7 @@ export const PriorityPage: React.FC = () => {
         <div style={{ backgroundColor: colors.cardSurface, border: `1px solid ${colors.border}`, borderRadius: radii.md, padding: '1rem', position: 'relative' }}>
           <span style={{ fontSize: typography.fontSize.xs, color: colors.danger, fontWeight: 600 }}>Critical Open</span>
           <div style={{ fontSize: typography.fontSize.xl, fontWeight: 700, color: colors.danger, marginTop: '0.2rem' }}>
-            {MOCK_PRIORITY_METRICS.criticalUnresolved}
+            {livePriorityMetrics.criticalUnresolved}
           </div>
           <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: '3px', backgroundColor: colors.danger }} />
         </div>
@@ -354,8 +390,21 @@ export const PriorityPage: React.FC = () => {
                 </tr>
               </thead>
               <tbody>
-                {filteredItems.map((item, idx) => (
-                  <tr
+                {filteredItems.length === 0 ? (
+                  <tr>
+                    <td colSpan={7} style={{ padding: '3rem 1rem', textAlign: 'center', color: colors.secondaryText }}>
+                      <Zap size={32} color={colors.secondaryGreen} style={{ margin: '0 auto 0.5rem', opacity: 0.6 }} />
+                      <div style={{ fontWeight: 600, color: colors.deepForestGreen, marginBottom: '0.25rem' }}>
+                        No Priority Grievances In Queue
+                      </div>
+                      <div style={{ fontSize: typography.fontSize.xs }}>
+                        All current grievances have been processed or do not match selected filters.
+                      </div>
+                    </td>
+                  </tr>
+                ) : (
+                  filteredItems.map((item, idx) => (
+                    <tr
                     key={item.id}
                     onClick={() => setActiveItem(item)}
                     style={{
@@ -420,7 +469,7 @@ export const PriorityPage: React.FC = () => {
                       </div>
                     </td>
                   </tr>
-                ))}
+                )))}
               </tbody>
             </table>
           </div>

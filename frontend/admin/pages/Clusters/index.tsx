@@ -23,15 +23,17 @@ import {
 import { Sparkles, TrendingDown, Minus } from 'lucide-react';
 
 export const ClustersPage: React.FC = () => {
-  const [clusters, setClusters] = useState<ClusterDetailItem[]>(MOCK_CLUSTERS);
-  const [selectedClusterId, setSelectedClusterId] = useState<string>(MOCK_CLUSTERS[0].id);
+  const [clusters, setClusters] = useState<ClusterDetailItem[]>([]);
+  const [selectedClusterId, setSelectedClusterId] = useState<string>('');
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [statusFilter, setStatusFilter] = useState<string>('ALL');
+  const [isLoading, setIsLoading] = useState<boolean>(true);
 
   useEffect(() => {
     let mounted = true;
     adminApiService.getClusters().then((data) => {
       if (!mounted) return;
+      setIsLoading(false);
       if (data && Array.isArray(data.clusters) && data.clusters.length > 0) {
         const liveClusters: ClusterDetailItem[] = data.clusters.map((c: any) => ({
           id: c.id,
@@ -66,14 +68,13 @@ export const ClustersPage: React.FC = () => {
           recentGrievances: [],
         }));
 
-        setClusters((prev) => {
-          const liveIds = new Set(liveClusters.map((lc) => lc.id));
-          return [...liveClusters, ...prev.filter((p) => !liveIds.has(p.id))];
-        });
+        setClusters(liveClusters);
         if (liveClusters.length > 0) {
           setSelectedClusterId(liveClusters[0].id);
         }
       }
+    }).catch(() => {
+      if (mounted) setIsLoading(false);
     });
     return () => {
       mounted = false;
@@ -292,8 +293,19 @@ export const ClustersPage: React.FC = () => {
           <CardDescription>Relative grievance concentration across top operational clusters</CardDescription>
         </CardHeader>
         <CardContent style={{ padding: '0 1.5rem 1.5rem' }}>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
-            {clusters.map((c) => {
+          {clusters.length === 0 ? (
+            <div style={{ textAlign: 'center', padding: '2.5rem 1rem', color: colors.secondaryText }}>
+              <Network size={32} color={colors.secondaryGreen} style={{ margin: '0 auto 0.5rem', opacity: 0.6 }} />
+              <div style={{ fontWeight: 600, color: colors.deepForestGreen, marginBottom: '0.25rem' }}>
+                No Issue Clusters Detected
+              </div>
+              <div style={{ fontSize: typography.fontSize.xs }}>
+                No recurring grievance clusters or systemic patterns have formed yet.
+              </div>
+            </div>
+          ) : (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
+              {clusters.map((c) => {
               const maxVol = 450;
               const barPercent = Math.min(100, (c.grievanceCount / maxVol) * 100);
               const isSelected = c.id === selectedClusterId;
@@ -335,6 +347,7 @@ export const ClustersPage: React.FC = () => {
               );
             })}
           </div>
+          )}
         </CardContent>
       </Card>
 
