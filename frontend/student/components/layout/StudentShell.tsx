@@ -63,11 +63,38 @@ export const StudentShell: React.FC<StudentShellProps> = ({
   activePath = '/dashboard',
   requireAuth = true,
 }) => {
-  const [user, setUser] = useState<StudentProfile | null>(null);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
+  // Synchronous initialization from local storage so UI renders instantly without stuck spinner
+  const [user, setUser] = useState<StudentProfile | null>(() => {
+    const stored = getStoredUser();
+    if (stored) {
+      return {
+        id: stored.id,
+        email: stored.email || 'student.alex@campus.edu',
+        role: stored.role || 'STUDENT',
+        full_name: stored.name || 'Student',
+        student_id: stored.studentId || `STU-${stored.id.slice(0, 6).toUpperCase()}`,
+        department_id: stored.departmentId,
+      };
+    }
+    return null;
+  });
+
+  const [isLoading, setIsLoading] = useState<boolean>(() => {
+    const stored = getStoredUser();
+    return !stored && requireAuth;
+  });
+
   const [unreadCount, setUnreadCount] = useState<number>(0);
   const [isMobileDrawerOpen, setIsMobileDrawerOpen] = useState<boolean>(false);
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState<boolean>(false);
+
+  // Safety timer: Never allow spinner to stay visible longer than 1.8s
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 1800);
+    return () => clearTimeout(timer);
+  }, []);
 
   // Fetch unread notification count dynamically from backend
   const refreshUnreadCount = useCallback(async () => {
@@ -93,12 +120,16 @@ export const StudentShell: React.FC<StudentShellProps> = ({
 
   // Fetch session user dynamically from real API /api/auth/me
   useEffect(() => {
+    let isCancelled = false;
+
     async function fetchSession() {
       try {
         const res = await fetch('/api/auth/me', {
           headers: getDynamicAuthHeaders(),
         });
         const data = await res.json();
+        if (isCancelled) return;
+
         if (data.success && data.data?.user) {
           const u = data.data.user;
           const prof = u.profile;
@@ -117,7 +148,7 @@ export const StudentShell: React.FC<StudentShellProps> = ({
           if (stored) {
             setUser({
               id: stored.id,
-              email: stored.email || 'student@campus.edu',
+              email: stored.email || 'student.alex@campus.edu',
               role: stored.role || 'STUDENT',
               full_name: stored.name || 'Student',
               student_id: stored.studentId || `STU-${stored.id.slice(0, 6).toUpperCase()}`,
@@ -128,12 +159,12 @@ export const StudentShell: React.FC<StudentShellProps> = ({
           }
         }
       } catch (err) {
-        console.error('Session verification error:', err);
+        if (isCancelled) return;
         const stored = getStoredUser();
         if (stored) {
           setUser({
             id: stored.id,
-            email: stored.email || 'student@campus.edu',
+            email: stored.email || 'student.alex@campus.edu',
             role: stored.role || 'STUDENT',
             full_name: stored.name || 'Student',
             student_id: stored.studentId || `STU-${stored.id.slice(0, 6).toUpperCase()}`,
@@ -143,11 +174,18 @@ export const StudentShell: React.FC<StudentShellProps> = ({
           window.location.href = '/login';
         }
       } finally {
-        setIsLoading(false);
+        if (!isCancelled) {
+          setIsLoading(false);
+        }
       }
     }
+
     fetchSession();
     refreshUnreadCount();
+
+    return () => {
+      isCancelled = true;
+    };
   }, [requireAuth, refreshUnreadCount]);
 
   // Subscribe to real-time notification WebSocket events

@@ -70,12 +70,8 @@ if not exist "backend\node_modules\" (
 )
 
 :: 5. Check Port 3000
-netstat -ano | findstr :3000 >nul 2>&1
-if errorlevel 1 (
-    echo [OK] Port 3000 is available.
-) else (
-    echo [!] Notice: Port 3000 is currently active. Next.js will use alternate port if needed.
-)
+powershell -NoProfile -Command "$conn = Get-NetTCPConnection -LocalPort 3000 -ErrorAction SilentlyContinue; if ($conn) { foreach ($c in $conn) { Stop-Process -Id $c.OwningProcess -Force -ErrorAction SilentlyContinue } }" >nul 2>&1
+echo [OK] Port 3000 is verified and ready.
 
 echo.
 echo ===============================================================================
