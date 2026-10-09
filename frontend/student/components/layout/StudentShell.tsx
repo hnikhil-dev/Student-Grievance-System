@@ -58,43 +58,26 @@ export interface StudentShellProps {
   requireAuth?: boolean;
 }
 
+const DEFAULT_STUDENT_PROFILE: StudentProfile = {
+  id: '00000000-0000-0000-0000-000000000006',
+  email: 'student.alex@campus.edu',
+  role: 'STUDENT',
+  full_name: 'Alex Mercer',
+  student_id: 'CS-2023-014',
+  department_id: 'd1000000-0000-0000-0000-000000000001',
+};
+
 export const StudentShell: React.FC<StudentShellProps> = ({
   children,
   activePath = '/dashboard',
   requireAuth = true,
 }) => {
-  // Synchronous initialization from local storage so UI renders instantly without stuck spinner
-  const [user, setUser] = useState<StudentProfile | null>(() => {
-    const stored = getStoredUser();
-    if (stored) {
-      return {
-        id: stored.id,
-        email: stored.email || 'student.alex@campus.edu',
-        role: stored.role || 'STUDENT',
-        full_name: stored.name || 'Student',
-        student_id: stored.studentId || `STU-${stored.id.slice(0, 6).toUpperCase()}`,
-        department_id: stored.departmentId,
-      };
-    }
-    return null;
-  });
-
-  const [isLoading, setIsLoading] = useState<boolean>(() => {
-    const stored = getStoredUser();
-    return !stored && requireAuth;
-  });
-
+  // Consistent initial state between SSR and client prevents hydration mismatch
+  const [user, setUser] = useState<StudentProfile | null>(DEFAULT_STUDENT_PROFILE);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const [unreadCount, setUnreadCount] = useState<number>(0);
   const [isMobileDrawerOpen, setIsMobileDrawerOpen] = useState<boolean>(false);
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState<boolean>(false);
-
-  // Safety timer: Never allow spinner to stay visible longer than 1.8s
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setIsLoading(false);
-    }, 1800);
-    return () => clearTimeout(timer);
-  }, []);
 
   // Fetch unread notification count dynamically from backend
   const refreshUnreadCount = useCallback(async () => {
@@ -207,10 +190,6 @@ export const StudentShell: React.FC<StudentShellProps> = ({
     { label: 'Feedback & Ratings', href: '/student/feedback', icon: <Star size={18} /> },
     { label: 'My Profile', href: '/student/page', icon: <User size={18} /> },
   ];
-
-  if (isLoading) {
-    return <PageSpinner label="Verifying Student Session..." />;
-  }
 
   return (
     <StudentShellContext.Provider
@@ -569,7 +548,7 @@ export const StudentShell: React.FC<StudentShellProps> = ({
           activePath={activePath}
         />
 
-        {/* Mobile Bottom Navigation Bar */}
+        {/* Mobile Bottom Navigation Bar (Hidden on Desktop/Laptop via tokens.css) */}
         <nav
           className="sg-mobile-bottom-bar"
           aria-label="Student Mobile Navigation"
@@ -580,7 +559,6 @@ export const StudentShell: React.FC<StudentShellProps> = ({
             right: 0,
             backgroundColor: '#FFFFFF',
             borderTop: '1px solid #E5E7EB',
-            display: 'flex',
             justifyContent: 'space-around',
             alignItems: 'center',
             padding: '0.5rem 0.25rem',

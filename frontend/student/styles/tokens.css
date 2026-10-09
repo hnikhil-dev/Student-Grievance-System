@@ -335,7 +335,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 }
 
 .sg-mobile-bottom-bar {
-  display: none;
+  display: none !important;
 }
 
 @media (max-width: 899px) {

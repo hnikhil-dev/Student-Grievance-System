@@ -138,7 +138,7 @@ export const NotificationsCenter: React.FC = () => {
   const [actionNotice, setActionNotice] = useState<string | null>(null);
 
   // Dynamic active user session
-  const [activeUser, setActiveUser] = useState(() => getStoredUser());
+  const [activeUser, setActiveUser] = useState<any>(null);
 
   useEffect(() => {
     setActiveUser(getStoredUser());
