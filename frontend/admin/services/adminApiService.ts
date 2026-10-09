@@ -345,20 +345,46 @@ export const adminApiService = {
   },
 
   /**
-   * Propose resolution notes for closed-loop student verification
+   * Propose resolution notes with optional counter-evidence / solved media upload
+   * for closed-loop student verification and Resolution Verifier Agent evaluation
    */
-  async resolveGrievance(id: string, resolutionNotes: string) {
+  async resolveGrievance(
+    id: string,
+    resolutionNotes: string,
+    file?: File | null,
+    evidenceType?: string
+  ) {
+    const authHeaders = getDynamicAuthHeaders({
+      'x-demo-user-id': DEFAULT_DEMO_ADMIN_ID,
+      'x-demo-user-role': DEFAULT_DEMO_ADMIN_ROLE,
+    });
+
+    if (file) {
+      const formData = new FormData();
+      formData.append('resolution_notes', resolutionNotes);
+      formData.append('file', file);
+      if (evidenceType) {
+        formData.append('evidenceType', evidenceType);
+      }
+      formData.append('isResolutionProof', 'true');
+
+      const res = await fetch(`/api/admin/grievances/${id}/resolve`, {
+        method: 'POST',
+        headers: authHeaders,
+        body: formData,
+      });
+      return res.json();
+    }
+
     const res = await fetch(`/api/admin/grievances/${id}/resolve`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        ...getDynamicAuthHeaders({
-          'x-demo-user-id': DEFAULT_DEMO_ADMIN_ID,
-          'x-demo-user-role': DEFAULT_DEMO_ADMIN_ROLE,
-        }),
+        ...authHeaders,
       },
       body: JSON.stringify({
         resolution_notes: resolutionNotes,
+        evidenceType: evidenceType || 'PHOTO',
       }),
     });
     return res.json();

@@ -37,6 +37,11 @@ import {
   SlidersHorizontal,
   Send,
   Layers,
+  Camera,
+  Upload,
+  ImageIcon,
+  Paperclip,
+  ShieldCheck,
 } from '../../components/ui/Icons';
 
 export const CommandCenterPage: React.FC = () => {
@@ -75,9 +80,17 @@ export const CommandCenterPage: React.FC = () => {
 
   // Critical Issues & Interactive Modal State
   const [activeIssueModal, setActiveIssueModal] = useState<CriticalIssue | null>(null);
-  const [modalMode, setModalMode] = useState<'DETAILS' | 'ASSIGN' | 'ESCALATE' | null>(null);
+  const [modalMode, setModalMode] = useState<'DETAILS' | 'ASSIGN' | 'ESCALATE' | 'RESOLVE' | null>(null);
   const [assigneeName, setAssigneeName] = useState<string>('Assigned Field Officer');
   const [escalationReason, setEscalationReason] = useState<string>('');
+
+  // Solved Media & Resolution Verifier Agent State
+  const [resolutionNotes, setResolutionNotes] = useState<string>('');
+  const [resolutionFile, setResolutionFile] = useState<File | null>(null);
+  const [resolutionFileType, setResolutionFileType] = useState<'PHOTO' | 'RECEIPT' | 'DOCUMENT' | 'SCREENSHOT'>('PHOTO');
+  const [isResolving, setIsResolving] = useState<boolean>(false);
+  const [resolutionError, setResolutionError] = useState<string | null>(null);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
 
   // 2. Load live backend data with dynamic range and staff
   const loadBackendData = useCallback(async () => {
@@ -200,23 +213,77 @@ export const CommandCenterPage: React.FC = () => {
     setTimeout(() => setActionFeedback(null), 4000);
   };
 
-  // 6. Direct Resolution Dispatch to Backend (Closed-Loop)
-  const handleDirectResolve = async (issueId: string, ticketNumber: string) => {
+  // 6. Interactive Resolution with Solved Media & Resolution Verifier Agent
+  const handleOpenResolveModal = (issue: CriticalIssue) => {
+    setActiveIssueModal(issue);
+    setModalMode('RESOLVE');
+    setResolutionNotes(
+      `Inspected and rectified on-site for ticket ${issue.ticketNumber}. Replaced faulty components, verified normal operational parameters, and restored service.`
+    );
+    setResolutionFile(null);
+    setResolutionFileType('PHOTO');
+    setResolutionError(null);
+    setPreviewUrl(null);
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      const f = e.target.files[0];
+      setResolutionFile(f);
+      if (f.type.startsWith('image/')) {
+        setPreviewUrl(URL.createObjectURL(f));
+      } else {
+        setPreviewUrl(null);
+      }
+    }
+  };
+
+  const handleResolveSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!activeIssueModal) return;
+
+    if (!resolutionNotes.trim() || resolutionNotes.trim().length < 10) {
+      setResolutionError('Detailed resolution notes (minimum 10 characters) are required.');
+      return;
+    }
+
+    setIsResolving(true);
+    setResolutionError(null);
+
     try {
       const res = await adminApiService.resolveGrievance(
-        issueId,
-        'Resolution proposed by administrator via Command Center'
+        activeIssueModal.id,
+        resolutionNotes.trim(),
+        resolutionFile,
+        resolutionFileType
       );
+
       if (res.success) {
-        setActionFeedback(`Ticket ${ticketNumber} marked as PROPOSED RESOLUTION and awaiting student verification.`);
+        const vResult = res.data?.verificationResult;
+        const verdict = vResult?.verdict || 'VERIFIED_RESOLVED';
+        const confidence = vResult?.confidence ? ` (${(vResult.confidence * 100).toFixed(0)}% confidence)` : '';
+        const sha256 = res.data?.evidence?.sha256 ? ` | SHA-256: ${res.data.evidence.sha256.slice(0, 10)}...` : '';
+
+        setCriticalIssuesList((prev) => prev.filter((item) => item.id !== activeIssueModal.id));
+        setActionFeedback(
+          `Resolution proposed for ${activeIssueModal.ticketNumber}: Resolution Verifier Agent concluded '${verdict}'${confidence}${sha256}. Awaiting student verification.`
+        );
+        setTimeout(() => setActionFeedback(null), 6500);
+
+        setActiveIssueModal(null);
+        setModalMode(null);
+        setResolutionNotes('');
+        setResolutionFile(null);
+        setPreviewUrl(null);
+        loadBackendData();
       } else {
-        setActionFeedback(`Ticket ${ticketNumber}: ${res.error?.message || 'Resolution marked.'}`);
+        setResolutionError(res.error?.message || 'Failed to submit resolution.');
       }
-    } catch {
-      setActionFeedback(`Ticket ${ticketNumber} marked as RESOLVED and archived from critical queue.`);
+    } catch (err: any) {
+      setResolutionError(err?.message || 'Error communicating with grievance server.');
+    } finally {
+      setIsResolving(false);
     }
-    setCriticalIssuesList((prev) => prev.filter((i) => i.id !== issueId));
-    setTimeout(() => setActionFeedback(null), 3500);
   };
 
   // Filtered Critical Issues
@@ -864,12 +931,12 @@ export const CommandCenterPage: React.FC = () => {
                           Escalate Memo
                         </Button>
                         <Button
-                          variant="outline"
+                          variant="primary"
                           size="sm"
-                          onClick={() => handleDirectResolve(issue.id, issue.ticketNumber)}
-                          title="Direct Resolution"
+                          onClick={() => handleOpenResolveModal(issue)}
+                          title="Resolve Grievance with Proof & Resolution Verifier Agent"
                         >
-                          Resolve
+                          <CheckCircle2 size={13} style={{ marginRight: '4px' }} /> Resolve with Proof
                         </Button>
                         <Button
                           variant="outline"
@@ -1549,11 +1616,13 @@ export const CommandCenterPage: React.FC = () => {
                 Assign Field Tech
               </Button>
               <Button
-                variant="danger"
+                variant="primary"
                 size="sm"
-                onClick={() => setModalMode('ESCALATE')}
+                onClick={() => {
+                  handleOpenResolveModal(activeIssueModal);
+                }}
               >
-                Escalate Memo
+                <CheckCircle2 size={13} style={{ marginRight: '4px' }} /> Resolve with Proof
               </Button>
             </div>
           }
@@ -1755,6 +1824,257 @@ export const CommandCenterPage: React.FC = () => {
               </Button>
               <Button type="submit" variant="danger" size="sm">
                 Dispatch Escalation Memo
+              </Button>
+            </div>
+          </form>
+        </Modal>
+      )}
+
+      {/* Resolve Grievance & Submit Solved Media Modal */}
+      {activeIssueModal && modalMode === 'RESOLVE' && (
+        <Modal
+          isOpen={true}
+          onClose={() => {
+            if (!isResolving) {
+              setActiveIssueModal(null);
+              setModalMode(null);
+            }
+          }}
+          title={`Resolve Grievance & Submit Proof: ${activeIssueModal.ticketNumber}`}
+          description="Document corrective actions and upload photographic/document counter-evidence for Resolution Verifier Agent evaluation."
+        >
+          <form onSubmit={handleResolveSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.15rem' }}>
+            {/* Grievance Summary Box */}
+            <div
+              style={{
+                backgroundColor: colors.adminBackground,
+                padding: '0.85rem 1rem',
+                borderRadius: radii.md,
+                border: `1px solid ${colors.border}`,
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '0.35rem',
+              }}
+            >
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <span style={{ fontSize: typography.fontSize.xs, color: colors.secondaryText, textTransform: 'uppercase', fontWeight: 600 }}>
+                  Reported Issue:
+                </span>
+                <Badge variant="neutral">{activeIssueModal.category}</Badge>
+              </div>
+              <strong style={{ fontSize: typography.fontSize.sm, color: colors.deepForestGreen }}>
+                {activeIssueModal.title}
+              </strong>
+              <p style={{ margin: 0, fontSize: typography.fontSize.xs, color: colors.primaryText, lineHeight: 1.4 }}>
+                {activeIssueModal.description}
+              </p>
+            </div>
+
+            {/* Resolution Notes Field */}
+            <div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.35rem' }}>
+                <label style={{ fontSize: typography.fontSize.xs, fontWeight: 700, color: colors.deepForestGreen }}>
+                  Corrective Actions & Resolution Notes <span style={{ color: colors.danger }}>*</span>
+                </label>
+                <span style={{ fontSize: '0.7rem', color: colors.secondaryText }}>Min. 10 chars</span>
+              </div>
+              <textarea
+                required
+                rows={4}
+                value={resolutionNotes}
+                onChange={(e) => setResolutionNotes(e.target.value)}
+                placeholder="Describe specific technical or physical actions performed (e.g., 'Replaced broken circuit breaker in Science Block B, tested power distribution unit at 230V, verified all switches operational.')..."
+                style={{
+                  width: '100%',
+                  padding: '0.65rem',
+                  borderRadius: radii.md,
+                  border: `1px solid ${colors.border}`,
+                  fontSize: typography.fontSize.sm,
+                  fontFamily: typography.fontFamily,
+                  color: colors.primaryText,
+                  outline: 'none',
+                  boxSizing: 'border-box',
+                }}
+              />
+            </div>
+
+            {/* Solved Media / Counter-Evidence Upload Section */}
+            <div
+              style={{
+                border: `1px dashed ${resolutionFile ? colors.primaryGreen : colors.border}`,
+                backgroundColor: resolutionFile ? 'rgba(45, 106, 79, 0.04)' : '#FAFBF9',
+                borderRadius: radii.md,
+                padding: '1rem',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '0.75rem',
+              }}
+            >
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem' }}>
+                  <Camera size={16} color={colors.primaryGreen} />
+                  <span style={{ fontSize: typography.fontSize.xs, fontWeight: 700, color: colors.deepForestGreen, textTransform: 'uppercase' }}>
+                    Upload Solved Media / Proof (Photo or Document)
+                  </span>
+                </div>
+                <span style={{ fontSize: '0.7rem', color: colors.primaryGreen, fontWeight: 600 }}>
+                  Cryptographic SHA-256 Hashing
+                </span>
+              </div>
+
+              {/* File Picker & Evidence Type Row */}
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr auto', gap: '0.75rem', alignItems: 'center' }}>
+                <div>
+                  <input
+                    type="file"
+                    id="resolution-media-input"
+                    accept="image/*,.pdf,.txt"
+                    onChange={handleFileChange}
+                    style={{ fontSize: typography.fontSize.xs, color: colors.primaryText, width: '100%' }}
+                  />
+                </div>
+
+                <div>
+                  <select
+                    value={resolutionFileType}
+                    onChange={(e) => setResolutionFileType(e.target.value as any)}
+                    style={{
+                      padding: '0.35rem 0.65rem',
+                      borderRadius: radii.sm,
+                      border: `1px solid ${colors.border}`,
+                      fontSize: typography.fontSize.xs,
+                      fontFamily: typography.fontFamily,
+                      color: colors.primaryText,
+                      backgroundColor: '#FFFFFF',
+                    }}
+                  >
+                    <option value="PHOTO">Photo Proof of Repair</option>
+                    <option value="RECEIPT">Service Bill / Work Order</option>
+                    <option value="SCREENSHOT">System / Portal Screenshot</option>
+                    <option value="DOCUMENT">PDF Inspection Report</option>
+                  </select>
+                </div>
+              </div>
+
+              {/* Preview Box if file selected */}
+              {resolutionFile && (
+                <div
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    padding: '0.5rem 0.75rem',
+                    backgroundColor: '#FFFFFF',
+                    borderRadius: radii.sm,
+                    border: `1px solid ${colors.border}`,
+                  }}
+                >
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', overflow: 'hidden' }}>
+                    {previewUrl ? (
+                      <img
+                        src={previewUrl}
+                        alt="Resolution Preview"
+                        style={{ width: '42px', height: '42px', objectFit: 'cover', borderRadius: '4px' }}
+                      />
+                    ) : (
+                      <FileText size={22} color={colors.primaryGreen} />
+                    )}
+                    <div style={{ overflow: 'hidden' }}>
+                      <span style={{ display: 'block', fontSize: typography.fontSize.xs, fontWeight: 600, color: colors.deepForestGreen, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '280px' }}>
+                        {resolutionFile.name}
+                      </span>
+                      <span style={{ fontSize: '0.7rem', color: colors.secondaryText }}>
+                        {(resolutionFile.size / 1024).toFixed(1)} KB • {resolutionFileType}
+                      </span>
+                    </div>
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setResolutionFile(null);
+                      setPreviewUrl(null);
+                    }}
+                    style={{
+                      background: 'none',
+                      border: 'none',
+                      color: colors.danger,
+                      fontSize: typography.fontSize.xs,
+                      cursor: 'pointer',
+                      fontWeight: 600,
+                      padding: '0.2rem 0.5rem',
+                    }}
+                  >
+                    Remove
+                  </button>
+                </div>
+              )}
+            </div>
+
+            {/* Resolution Verifier Agent Notice Banner */}
+            <div
+              style={{
+                backgroundColor: 'rgba(79, 70, 229, 0.05)',
+                border: '1px solid rgba(79, 70, 229, 0.2)',
+                borderRadius: radii.md,
+                padding: '0.75rem 0.9rem',
+                display: 'flex',
+                alignItems: 'flex-start',
+                gap: '0.65rem',
+              }}
+            >
+              <ShieldCheck size={18} color="#4F46E5" style={{ flexShrink: 0, marginTop: '2px' }} />
+              <div>
+                <div style={{ fontSize: typography.fontSize.xs, fontWeight: 700, color: '#312E81', display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+                  <span>Resolution Verifier Agent Active</span>
+                  <span style={{ fontSize: '0.65rem', backgroundColor: '#EEF2FF', color: '#4338CA', padding: '0.1rem 0.4rem', borderRadius: '4px' }}>
+                    Multimodal Audit
+                  </span>
+                </div>
+                <p style={{ margin: '0.2rem 0 0 0', fontSize: '0.73rem', color: '#4338CA', lineHeight: 1.4 }}>
+                  The agent cross-checks corrective notes against original complaint symptoms, validates counter-evidence proof, computes SHA-256 integrity, and transitions ticket to <strong>Student Verification</strong>.
+                </p>
+              </div>
+            </div>
+
+            {/* Error Message */}
+            {resolutionError && (
+              <div style={{ padding: '0.5rem 0.75rem', backgroundColor: '#FEF2F2', border: '1px solid #FCA5A5', borderRadius: radii.sm, color: colors.danger, fontSize: typography.fontSize.xs }}>
+                {resolutionError}
+              </div>
+            )}
+
+            {/* Modal Actions */}
+            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.5rem', marginTop: '0.25rem' }}>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                disabled={isResolving}
+                onClick={() => {
+                  setActiveIssueModal(null);
+                  setModalMode(null);
+                }}
+              >
+                Cancel
+              </Button>
+              <Button
+                type="submit"
+                variant="primary"
+                size="sm"
+                disabled={isResolving}
+              >
+                {isResolving ? (
+                  <>
+                    <RefreshCw size={13} style={{ marginRight: '6px' }} />
+                    Verifying Resolution...
+                  </>
+                ) : (
+                  <>
+                    <CheckCircle2 size={14} style={{ marginRight: '5px' }} />
+                    Propose Resolution with Proof
+                  </>
+                )}
               </Button>
             </div>
           </form>

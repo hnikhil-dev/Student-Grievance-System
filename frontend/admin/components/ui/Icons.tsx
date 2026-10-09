@@ -328,3 +328,41 @@ export const Leaf: React.FC<IconProps> = ({ size = 20, color, strokeWidth = 2, s
     <path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12" />
   </svg>
 );
+
+export const Upload: React.FC<IconProps> = ({ size = 18, color, strokeWidth = 2, style, ...props }) => (
+  <svg width={size} height={size} {...defaultProps} stroke={color || 'currentColor'} strokeWidth={strokeWidth} style={style} {...props}>
+    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+    <polyline points="17 8 12 3 7 8" />
+    <line x1="12" y1="3" x2="12" y2="15" />
+  </svg>
+);
+
+export const ImageIcon: React.FC<IconProps> = ({ size = 18, color, strokeWidth = 2, style, ...props }) => (
+  <svg width={size} height={size} {...defaultProps} stroke={color || 'currentColor'} strokeWidth={strokeWidth} style={style} {...props}>
+    <rect width="18" height="18" x="3" y="3" rx="2" ry="2" />
+    <circle cx="9" cy="9" r="2" />
+    <path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21" />
+  </svg>
+);
+
+export const Paperclip: React.FC<IconProps> = ({ size = 18, color, strokeWidth = 2, style, ...props }) => (
+  <svg width={size} height={size} {...defaultProps} stroke={color || 'currentColor'} strokeWidth={strokeWidth} style={style} {...props}>
+    <path d="m21.44 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l8.57-8.57A4 4 0 1 1 18 8.84l-8.59 8.57a2 2 0 0 1-2.83-2.83l8.49-8.48" />
+  </svg>
+);
+
+export const ShieldCheck: React.FC<IconProps> = ({ size = 18, color, strokeWidth = 2, style, ...props }) => (
+  <svg width={size} height={size} {...defaultProps} stroke={color || 'currentColor'} strokeWidth={strokeWidth} style={style} {...props}>
+    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10" />
+    <path d="m9 12 2 2 4-4" />
+  </svg>
+);
+
+export const Camera: React.FC<IconProps> = ({ size = 18, color, strokeWidth = 2, style, ...props }) => (
+  <svg width={size} height={size} {...defaultProps} stroke={color || 'currentColor'} strokeWidth={strokeWidth} style={style} {...props}>
+    <path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z" />
+    <circle cx="12" cy="13" r="3" />
+  </svg>
+);
+
+
