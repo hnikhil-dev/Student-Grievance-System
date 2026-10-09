@@ -1,6 +1,6 @@
 import React from 'react';
-import { LandingPage } from '@student/components/landing/LandingPage';
+import { LoginPage } from '@student/components/auth/LoginPage';
 
 export default function HomePage() {
-  return <LandingPage />;
+  return <LoginPage />;
 }

@@ -47,30 +47,31 @@ export const CommandCenterPage: React.FC = () => {
   const [actionFeedback, setActionFeedback] = useState<string | null>(null);
   const [hoveredTrendIdx, setHoveredTrendIdx] = useState<number | null>(null);
 
-  // Dynamic critical issues state
-  const [criticalIssuesList, setCriticalIssuesList] = useState<CriticalIssue[]>(
-    MOCK_COMMAND_CENTER_DATA.criticalIssues
-  );
+  // Dynamic critical issues state - clean initial state from live database
+  const [criticalIssuesList, setCriticalIssuesList] = useState<CriticalIssue[]>([]);
   const [issueCategoryFilter, setIssueCategoryFilter] = useState<string>('ALL');
   const [issueSearchQuery, setIssueSearchQuery] = useState<string>('');
   const [isInitialLoading, setIsInitialLoading] = useState<boolean>(true);
 
-  // Live Backend Data States
-  const [trends, setTrends] = useState<VolumeTrendPoint[]>(MOCK_COMMAND_CENTER_DATA.trends);
-  const [departments, setDepartments] = useState<DepartmentWorkload[]>(MOCK_COMMAND_CENTER_DATA.departments);
-  const [slaHealth, setSlaHealth] = useState<SlaHealthMetrics>(MOCK_COMMAND_CENTER_DATA.slaHealth);
+  // Live Backend Data States - strictly reflecting real database state
+  const [trends, setTrends] = useState<VolumeTrendPoint[]>([]);
+  const [departments, setDepartments] = useState<DepartmentWorkload[]>([]);
+  const [slaHealth, setSlaHealth] = useState<SlaHealthMetrics>({
+    healthyPercent: 100,
+    atRiskPercent: 0,
+    breachedPercent: 0,
+    healthyCount: 0,
+    atRiskCount: 0,
+    breachedCount: 0,
+  });
   const [liveOverview, setLiveOverview] = useState<any | null>(null);
   const [availableDepartments, setAvailableDepartments] = useState<BackendDepartment[]>([]);
   const [selectedDeptId, setSelectedDeptId] = useState<string>('');
   const [availableStaff, setAvailableStaff] = useState<any[]>([]);
 
   // Dynamic Priority Distribution & Autonomous Stream
-  const [priorityDistribution, setPriorityDistribution] = useState<PriorityDistributionItem[]>(
-    MOCK_COMMAND_CENTER_DATA.priorityDistribution
-  );
-  const [recentActivity, setRecentActivity] = useState<ActivityEvent[]>(
-    MOCK_COMMAND_CENTER_DATA.recentActivity
-  );
+  const [priorityDistribution, setPriorityDistribution] = useState<PriorityDistributionItem[]>([]);
+  const [recentActivity, setRecentActivity] = useState<ActivityEvent[]>([]);
 
   // Critical Issues & Interactive Modal State
   const [activeIssueModal, setActiveIssueModal] = useState<CriticalIssue | null>(null);
@@ -93,17 +94,17 @@ export const CommandCenterPage: React.FC = () => {
 
       if (overview) {
         setLiveOverview(overview);
-        if (overview.priorityDistribution && overview.priorityDistribution.length > 0) {
+        if (overview.priorityDistribution) {
           setPriorityDistribution(overview.priorityDistribution);
         }
-        if (overview.recentActivity && overview.recentActivity.length > 0) {
+        if (overview.recentActivity) {
           setRecentActivity(overview.recentActivity);
         }
       }
-      if (tr && tr.length > 0) setTrends(tr);
-      if (depts && depts.length > 0) setDepartments(depts);
+      setTrends(tr || []);
+      setDepartments(depts || []);
       if (sla) setSlaHealth(sla);
-      if (critical && critical.length > 0) setCriticalIssuesList(critical);
+      setCriticalIssuesList(critical || []);
       if (rawDepts && rawDepts.length > 0) {
         setAvailableDepartments(rawDepts);
         if (!selectedDeptId && rawDepts[0]) setSelectedDeptId(rawDepts[0].id);
@@ -1014,8 +1015,23 @@ export const CommandCenterPage: React.FC = () => {
             </div>
           </CardHeader>
           <CardContent style={{ padding: '0 1.5rem 1.5rem' }}>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.9rem' }}>
-              {departments.map((dept: DepartmentWorkload) => (
+            {departments.length === 0 ? (
+              <div
+                style={{
+                  padding: '2rem',
+                  textAlign: 'center',
+                  backgroundColor: colors.adminBackground,
+                  borderRadius: radii.md,
+                  border: `1px dashed ${colors.border}`,
+                  color: colors.secondaryText,
+                  fontSize: typography.fontSize.xs,
+                }}
+              >
+                No active departmental grievance load recorded.
+              </div>
+            ) : (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.9rem' }}>
+                {departments.map((dept: DepartmentWorkload) => (
                 <div
                   key={dept.id}
                   style={{
@@ -1088,6 +1104,7 @@ export const CommandCenterPage: React.FC = () => {
                 </div>
               ))}
             </div>
+            )}
           </CardContent>
         </Card>
       </div>
@@ -1117,14 +1134,31 @@ export const CommandCenterPage: React.FC = () => {
             </div>
           </CardHeader>
           <CardContent>
-            {/* SVG Line and Area Chart */}
-            <div style={{ width: '100%', height: '220px', position: 'relative' }}>
-              <svg
-                width="100%"
-                height="100%"
-                viewBox={`0 0 ${svgWidth} ${svgHeight}`}
-                preserveAspectRatio="none"
+            {trends.length === 0 ? (
+              <div
+                style={{
+                  height: '220px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  backgroundColor: colors.adminBackground,
+                  borderRadius: radii.md,
+                  border: `1px dashed ${colors.border}`,
+                  color: colors.secondaryText,
+                  fontSize: typography.fontSize.xs,
+                }}
               >
+                No trend volume accumulated yet for this period.
+              </div>
+            ) : (
+              /* SVG Line and Area Chart */
+              <div style={{ width: '100%', height: '220px', position: 'relative' }}>
+                <svg
+                  width="100%"
+                  height="100%"
+                  viewBox={`0 0 ${svgWidth} ${svgHeight}`}
+                  preserveAspectRatio="none"
+                >
                 <defs>
                   <linearGradient id="incomingGrad" x1="0" y1="0" x2="0" y2="1">
                     <stop offset="0%" stopColor={colors.primaryGreen} stopOpacity="0.32" />
@@ -1271,6 +1305,7 @@ export const CommandCenterPage: React.FC = () => {
                 </div>
               )}
             </div>
+            )}
           </CardContent>
         </Card>
 
@@ -1298,10 +1333,25 @@ export const CommandCenterPage: React.FC = () => {
                 marginBottom: '1.25rem',
               }}
             >
-              <div style={{ width: '3.9%', backgroundColor: colors.danger }} title="Critical (3.9%)" />
-              <div style={{ width: '17.0%', backgroundColor: colors.warning }} title="High (17.0%)" />
-              <div style={{ width: '46.8%', backgroundColor: colors.primaryGreen }} title="Medium (46.8%)" />
-              <div style={{ width: '32.3%', backgroundColor: colors.secondaryGreen }} title="Low (32.3%)" />
+              {priorityDistribution.map((item) => {
+                const getLevelColor = (lvl: string) => {
+                  if (lvl === 'CRITICAL') return colors.danger;
+                  if (lvl === 'HIGH') return colors.warning;
+                  if (lvl === 'MEDIUM') return colors.primaryGreen;
+                  return colors.secondaryGreen;
+                };
+                return (
+                  <div
+                    key={item.level}
+                    style={{
+                      width: `${item.percentage}%`,
+                      backgroundColor: getLevelColor(item.level),
+                      transition: 'width 0.3s ease',
+                    }}
+                    title={`${item.level} (${item.percentage}%)`}
+                  />
+                );
+              })}
             </div>
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
@@ -1393,55 +1443,76 @@ export const CommandCenterPage: React.FC = () => {
           </div>
         </CardHeader>
         <CardContent style={{ padding: '0 1.5rem 1.5rem' }}>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
-            {recentActivity.map((act: ActivityEvent) => {
-              const getTypeBadgeVariant = (type: string) => {
-                if (type === 'GRIEVANCE_ESCALATED') return 'danger';
-                if (type === 'SLA_APPROACHING') return 'warning';
-                if (type === 'GRIEVANCE_RESOLVED') return 'success';
-                return 'info';
-              };
+          {recentActivity.length === 0 ? (
+            <div
+              style={{
+                padding: '2rem',
+                textAlign: 'center',
+                backgroundColor: colors.adminBackground,
+                borderRadius: radii.md,
+                border: `1px dashed ${colors.border}`,
+                color: colors.secondaryText,
+                fontSize: typography.fontSize.xs,
+              }}
+            >
+              No recent background agent events. The system is operating normally.
+            </div>
+          ) : (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
+              {recentActivity.map((act: any) => {
+                const getTypeBadgeVariant = (type: string) => {
+                  if (type === 'GRIEVANCE_ESCALATED') return 'danger';
+                  if (type === 'SLA_APPROACHING') return 'warning';
+                  if (type === 'GRIEVANCE_RESOLVED') return 'success';
+                  return 'info';
+                };
 
-              return (
-                <div
-                  key={act.id}
-                  style={{
-                    display: 'flex',
-                    alignItems: 'flex-start',
-                    gap: '0.75rem',
-                    fontSize: typography.fontSize.xs,
-                    padding: '0.6rem 0',
-                    borderBottom: `1px solid ${colors.border}`,
-                  }}
-                >
-                  <span
+                return (
+                  <div
+                    key={act.id}
                     style={{
-                      color: colors.secondaryText,
-                      minWidth: '75px',
-                      whiteSpace: 'nowrap',
-                      paddingTop: '0.15rem',
+                      display: 'flex',
+                      alignItems: 'flex-start',
+                      gap: '0.75rem',
+                      fontSize: typography.fontSize.xs,
+                      padding: '0.6rem 0',
+                      borderBottom: `1px solid ${colors.border}`,
                     }}
                   >
-                    {act.timestamp}
-                  </span>
+                    <span
+                      style={{
+                        color: colors.secondaryText,
+                        minWidth: '75px',
+                        whiteSpace: 'nowrap',
+                        paddingTop: '0.15rem',
+                      }}
+                    >
+                      {act.timestamp}
+                    </span>
 
-                  <Badge variant={getTypeBadgeVariant(act.type)} size="sm">
-                    {act.typeLabel}
-                  </Badge>
+                    <Badge variant={getTypeBadgeVariant(act.type)} size="sm">
+                      {act.typeLabel || act.type}
+                    </Badge>
 
-                  <div style={{ flex: 1 }}>
-                    <div style={{ color: colors.primaryText, fontWeight: 500, fontSize: typography.fontSize.sm }}>
-                      {act.title}
-                    </div>
-                    <div style={{ color: colors.secondaryText, marginTop: '0.2rem' }}>
-                      by <strong style={{ color: colors.deepForestGreen }}>{act.actor}</strong> •{' '}
-                      <span style={{ fontFamily: 'monospace', fontWeight: 600 }}>{act.ticketNumber}</span> ({act.department})
+                    <div style={{ flex: 1 }}>
+                      <div style={{ color: colors.primaryText, fontWeight: 500, fontSize: typography.fontSize.sm }}>
+                        {act.title}
+                      </div>
+                      <div style={{ color: colors.secondaryText, marginTop: '0.2rem' }}>
+                        by <strong style={{ color: colors.deepForestGreen }}>{act.actor}</strong>
+                        {act.ticketNumber && (
+                          <>
+                            {' '}• <span style={{ fontFamily: 'monospace', fontWeight: 600 }}>{act.ticketNumber}</span>
+                          </>
+                        )}
+                        {act.department && ` (${act.department})`}
+                      </div>
                     </div>
                   </div>
-                </div>
-              );
-            })}
-          </div>
+                );
+              })}
+            </div>
+          )}
         </CardContent>
       </Card>
 

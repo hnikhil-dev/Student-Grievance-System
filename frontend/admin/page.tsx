@@ -72,12 +72,34 @@ export default function AdminPage() {
     };
   }, []);
 
-  // Fetch admin session from backend /api/auth/me
+  const [isCheckingAuth, setIsCheckingAuth] = useState<boolean>(true);
+
+  // Fetch admin session from storage or backend /api/auth/me; redirect to /login if unauthenticated
   useEffect(() => {
     let isMounted = true;
+    if (typeof window !== 'undefined') {
+      const rawUser = localStorage.getItem('sg_active_user') || sessionStorage.getItem('sg_active_user');
+      if (!rawUser) {
+        window.location.href = '/login';
+        return;
+      }
+      try {
+        const parsed = JSON.parse(rawUser);
+        if (parsed.role === 'STUDENT') {
+          // If a student tries to navigate to /admin, redirect to /student
+          window.location.href = '/student';
+          return;
+        }
+      } catch (e) {
+        window.location.href = '/login';
+        return;
+      }
+    }
+
     adminApiService.getAdminSession().then((user) => {
       if (isMounted && user) {
         setAdminUser(user);
+        setIsCheckingAuth(false);
       }
     });
     return () => {
@@ -126,6 +148,26 @@ export default function AdminPage() {
         return <PlaceholderView routeId={activeRoute} />;
     }
   };
+
+  if (isCheckingAuth) {
+    return (
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          minHeight: '100vh',
+          backgroundColor: '#F6F8F6',
+          fontFamily: 'system-ui, sans-serif',
+          color: '#14433D',
+          fontSize: '0.9rem',
+          fontWeight: 600,
+        }}
+      >
+        Verifying administrative credentials...
+      </div>
+    );
+  }
 
   return (
     <AdminLayout activeRoute={activeRoute} onRouteChange={handleRouteChange}>

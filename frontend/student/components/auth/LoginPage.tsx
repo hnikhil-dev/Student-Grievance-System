@@ -28,8 +28,8 @@ import {
 
 export const LoginPage: React.FC = () => {
   const [role, setRole] = useState<'STUDENT' | 'ADMIN'>('STUDENT');
-  const [email, setEmail] = useState('student.alex@campus.edu');
-  const [password, setPassword] = useState('password123');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [rememberMe, setRememberMe] = useState(true);
   
   // UI States
@@ -425,14 +425,21 @@ export const LoginPage: React.FC = () => {
                   <Check size={16} color="#1B4332" /> Active Session Detected
                 </div>
                 <div style={{ fontSize: '0.8125rem', color: '#2D6A4F', marginTop: '0.25rem' }}>
-                  Signed in as <strong>{alreadyAuthUser.name}</strong> ({alreadyAuthUser.studentId})
+                  Signed in as <strong>{alreadyAuthUser.name}</strong>
+                  {alreadyAuthUser.role !== 'SUPER_ADMIN' && alreadyAuthUser.role !== 'ADMIN' && alreadyAuthUser.studentId ? ` (${alreadyAuthUser.studentId})` : ''}
                 </div>
                 <div style={{ display: 'flex', gap: '0.5rem', marginTop: '0.75rem', justifyContent: 'center' }}>
                   <Button
                     variant="primary"
                     size="sm"
                     pill
-                    onClick={() => (window.location.href = '/student/page')}
+                    onClick={() => {
+                      if (alreadyAuthUser.role === 'SUPER_ADMIN' || alreadyAuthUser.role === 'ADMIN') {
+                        window.location.href = '/admin/page';
+                      } else {
+                        window.location.href = '/student/page';
+                      }
+                    }}
                     rightIcon={<ArrowRight size={14} />}
                   >
                     Go to Dashboard
@@ -538,7 +545,7 @@ export const LoginPage: React.FC = () => {
                   htmlFor="login-email"
                   style={{ display: 'block', fontSize: '0.875rem', fontWeight: 600, color: '#374151', marginBottom: '0.35rem' }}
                 >
-                  Campus Email / Student ID
+                  {role === 'ADMIN' ? 'Administrative Email' : 'Campus Email / Student ID'}
                 </label>
                 <Input
                   id="login-email"
@@ -547,7 +554,7 @@ export const LoginPage: React.FC = () => {
                   disabled={isLoading}
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="e.g. student.alex@campus.edu"
+                  placeholder={role === 'ADMIN' ? 'admin@campus.edu' : 'student@campus.edu'}
                   leftIcon={<Mail size={16} />}
                   aria-invalid={!!validationError || !!authError}
                 />
@@ -565,7 +572,7 @@ export const LoginPage: React.FC = () => {
                     href="#forgot"
                     onClick={(e) => {
                       e.preventDefault();
-                      alert('Password recovery: Contact the campus IT helpdesk or use the one-click Instant Demo Login for hackathon testing.');
+                      alert('Password recovery: Please contact the campus IT administrator.');
                     }}
                     style={{ fontSize: '0.8125rem', color: '#2D6A4F', fontWeight: 600, textDecoration: 'none' }}
                   >
@@ -613,27 +620,6 @@ export const LoginPage: React.FC = () => {
                 {isLoading ? 'Authenticating...' : 'Login'}
               </Button>
             </form>
-
-            {/* OR Divider Line */}
-            <div style={{ display: 'flex', alignItems: 'center', margin: '1.5rem 0', gap: '0.75rem' }}>
-              <div style={{ flex: 1, height: '1px', backgroundColor: '#E5E7EB' }} />
-              <span style={{ fontSize: '0.75rem', color: '#9CA3AF', fontWeight: 700 }}>OR</span>
-              <div style={{ flex: 1, height: '1px', backgroundColor: '#E5E7EB' }} />
-            </div>
-
-            {/* Secondary Action: Instant One-Click Demo Login */}
-            <Button
-              type="button"
-              variant="outline"
-              size="md"
-              pill
-              fullWidth
-              disabled={isLoading}
-              onClick={() => handleQuickDemoLogin(role)}
-              leftIcon={<UserPlus size={16} />}
-            >
-              Instant Demo Access ({role === 'STUDENT' ? 'Student Alex' : 'Admin Master'})
-            </Button>
           </Card>
         </div>
       </div>

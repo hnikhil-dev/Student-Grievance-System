@@ -131,8 +131,9 @@ export const adminApiService = {
         }),
       });
       const data = await res.json();
-      if (data.success && Array.isArray(data.data) && data.data.length > 0) {
-        return data.data.map((t: any) => ({
+      const rawTrends = Array.isArray(data.data) ? data.data : data.data?.trends;
+      if (data.success && Array.isArray(rawTrends) && rawTrends.length > 0) {
+        return rawTrends.map((t: any) => ({
           date: t.date ? new Date(t.date).toLocaleDateString([], { month: 'short', day: 'numeric' }) : t.date,
           incoming: Number(t.incoming || t.submitted || 0),
           resolved: Number(t.resolved || 0),
@@ -141,7 +142,7 @@ export const adminApiService = {
     } catch (err) {
       console.warn('[adminApiService] Error fetching trends:', err);
     }
-    return MOCK_COMMAND_CENTER_DATA.trends;
+    return [];
   },
 
   /**
@@ -156,24 +157,25 @@ export const adminApiService = {
         }),
       });
       const data = await res.json();
-      if (data.success && Array.isArray(data.data) && data.data.length > 0) {
-        return data.data.map((d: any) => ({
+      const rawDepts = Array.isArray(data.data) ? data.data : data.data?.departments;
+      if (data.success && Array.isArray(rawDepts) && rawDepts.length > 0) {
+        return rawDepts.map((d: any) => ({
           id: d.id || d.department_id,
           name: d.name || d.department_name || 'Department',
           code: d.code || 'DEPT',
-          totalGrievances: d.totalGrievances || d.total || 0,
-          resolutionRate: d.resolutionRate || 85,
-          slaPercentage: d.slaPercentage || d.slaRate || 92,
-          active: d.activeCount || d.active || 0,
-          resolved: d.resolvedCount || d.resolved || 0,
-          headName: d.headName || 'Department Dean',
-          atRiskCount: d.atRiskCount || d.overdueCount || 0,
+          totalGrievances: Number(d.totalGrievances ?? d.total ?? 0),
+          resolutionRate: Number(d.resolutionRate ?? 0),
+          slaPercentage: Number(d.slaPercentage ?? (d.overdue > 0 ? 80 : 100)),
+          active: Number(d.activeCount ?? d.inProgress ?? (d.total != null ? d.total - (d.closed || 0) : 0)),
+          resolved: Number(d.resolvedCount ?? d.closed ?? 0),
+          headName: d.headName || 'Department Head',
+          atRiskCount: Number(d.atRiskCount ?? d.overdue ?? 0),
         }));
       }
     } catch (err) {
       console.warn('[adminApiService] Error fetching department workloads:', err);
     }
-    return MOCK_COMMAND_CENTER_DATA.departments;
+    return [];
   },
 
   /**
@@ -211,20 +213,30 @@ export const adminApiService = {
       const data = await res.json();
       if (data.success && data.data) {
         const d = data.data;
-        const total = (d.healthyCount || 0) + (d.atRiskCount || 0) + (d.breachedCount || 0) || 1;
+        const healthyCount = d.activeTickets?.onTrackCount ?? d.healthyCount ?? 0;
+        const atRiskCount = d.activeTickets?.warningCount ?? d.atRiskCount ?? 0;
+        const breachedCount = d.activeTickets?.breachedCount ?? d.breachedCount ?? 0;
+        const total = healthyCount + atRiskCount + breachedCount || 1;
         return {
-          healthyCount: d.healthyCount || 0,
-          atRiskCount: d.atRiskCount || 0,
-          breachedCount: d.breachedCount || 0,
-          healthyPercent: Math.round(((d.healthyCount || 0) / total) * 100),
-          atRiskPercent: Math.round(((d.atRiskCount || 0) / total) * 100),
-          breachedPercent: Math.round(((d.breachedCount || 0) / total) * 100),
+          healthyCount,
+          atRiskCount,
+          breachedCount,
+          healthyPercent: Math.round((healthyCount / total) * 100),
+          atRiskPercent: Math.round((atRiskCount / total) * 100),
+          breachedPercent: Math.round((breachedCount / total) * 100),
         };
       }
     } catch (err) {
       console.warn('[adminApiService] Error fetching SLA analytics:', err);
     }
-    return MOCK_COMMAND_CENTER_DATA.slaHealth;
+    return {
+      healthyCount: 0,
+      atRiskCount: 0,
+      breachedCount: 0,
+      healthyPercent: 100,
+      atRiskPercent: 0,
+      breachedPercent: 0,
+    };
   },
 
   /**
@@ -303,10 +315,11 @@ export const adminApiService = {
           };
         });
       }
+      return [];
     } catch (err) {
       console.warn('[adminApiService] Error mapping critical issues:', err);
     }
-    return MOCK_COMMAND_CENTER_DATA.criticalIssues;
+    return [];
   },
 
   /**

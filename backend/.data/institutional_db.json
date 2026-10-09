@@ -126,6 +126,18 @@
   ],
   "profiles": [
     {
+      "id": "7e53dfda-355f-4b26-a7a8-553e90b6ad36",
+      "full_name": "Admin",
+      "email": "admin@gmail.com",
+      "role": "OFFICER",
+      "department_id": null,
+      "student_id": null,
+      "phone": "+1-555-0199",
+      "is_active": true,
+      "created_at": "2026-10-09T03:40:55.644Z",
+      "updated_at": "2026-10-09T03:40:55.644Z"
+    },
+    {
       "id": "00000000-0000-0000-0000-000000000001",
       "full_name": "Dr. Sarah Jenkins",
       "email": "superadmin@campus.edu",
@@ -223,6 +235,36 @@
     }
   ],
   "grievances": [
+    {
+      "ticket_number": "GRV-2026-64993",
+      "student_id": "00000000-0000-0000-0000-000000000006",
+      "title": "light is not working in c wing",
+      "description": "light is not working in c wing",
+      "category": "IT",
+      "subcategory": null,
+      "priority": "LOW",
+      "priority_score": 25,
+      "priority_reasons": [
+        "Moderate severity grievance",
+        "Standard operational urgency",
+        "Single individual grievance"
+      ],
+      "status": "SUBMITTED",
+      "department_id": "a0000000-0000-0000-0000-000000000001",
+      "assigned_to": null,
+      "location": null,
+      "affected_students": 1,
+      "severity": "MODERATE",
+      "urgency": "MEDIUM",
+      "recurrence": false,
+      "is_confidential": true,
+      "is_anonymous": true,
+      "sla_hours": 48,
+      "due_at": "2026-10-11T03:39:34.399Z",
+      "id": "dccabe21-f3f1-4682-9f2e-bdf06850c1d1",
+      "created_at": "2026-10-09T03:39:34.410Z",
+      "updated_at": "2026-10-09T03:39:34.410Z"
+    },
     {
       "ticket_number": "GRV-2026-82787",
       "student_id": "00000000-0000-0000-0000-000000000006",
@@ -384,6 +426,21 @@
   ],
   "grievance_status_history": [
     {
+      "grievance_id": "dccabe21-f3f1-4682-9f2e-bdf06850c1d1",
+      "old_status": null,
+      "new_status": "SUBMITTED",
+      "changed_by": "00000000-0000-0000-0000-000000000006",
+      "reason": "Grievance submitted by student",
+      "metadata": {
+        "initialPriority": "LOW",
+        "priorityScore": 25,
+        "slaHours": 48
+      },
+      "id": "b56ea8fb-b45c-45a6-a98c-9fc9b1b74812",
+      "created_at": "2026-10-09T03:39:34.414Z",
+      "updated_at": "2026-10-09T03:39:34.414Z"
+    },
+    {
       "grievance_id": "5ac492e4-2acc-4d0a-9c12-61f96b8a6e6a",
       "old_status": "STUDENT_VERIFICATION",
       "new_status": "CLOSED",
@@ -486,6 +543,18 @@
   "notifications": [
     {
       "user_id": "00000000-0000-0000-0000-000000000006",
+      "grievance_id": "dccabe21-f3f1-4682-9f2e-bdf06850c1d1",
+      "type": "SUBMITTED",
+      "title": "Grievance Registered",
+      "message": "Your grievance has been registered with ticket number GRV-2026-64993. SLA target: 48 hours.",
+      "is_read": false,
+      "metadata": {},
+      "id": "85e4189d-b0b1-4baa-9a37-cb81dec53c12",
+      "created_at": "2026-10-09T03:39:34.416Z",
+      "updated_at": "2026-10-09T03:39:34.416Z"
+    },
+    {
+      "user_id": "00000000-0000-0000-0000-000000000006",
       "grievance_id": "5ac492e4-2acc-4d0a-9c12-61f96b8a6e6a",
       "type": "CLOSED",
       "title": "Grievance Closed",
@@ -567,6 +636,23 @@
   ],
   "grievance_evidence": [],
   "agent_execution_logs": [
+    {
+      "grievance_id": "dccabe21-f3f1-4682-9f2e-bdf06850c1d1",
+      "agent_name": "TRIAGE_AGENT",
+      "action_taken": "CLASSIFY_AND_SCORE",
+      "thought_process": "[STEP 1: INTENT DECOMPOSITION] Grievance corpus analyzed (\"light is not working in c wing\"). Key entities mapped to category 'IT'.\n[STEP 2: IMPACT & SEVERITY ASSESSMENT] Impact cohort evaluated at 1 student(s) with urgency 'MEDIUM'.\n[STEP 3: MULTI-FACTOR WEIGHTING] Priority calculated as LOW (25/100). Contributing factors: Moderate severity grievance; Standard operational urgency; Single individual grievance.\n[STEP 4: SMART ROUTING] Routed to Department ID 'a0000000-0000-0000-0000-000000000001' with dynamic SLA deadline of 48 hours.",
+      "confidence": 0.965,
+      "metadata": {
+        "category": "IT",
+        "priority": "LOW",
+        "priorityScore": 25,
+        "slaHours": 48,
+        "ticketNumber": "GRV-2026-64993"
+      },
+      "id": "223c0002-e33f-4b19-b2cb-925e15c33f68",
+      "created_at": "2026-10-09T03:39:34.419Z",
+      "updated_at": "2026-10-09T03:39:34.419Z"
+    },
     {
       "grievance_id": "5ac492e4-2acc-4d0a-9c12-61f96b8a6e6a",
       "agent_name": "RESOLUTION_VERIFIER",
