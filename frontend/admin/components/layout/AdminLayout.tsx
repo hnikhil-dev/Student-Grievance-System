@@ -32,7 +32,8 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({
     <div
       style={{
         display: 'flex',
-        minHeight: '100vh',
+        height: '100vh',
+        overflow: 'hidden',
         backgroundColor: colors.adminBackground,
         fontFamily: typography.fontFamily,
         color: colors.primaryText,
@@ -55,6 +56,8 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({
           display: 'flex',
           flexDirection: 'column',
           minWidth: 0,
+          height: '100vh',
+          overflow: 'hidden',
           backgroundColor: colors.adminBackground,
         }}
       >
@@ -73,6 +76,7 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({
           className="admin-main-content"
           style={{
             flex: 1,
+            overflowY: 'auto',
             padding: '2rem',
             maxWidth: '1440px',
             width: '100%',

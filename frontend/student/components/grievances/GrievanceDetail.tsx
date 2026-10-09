@@ -656,16 +656,16 @@ export const GrievanceDetail: React.FC<GrievanceDetailProps> = ({ id: propId }) 
                     <Lightbulb size={24} color="#D97706" />
                     <div>
                       <h3 style={{ margin: 0, fontSize: '1.15rem', fontWeight: 800, color: '#92400E' }}>
-                        Resolution Proposed by Officer - Verification Required
+                        Resolution Proposed — Please Confirm
                       </h3>
                       <span style={{ fontSize: '0.8125rem', color: '#B45309' }}>
-                        The assigned officer has submitted a resolution. Your confirmation is required to close this ticket or reopen if unresolved.
+                        The department officer has proposed a resolution. Please confirm if your issue is resolved, or request further assistance.
                       </span>
                     </div>
                   </div>
 
                   <span style={{ fontSize: '0.75rem', fontWeight: 700, backgroundColor: '#FEF3C7', color: '#92400E', padding: '0.3rem 0.65rem', borderRadius: '8px' }}>
-                    Student Verification Required
+                    Confirmation Needed
                   </span>
                 </div>
 
@@ -681,7 +681,7 @@ export const GrievanceDetail: React.FC<GrievanceDetailProps> = ({ id: propId }) 
                   }}
                 >
                   <p style={{ margin: '0 0 0.5rem 0', fontWeight: 700, color: '#92400E', fontSize: '0.8125rem', textTransform: 'uppercase' }}>
-                    Officer Resolution Notes:
+                    Resolution Summary:
                   </p>
                   {grievance.resolution_notes || 'The department has marked this problem as resolved. Please test and confirm resolution.'}
                 </div>
@@ -696,7 +696,7 @@ export const GrievanceDetail: React.FC<GrievanceDetailProps> = ({ id: propId }) 
                     onClick={() => handleVerifyResolution(true)}
                     rightIcon={<Check size={16} />}
                   >
-                    Accept & Close
+                    Confirm & Close
                   </Button>
 
                   <Button
@@ -709,7 +709,7 @@ export const GrievanceDetail: React.FC<GrievanceDetailProps> = ({ id: propId }) 
                     }}
                     leftIcon={<X size={16} />}
                   >
-                    Reject & Reopen
+                    Need More Help
                   </Button>
                 </div>
               </div>
@@ -774,7 +774,7 @@ export const GrievanceDetail: React.FC<GrievanceDetailProps> = ({ id: propId }) 
                 <Card variant="floating" style={{ padding: '1.75rem' }}>
                   <CardHeader>
                     <CardTitle style={{ fontSize: '1.2rem', color: '#1B4332' }}>Complaint Description</CardTitle>
-                    <CardDescription>Full student explanation and parameters submitted to the institution</CardDescription>
+                    <CardDescription>Request description and details provided</CardDescription>
                   </CardHeader>
 
                   <CardContent>
@@ -813,8 +813,8 @@ export const GrievanceDetail: React.FC<GrievanceDetailProps> = ({ id: propId }) 
                       </div>
 
                       <div>
-                        <span style={{ color: '#6B7280', display: 'block' }}>Priority Score:</span>
-                        <strong style={{ color: '#2D6A4F' }}>{grievance.priority_score || 50}/100 Calculated</strong>
+                        <span style={{ color: '#6B7280', display: 'block' }}>Priority Level:</span>
+                        <PriorityBadge priority={grievance.priority} size="sm" />
                       </div>
                     </div>
                   </CardContent>
@@ -825,7 +825,7 @@ export const GrievanceDetail: React.FC<GrievanceDetailProps> = ({ id: propId }) 
                   <Card variant="floating" style={{ padding: '1.75rem' }}>
                     <CardHeader>
                       <CardTitle style={{ fontSize: '1.15rem', color: '#1B4332' }}>Attached Files ({grievance.attachments.length})</CardTitle>
-                      <CardDescription>Verified attachments submitted with this ticket</CardDescription>
+                      <CardDescription>Files attached to this request</CardDescription>
                     </CardHeader>
 
                     <CardContent>
@@ -895,7 +895,7 @@ export const GrievanceDetail: React.FC<GrievanceDetailProps> = ({ id: propId }) 
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                       <div>
                         <CardTitle style={{ fontSize: '1.15rem', color: '#1B4332' }}>Discussion Stream</CardTitle>
-                        <CardDescription>Direct, logged communication between student and department officer</CardDescription>
+                        <CardDescription>Direct conversation with the department team</CardDescription>
                       </div>
                       <span style={{ fontSize: '0.8125rem', fontWeight: 700, color: '#4B5563', backgroundColor: '#F3F4F6', padding: '0.2rem 0.6rem', borderRadius: '9999px' }}>
                         {comments.length} Comments
@@ -1006,14 +1006,14 @@ export const GrievanceDetail: React.FC<GrievanceDetailProps> = ({ id: propId }) 
                 {/* 1. Live SLA Countdown & Health Card */}
                 <Card variant="floating" style={{ padding: '1.5rem' }}>
                   <CardHeader>
-                    <CardTitle style={{ fontSize: '1.1rem', color: '#1B4332' }}>SLA Target & Countdown</CardTitle>
-                    <CardDescription>Guaranteed institutional resolution window</CardDescription>
+                    <CardTitle style={{ fontSize: '1.1rem', color: '#1B4332' }}>Resolution Timeline</CardTitle>
+                    <CardDescription>Estimated timeline and target completion</CardDescription>
                   </CardHeader>
 
                   <CardContent>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                        <span style={{ fontSize: '0.8125rem', color: '#6B7280' }}>SLA Health:</span>
+                        <span style={{ fontSize: '0.8125rem', color: '#6B7280' }}>Status:</span>
                         <SlaIndicator slaStatus={grievance.sla_status} size="sm" />
                       </div>
 
@@ -1035,7 +1035,7 @@ export const GrievanceDetail: React.FC<GrievanceDetailProps> = ({ id: propId }) 
                       {grievance.sla_status && (
                         <div style={{ marginTop: '0.5rem' }}>
                           <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.75rem', marginBottom: '0.25rem', color: '#6B7280' }}>
-                            <span>Consumed Time</span>
+                            <span>Elapsed Time</span>
                             <strong>{Math.min(100, grievance.sla_status.elapsedPercent)}%</strong>
                           </div>
                           <ProgressBar
@@ -1131,14 +1131,14 @@ export const GrievanceDetail: React.FC<GrievanceDetailProps> = ({ id: propId }) 
                     confidence: typeof grievance.ai_confidence === 'number' ? grievance.ai_confidence : 0.88,
                   }}
                   isAiEnhanced={true}
-                  titleOverride="AI Triage & Explainability"
+                  titleOverride="Automated Request Summary"
                 />
 
                 {/* 4. Vertical Status History Timeline */}
                 <Card variant="floating" style={{ padding: '1.5rem' }}>
                   <CardHeader>
-                    <CardTitle style={{ fontSize: '1.1rem', color: '#1B4332' }}>Lifecycle Audit Timeline</CardTitle>
-                    <CardDescription>Chronological events logged by the institution</CardDescription>
+                    <CardTitle style={{ fontSize: '1.1rem', color: '#1B4332' }}>Status History & Updates</CardTitle>
+                    <CardDescription>Chronological updates on this request</CardDescription>
                   </CardHeader>
 
                   <CardContent>

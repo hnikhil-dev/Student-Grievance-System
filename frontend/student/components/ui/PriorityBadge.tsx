@@ -8,12 +8,14 @@ export interface PriorityBadgeProps {
   priority: PriorityLevel | string;
   score?: number;
   size?: BadgeSize;
+  showScore?: boolean;
 }
 
 export const PriorityBadge: React.FC<PriorityBadgeProps> = ({
   priority,
   score,
   size = 'md',
+  showScore = false,
 }) => {
   const normPriority = (priority || 'MEDIUM').toUpperCase() as PriorityLevel;
 
@@ -53,7 +55,7 @@ export const PriorityBadge: React.FC<PriorityBadgeProps> = ({
     >
       <IconComponent size={sStyle.iconSize} strokeWidth={2.2} />
       <span>{config.label}</span>
-      {score !== undefined && (
+      {showScore && score !== undefined && (
         <span
           style={{
             marginLeft: '0.15rem',

@@ -80,18 +80,17 @@ export const AiReasoningCard: React.FC<AiReasoningCardProps> = ({
             <Sparkles size={18} color="#FFFFFF" />
           </div>
           <div>
-            <h4 style={{ margin: 0, fontSize: '1rem', fontWeight: 800, color: '#1E1B4B' }}>
-              {titleOverride || 'AI Institutional Triage & Understanding'}
+            <h4 style={{ margin: 0, fontSize: '1rem', fontWeight: 700, color: '#1E1B4B' }}>
+              {titleOverride || 'Automated Categorization'}
             </h4>
             <span style={{ fontSize: '0.75rem', color: '#4338CA' }}>
-              Explainable classification & SLA target calculation
+              Suggested department and estimated resolution window
             </span>
           </div>
         </div>
 
         <AiBadge
-          label={isAiEnhanced ? 'AI Evaluated' : 'Rule Triage'}
-          confidence={analysis.confidence}
+          label={isAiEnhanced ? 'Auto-Assigned' : 'Standard Rules'}
           variant="indigo"
         />
       </div>
@@ -106,8 +105,8 @@ export const AiReasoningCard: React.FC<AiReasoningCardProps> = ({
             padding: '0.85rem 1rem',
           }}
         >
-          <span style={{ fontSize: '0.75rem', color: '#3730A3', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.04em', display: 'block', marginBottom: '0.25rem' }}>
-            Extracted Complaint Understanding
+          <span style={{ fontSize: '0.75rem', color: '#3730A3', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.04em', display: 'block', marginBottom: '0.25rem' }}>
+            Request Summary
           </span>
           <p style={{ margin: 0, fontSize: '0.875rem', color: '#1E1B4B', lineHeight: 1.5, fontWeight: 500 }}>
             {analysis.summary}
@@ -121,7 +120,7 @@ export const AiReasoningCard: React.FC<AiReasoningCardProps> = ({
         <div style={{ backgroundColor: '#FFFFFF', padding: '0.85rem', borderRadius: '12px', border: '1px solid #E2E8F0', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
           <div>
             <span style={{ fontSize: '0.7rem', color: '#64748B', fontWeight: 700, textTransform: 'uppercase', display: 'block', marginBottom: '0.25rem' }}>
-              CLASSIFICATION
+              CATEGORY
             </span>
             <span style={{ fontSize: '0.9375rem', fontWeight: 700, color: '#0F172A' }}>
               {analysis.category}
@@ -149,20 +148,20 @@ export const AiReasoningCard: React.FC<AiReasoningCardProps> = ({
           )}
         </div>
 
-        {/* Priority Score */}
+        {/* Priority */}
         <div style={{ backgroundColor: '#FFFFFF', padding: '0.85rem', borderRadius: '12px', border: '1px solid #E2E8F0' }}>
           <span style={{ fontSize: '0.7rem', color: '#64748B', fontWeight: 700, textTransform: 'uppercase', display: 'block', marginBottom: '0.25rem' }}>
-            PRIORITY ASSESSMENT
+            PRIORITY
           </span>
           <div style={{ marginTop: '0.15rem' }}>
-            <PriorityBadge priority={analysis.priority} score={analysis.priorityScore} size="sm" />
+            <PriorityBadge priority={analysis.priority} size="sm" />
           </div>
         </div>
 
         {/* Target Department */}
         <div style={{ backgroundColor: '#FFFFFF', padding: '0.85rem', borderRadius: '12px', border: '1px solid #E2E8F0' }}>
           <span style={{ fontSize: '0.7rem', color: '#64748B', fontWeight: 700, textTransform: 'uppercase', display: 'block', marginBottom: '0.25rem' }}>
-            DEPARTMENT ROUTING
+            RESPONSIBLE DEPARTMENT
           </span>
           <span style={{ fontSize: '0.9rem', fontWeight: 700, color: '#1B4332', display: 'inline-flex', alignItems: 'center', gap: '5px', marginTop: '0.2rem' }}>
             <Landmark size={14} color="#1B4332" />
@@ -173,7 +172,7 @@ export const AiReasoningCard: React.FC<AiReasoningCardProps> = ({
         {/* SLA Awareness Target */}
         <div style={{ backgroundColor: '#FFFFFF', padding: '0.85rem', borderRadius: '12px', border: '1px solid #E2E8F0' }}>
           <span style={{ fontSize: '0.7rem', color: '#64748B', fontWeight: 700, textTransform: 'uppercase', display: 'block', marginBottom: '0.25rem' }}>
-            SLA TARGET WINDOW
+            ESTIMATED RESOLUTION
           </span>
           <span style={{ fontSize: '0.9rem', fontWeight: 800, color: '#2D6A4F', display: 'inline-flex', alignItems: 'center', gap: '5px', marginTop: '0.2rem' }}>
             <Clock size={14} color="#2D6A4F" />
@@ -182,32 +181,29 @@ export const AiReasoningCard: React.FC<AiReasoningCardProps> = ({
         </div>
       </div>
 
-      {/* Transparent AI Reasoning Triggers */}
+      {/* Decision Factors */}
       {analysis.priorityReasons && analysis.priorityReasons.length > 0 && (
         <div style={{ backgroundColor: '#FFFFFF', padding: '1rem', borderRadius: '12px', border: '1px solid #E2E8F0' }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
-            <h5 style={{ margin: 0, fontSize: '0.775rem', fontWeight: 800, color: '#334155', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
-              Transparent Decision Triggers
+            <h5 style={{ margin: 0, fontSize: '0.775rem', fontWeight: 700, color: '#334155', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+              Key Factors Identified
             </h5>
-            <span style={{ fontSize: '0.725rem', color: '#64748B', fontStyle: 'italic' }}>
-              Institutionally Explainable
-            </span>
           </div>
           <ul style={{ margin: 0, paddingLeft: '1.2rem', fontSize: '0.85rem', color: '#475569', lineHeight: 1.6 }}>
             {analysis.priorityReasons.map((reason, idx) => (
               <li key={idx} style={{ marginBottom: '0.25rem' }}>
-                <strong style={{ color: '#0F172A' }}>{reason}</strong>
+                <span style={{ color: '#0F172A', fontWeight: 500 }}>{reason}</span>
               </li>
             ))}
           </ul>
         </div>
       )}
 
-      {/* Trust & Human Agency Guarantee */}
+      {/* Helpful Student Note */}
       <div style={{ display: 'flex', alignItems: 'center', gap: '0.55rem', fontSize: '0.75rem', color: '#64748B', borderTop: '1px solid #E0E7FF', paddingTop: '0.75rem' }}>
         <ShieldCheck size={16} color="#4F46E5" />
         <span>
-          <strong>Supervised AI:</strong> Suggestions reflect institutional guidelines. You maintain full authority to edit prior to submission.
+          These details are automatically organized to speed up resolution. You can review or edit anytime.
         </span>
       </div>
     </div>

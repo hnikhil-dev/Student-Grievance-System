@@ -79,14 +79,14 @@ const NOTIFICATION_TYPE_CONFIG: Record<
     border: '#A7F3D0',
   },
   SLA_WARNING: {
-    label: 'SLA Warning',
+    label: 'Timeline Notice',
     icon: <AlertTriangle size={20} color="#B45309" />,
     bg: '#FFFBEB',
     text: '#B45309',
     border: '#FDE68A',
   },
   SLA_BREACH: {
-    label: 'SLA Breached',
+    label: 'Resolution Delayed',
     icon: <AlertOctagon size={20} color="#B91C1C" />,
     bg: '#FEF2F2',
     text: '#B91C1C',
@@ -338,7 +338,7 @@ export const NotificationsCenter: React.FC = () => {
               )}
             </div>
             <p style={{ margin: 0, fontSize: '0.9375rem', color: '#4B5563', lineHeight: 1.5 }}>
-              Live updates, officer replies, resolution verification notices, and automated SLA alerts.
+              Stay informed on updates, officer messages, and resolution progress for your requests.
             </p>
           </div>
 

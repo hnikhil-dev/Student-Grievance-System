@@ -483,15 +483,15 @@ export const AiComplaintForm: React.FC = () => {
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', marginBottom: '0.25rem' }}>
               <Sparkles size={24} color="#2D6A4F" />
               <h1 style={{ margin: 0, fontSize: 'clamp(1.4rem, 2.5vw, 1.85rem)', fontWeight: 800, color: '#1B4332' }}>
-                AI-Assisted Grievance Submission
+                Submit a Campus Grievance
               </h1>
             </div>
             <p style={{ margin: 0, fontSize: '0.875rem', color: '#6B7280' }}>
-              Explain your issue naturally. Our AI extracts urgency, matches the responsible department, and computes transparent SLA targets.
+              Describe your issue in your own words. We will automatically assign the responsible department and set an expected resolution timeframe.
             </p>
           </div>
 
-          <AiBadge label="Institutional Triage 2.0" variant="indigo" />
+          <AiBadge label="Smart Routing" variant="indigo" />
         </div>
 
         {/* 4-Step Interactive Visual Stepper */}
@@ -511,7 +511,7 @@ export const AiComplaintForm: React.FC = () => {
         >
           {[
             { num: 1, label: '1. Describe' },
-            { num: 2, label: '2. AI Triage' },
+            { num: 2, label: '2. Details' },
             { num: 3, label: '3. Review' },
             { num: 4, label: '4. Done' },
           ].map((s) => {
@@ -746,7 +746,7 @@ export const AiComplaintForm: React.FC = () => {
                           <option value="SCREENSHOT">Portal / Wi-Fi Screenshot</option>
                         </select>
                         <span style={{ fontSize: '0.7rem', color: '#059669', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
-                          <Lock size={12} /> SHA-256 Vault Sealed
+                          <Lock size={12} /> Secure Upload
                         </span>
                       </div>
                     </div>
@@ -808,7 +808,7 @@ export const AiComplaintForm: React.FC = () => {
                     disabled={description.trim().length < 10}
                     rightIcon={<Sparkles size={16} />}
                   >
-                    Analyze Complaint with AI
+                    Continue to Review Details
                   </Button>
                 </div>
               </div>
@@ -841,7 +841,7 @@ export const AiComplaintForm: React.FC = () => {
 
               <div>
                 <h3 style={{ margin: 0, fontSize: '1.35rem', fontWeight: 800, color: '#1E1B4B' }}>
-                  Institutional AI Processing
+                  Organizing Your Request...
                 </h3>
                 <p style={{ margin: '0.5rem 0 0 0', fontSize: '0.95rem', color: '#4F46E5', fontWeight: 600 }}>
                   {aiProcessingPhase}
@@ -862,7 +862,7 @@ export const AiComplaintForm: React.FC = () => {
               </div>
 
               <span style={{ fontSize: '0.75rem', color: '#6B7280' }}>
-                Applying institutional priority formula & departmental triage rules...
+                Matching department and routing your request...
               </span>
             </div>
 
@@ -902,7 +902,7 @@ export const AiComplaintForm: React.FC = () => {
                     </h4>
                   </div>
                   <p style={{ margin: '0 0 0.75rem 0', fontSize: '0.85rem', color: '#166534', lineHeight: 1.5 }}>
-                    The grievance engine evaluated natural-language indicators against institutional criteria. Here is the transparent breakdown:
+                    Here is why this priority was assigned based on your request description:
                   </p>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '0.35rem' }}>
                     {aiAnalysis.priorityReasons.map((reason, idx) => (
@@ -916,7 +916,7 @@ export const AiComplaintForm: React.FC = () => {
               </div>
             ) : (
               <Alert type="info">
-                Standard institutional triage applied. You have full freedom to refine any parameter before filing.
+                Details organized automatically. You can review and edit any field before submitting.
               </Alert>
             )}
 
@@ -925,9 +925,9 @@ export const AiComplaintForm: React.FC = () => {
               <CardHeader>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.5rem' }}>
                   <div>
-                    <CardTitle style={{ color: '#1B4332', fontSize: '1.3rem' }}>Review & Refine Grievance</CardTitle>
+                    <CardTitle style={{ color: '#1B4332', fontSize: '1.3rem' }}>Review & Submit Grievance</CardTitle>
                     <CardDescription>
-                      Review the AI-structured parameters below. You can modify any field prior to final registration.
+                      Review the details below. You can modify any field prior to submitting.
                     </CardDescription>
                   </div>
                   <Button
@@ -972,7 +972,7 @@ export const AiComplaintForm: React.FC = () => {
                             padding: 0,
                           }}
                         >
-                          <Sparkles size={13} /> Use AI Suggested Title
+                          <Sparkles size={13} /> Use Suggested Title
                         </button>
                       )}
                     </div>
@@ -1044,7 +1044,7 @@ export const AiComplaintForm: React.FC = () => {
                   >
                     <div>
                       <span style={{ fontSize: '0.75rem', color: '#1B4332', fontWeight: 700, textTransform: 'uppercase' }}>
-                        COMPUTED SLA RESOLUTION TARGET
+                        ESTIMATED RESOLUTION WINDOW
                       </span>
                       <div style={{ fontSize: '1.1rem', fontWeight: 800, color: '#2D6A4F', display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
                         <Clock size={16} /> {aiAnalysis?.priority === 'CRITICAL' ? '4 Hours' : aiAnalysis?.priority === 'HIGH' ? '12 Hours' : '24 Hours'} Target
@@ -1052,7 +1052,7 @@ export const AiComplaintForm: React.FC = () => {
                     </div>
 
                     <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
-                      <PriorityBadge priority={aiAnalysis?.priority || 'MEDIUM'} score={aiAnalysis?.priorityScore || 50} />
+                      <PriorityBadge priority={aiAnalysis?.priority || 'MEDIUM'} />
                       <StatusBadge status="SUBMITTED" size="sm" />
                     </div>
                   </div>
@@ -1077,7 +1077,7 @@ export const AiComplaintForm: React.FC = () => {
                       onClick={handleSubmitGrievance}
                       rightIcon={<Send size={16} />}
                     >
-                      {isSubmitting ? 'Registering Grievance...' : 'Confirm & Submit Grievance'}
+                      {isSubmitting ? 'Submitting Request...' : 'Submit Grievance'}
                     </Button>
                   </div>
                 </div>
@@ -1111,13 +1111,13 @@ export const AiComplaintForm: React.FC = () => {
 
               <div>
                 <span style={{ fontSize: '0.8125rem', fontWeight: 700, color: '#059669', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                  GRIEVANCE REGISTERED & ROUTED
+                  GRIEVANCE SUBMITTED SUCCESSFULLY
                 </span>
                 <h2 style={{ margin: '0.25rem 0 0.5rem 0', fontSize: '2.25rem', fontWeight: 800, color: '#1B4332' }}>
                   {createdGrievance.ticket_number}
                 </h2>
                 <p style={{ margin: 0, fontSize: '0.9375rem', color: '#4B5563', lineHeight: 1.5 }}>
-                  Your grievance has been officially logged in the system. The designated department officer has been assigned and SLA timer has started.
+                  Your grievance has been submitted. The designated department has been notified, and resolution tracking is active.
                 </p>
               </div>
 
@@ -1135,10 +1135,10 @@ export const AiComplaintForm: React.FC = () => {
                 </div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <span style={{ fontSize: '0.8125rem', color: '#6B7280' }}>Priority:</span>
-                  <PriorityBadge priority={createdGrievance.priority} score={createdGrievance.priority_score} size="sm" />
+                  <PriorityBadge priority={createdGrievance.priority} size="sm" />
                 </div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <span style={{ fontSize: '0.8125rem', color: '#6B7280' }}>Guaranteed Resolution Window:</span>
+                  <span style={{ fontSize: '0.8125rem', color: '#6B7280' }}>Target Resolution Window:</span>
                   <span style={{ fontWeight: 700, color: '#2D6A4F', fontSize: '0.875rem', display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
                     <Clock size={15} /> {createdGrievance.sla_hours} Hours Target
                   </span>

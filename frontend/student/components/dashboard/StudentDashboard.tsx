@@ -323,24 +323,21 @@ export const StudentDashboardContent: React.FC = () => {
             </h1>
           </div>
           <p style={{ margin: 0, fontSize: '0.9375rem', color: '#4B5563' }}>
-            Live SLA Countdown Tracking & Closed-Loop Resolution Verification Portal.
+            Track campus issues, view department updates, and confirm resolved requests.
           </p>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginTop: '0.5rem', flexWrap: 'wrap' }}>
             {user?.student_id && (
-              <span style={{ fontSize: '0.75rem', backgroundColor: '#E8F5E9', color: '#1B4332', padding: '0.2rem 0.55rem', borderRadius: '6px', fontWeight: 700, border: '1px solid #D8F3DC', display: 'inline-flex', alignItems: 'center', gap: '0.3rem' }}>
-                <GraduationCap size={13} /> ID: {user.student_id}
+              <span style={{ fontSize: '0.75rem', backgroundColor: '#E8F5E9', color: '#1B4332', padding: '0.2rem 0.55rem', borderRadius: '6px', fontWeight: 600, border: '1px solid #D8F3DC', display: 'inline-flex', alignItems: 'center', gap: '0.3rem' }}>
+                <GraduationCap size={13} /> Roll No: {user.student_id}
               </span>
             )}
-            <span style={{ fontSize: '0.75rem', backgroundColor: '#F0FDF4', color: '#15803D', padding: '0.2rem 0.55rem', borderRadius: '6px', fontWeight: 600, border: '1px solid #BBF7D0', display: 'inline-flex', alignItems: 'center', gap: '0.3rem' }}>
-              <Activity size={13} /> Live Realtime: Active
-            </span>
-            <span style={{ fontSize: '0.75rem', backgroundColor: '#F3F4F6', color: '#4B5563', padding: '0.2rem 0.55rem', borderRadius: '6px', fontWeight: 600 }}>
-              {user?.role ? `Role: ${user.role}` : 'Campus Student Portal'}
+            <span style={{ fontSize: '0.75rem', backgroundColor: '#F3F4F6', color: '#4B5563', padding: '0.2rem 0.55rem', borderRadius: '6px', fontWeight: 500 }}>
+              Campus Helpdesk
             </span>
           </div>
         </div>
 
-        {/* Primary CTA: Report a New Grievance */}
+        {/* Primary Actions */}
         <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center', flexWrap: 'wrap' }}>
           <Button
             variant="outline"
@@ -349,17 +346,17 @@ export const StudentDashboardContent: React.FC = () => {
             onClick={() => fetchGrievances(false)}
             leftIcon={<RefreshCw size={15} />}
           >
-            Refresh Live Data
+            Refresh
           </Button>
           <Button
             variant="primary"
-            size="lg"
+            size="md"
             pill
             onClick={() => (window.location.href = '/student/report')}
             leftIcon={<Plus size={16} />}
             rightIcon={<ArrowRight size={16} />}
           >
-            Report a New Grievance
+            Report an Issue
           </Button>
         </div>
       </div>
@@ -392,7 +389,7 @@ export const StudentDashboardContent: React.FC = () => {
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem' }}>
           <MetricCard
             data={{
-              title: 'Total Grievances',
+              title: 'Total Requests',
               value: metrics.total,
               subtitle: 'All complaints logged',
               icon: <ClipboardList size={18} />,
@@ -401,9 +398,9 @@ export const StudentDashboardContent: React.FC = () => {
           />
           <MetricCard
             data={{
-              title: 'Open / Review',
+              title: 'Under Review',
               value: metrics.open,
-              subtitle: 'Awaiting assignment',
+              subtitle: 'Awaiting department review',
               icon: <Inbox size={18} />,
               variant: 'indigo',
             }}
@@ -412,25 +409,25 @@ export const StudentDashboardContent: React.FC = () => {
             data={{
               title: 'In Progress',
               value: metrics.inProgress,
-              subtitle: 'Officers active',
+              subtitle: 'Being actively worked on',
               icon: <Settings size={18} />,
               variant: 'emerald',
             }}
           />
           <MetricCard
             data={{
-              title: 'Closed & Verified',
+              title: 'Resolved',
               value: metrics.resolved,
-              subtitle: 'Completed resolutions',
+              subtitle: 'Successfully completed',
               icon: <CheckCircle2 size={18} />,
               variant: 'emerald',
             }}
           />
           <MetricCard
             data={{
-              title: 'Needs Attention',
+              title: 'Action Needed',
               value: metrics.needsAttention,
-              subtitle: metrics.needsAttention > 0 ? 'Verification or SLA risk' : 'All on track',
+              subtitle: metrics.needsAttention > 0 ? 'Awaiting your response' : 'No pending actions',
               icon: <AlertTriangle size={18} />,
               variant: metrics.needsAttention > 0 ? 'amber' : 'neutral',
             }}
@@ -445,26 +442,26 @@ export const StudentDashboardContent: React.FC = () => {
             style={{
             backgroundColor: '#FFFBEB',
             borderColor: '#F59E0B',
-            borderWidth: '2px',
+            borderWidth: '1.5px',
             padding: '1.5rem',
-            boxShadow: '0 8px 24px rgba(245, 158, 11, 0.12)',
+            boxShadow: '0 4px 16px rgba(245, 158, 11, 0.08)',
           }}
         >
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.75rem', marginBottom: '1.25rem' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
-              <AlertOctagon size={24} color="#DC2626" />
+              <AlertOctagon size={22} color="#D97706" />
               <div>
-                <h3 style={{ margin: 0, fontSize: '1.2rem', fontWeight: 800, color: '#92400E' }}>
-                  Action Required on Your Grievances ({attentionTickets.length})
+                <h3 style={{ margin: 0, fontSize: '1.15rem', fontWeight: 800, color: '#92400E' }}>
+                  Requests Needing Your Attention ({attentionTickets.length})
                 </h3>
                 <span style={{ fontSize: '0.8125rem', color: '#B45309' }}>
-                  Officers have proposed resolutions requiring your verification, or SLA thresholds require attention.
+                  Please review proposed resolutions or check progress on delayed requests.
                 </span>
               </div>
             </div>
 
-            <span style={{ fontSize: '0.75rem', fontWeight: 800, backgroundColor: '#FDE68A', color: '#78350F', padding: '0.25rem 0.65rem', borderRadius: '8px' }}>
-              Closed-Loop Enforcement
+            <span style={{ fontSize: '0.75rem', fontWeight: 700, backgroundColor: '#FDE68A', color: '#78350F', padding: '0.25rem 0.65rem', borderRadius: '8px' }}>
+              Response Requested
             </span>
           </div>
 
@@ -486,12 +483,12 @@ export const StudentDashboardContent: React.FC = () => {
                     gap: '1rem',
                   }}
                 >
-                  {/* Closed-Loop Verification Alert Banner */}
+                  {/* Resolution Confirmation Alert Banner */}
                   {isVerificationNeeded && (
                     <div
                       style={{
                         backgroundColor: '#FEF3C7',
-                        border: '2px solid #F59E0B',
+                        border: '1px solid #F59E0B',
                         borderRadius: '12px',
                         padding: '1rem 1.25rem',
                         display: 'flex',
@@ -502,13 +499,13 @@ export const StudentDashboardContent: React.FC = () => {
                       }}
                     >
                       <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                        <Bell size={22} color="#D97706" />
+                        <Bell size={20} color="#D97706" />
                         <div>
-                          <h4 style={{ margin: 0, fontSize: '1rem', fontWeight: 800, color: '#92400E' }}>
-                            Resolution Proposed by Officer - Verification Required
+                          <h4 style={{ margin: 0, fontSize: '0.95rem', fontWeight: 700, color: '#92400E' }}>
+                            Resolution Proposed - Please Confirm
                           </h4>
                           <span style={{ fontSize: '0.8rem', color: '#B45309' }}>
-                            Your confirmation is strictly required to close this ticket or reopen if inadequate.
+                            The department has completed work. Please verify if the issue is resolved to close this request.
                           </span>
                         </div>
                       </div>
@@ -523,7 +520,7 @@ export const StudentDashboardContent: React.FC = () => {
                           onClick={() => handleVerifyResolution(ticket.id, true)}
                           leftIcon={<Check size={14} />}
                         >
-                          Accept & Close
+                          Confirm & Close
                         </Button>
 
                         {/* Action 2: Reject & Reopen */}
@@ -537,7 +534,7 @@ export const StudentDashboardContent: React.FC = () => {
                           }}
                           leftIcon={<X size={14} />}
                         >
-                          Reject & Reopen
+                          Need More Help
                         </Button>
                       </div>
                     </div>
@@ -551,7 +548,7 @@ export const StudentDashboardContent: React.FC = () => {
                           {ticket.ticket_number}
                         </span>
                         <StatusBadge status={ticket.status} size="sm" />
-                        <PriorityBadge priority={ticket.priority} score={ticket.priority_score} size="sm" />
+                        <PriorityBadge priority={ticket.priority} size="sm" />
                       </div>
                       <h4 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 700, color: '#111827' }}>
                         {ticket.title}
@@ -571,7 +568,7 @@ export const StudentDashboardContent: React.FC = () => {
                         <FileText size={15} /> Officer Resolution Summary:
                       </strong>
                       <p style={{ margin: 0, color: '#134E4A', lineHeight: 1.5 }}>
-                        {ticket.resolution_notes || 'The assigned department officer has completed corrective action and marked the resolution ready for student inspection.'}
+                        {ticket.resolution_notes || 'The assigned department officer has completed corrective action and marked the resolution ready for your confirmation.'}
                       </p>
                     </div>
                   )}
@@ -584,7 +581,7 @@ export const StudentDashboardContent: React.FC = () => {
                       onClick={() => (window.location.href = `/student/grievances/${ticket.id}`)}
                       rightIcon={<ArrowRight size={14} />}
                     >
-                      View Full Audit Trail & Evidence
+                      View Request Details
                     </Button>
                   </div>
                 </div>
@@ -594,33 +591,32 @@ export const StudentDashboardContent: React.FC = () => {
         </Card>
       )}
 
-      {/* 4. AI Institutional Intelligence Insight */}
+      {/* 4. Latest Request Status Summary */}
       {!isLoading && latestAiGrievance && (
         <Card
           variant="floating"
           style={{
             backgroundColor: '#F8FAFC',
-            borderColor: '#C7D2FE',
+            borderColor: '#E2E8F0',
             borderWidth: '1px',
             padding: '1.5rem',
           }}
         >
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem', flexWrap: 'wrap', gap: '0.5rem' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              <Bot size={22} color="#4F46E5" />
-              <h3 style={{ margin: 0, fontSize: '1rem', fontWeight: 800, color: '#1E1B4B' }}>
-                AI Institutional Intelligence Insight
+              <Bot size={20} color="#4F46E5" />
+              <h3 style={{ margin: 0, fontSize: '0.95rem', fontWeight: 700, color: '#1E1B4B' }}>
+                Latest Request Status
               </h3>
             </div>
-            <AiBadge label="Gemini Priority Engine" confidence={latestAiGrievance.ai_confidence ?? undefined} variant="indigo" />
+            <AiBadge label="Auto-Assigned" variant="indigo" />
           </div>
 
           <p style={{ margin: 0, fontSize: '0.875rem', color: '#334155', lineHeight: 1.6 }}>
-            Your latest ticket <strong>{latestAiGrievance.ticket_number}</strong> was classified as{' '}
-            <strong style={{ color: '#1B4332' }}>{latestAiGrievance.priority}</strong> priority (Score:{' '}
-            {latestAiGrievance.priority_score}/100) with an automated SLA duration of{' '}
-            <strong>{latestAiGrievance.sla_hours ? `${latestAiGrievance.sla_hours} hours` : 'Standard 24h SLA'}</strong>. Routed to{' '}
-            <strong>{latestAiGrievance.department?.name || latestAiGrievance.category}</strong>.
+            Your latest request <strong>{latestAiGrievance.ticket_number}</strong> was categorized as{' '}
+            <strong style={{ color: '#1B4332' }}>{latestAiGrievance.priority}</strong> priority and assigned to{' '}
+            <strong>{latestAiGrievance.department?.name || latestAiGrievance.category}</strong> with an estimated resolution window of{' '}
+            <strong>{latestAiGrievance.sla_hours ? `${latestAiGrievance.sla_hours} hours` : '24 hours'}</strong>.
           </p>
 
           {latestAiGrievance.priority_reasons && latestAiGrievance.priority_reasons.length > 0 && (

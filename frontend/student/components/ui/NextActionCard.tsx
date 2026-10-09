@@ -75,8 +75,8 @@ export const NextActionCard: React.FC<NextActionCardProps> = ({
   } else if (normalizedStatus === 'SUBMITTED') {
     actor = 'DEPARTMENT';
     badgeLabel = 'Department Action';
-    title = 'Awaiting Officer Triage';
-    description = `${departmentName} administration is evaluating parameters to assign the designated handling officer.`;
+    title = 'Request Received';
+    description = `${departmentName} has received your request and is assigning an officer.`;
     icon = <Clock size={18} />;
     themeColor = '#4F46E5';
     bgGradient = 'linear-gradient(135deg, #EEF2FF 0%, #E0E7FF 100%)';
@@ -84,8 +84,8 @@ export const NextActionCard: React.FC<NextActionCardProps> = ({
   } else if (normalizedStatus === 'UNDER_REVIEW') {
     actor = 'DEPARTMENT';
     badgeLabel = 'Department Action';
-    title = 'Preliminary Investigation';
-    description = `${assigneeName ? `${assigneeName} is` : 'Assigned officer is'} examining ticket evidence, location context, and urgency triggers.`;
+    title = 'Under Review';
+    description = `${assigneeName ? `${assigneeName} is` : 'An assigned officer is'} reviewing the details and location context.`;
     icon = <Search size={18} />;
     themeColor = '#2563EB';
     bgGradient = 'linear-gradient(135deg, #EFF6FF 0%, #DBEAFE 100%)';
@@ -94,7 +94,7 @@ export const NextActionCard: React.FC<NextActionCardProps> = ({
     actor = 'DEPARTMENT';
     badgeLabel = 'Department Action';
     title = `Assigned to ${assigneeName || 'Officer'}`;
-    description = `Ticket has been queued for immediate investigation by ${assigneeName || 'the assigned officer'}.`;
+    description = `Your request has been assigned to ${assigneeName || 'a department officer'} for resolution.`;
     icon = <User size={18} />;
     themeColor = '#2563EB';
     bgGradient = 'linear-gradient(135deg, #EFF6FF 0%, #DBEAFE 100%)';
@@ -120,9 +120,9 @@ export const NextActionCard: React.FC<NextActionCardProps> = ({
     borderColor = '#FED7AA';
   } else if (normalizedStatus === 'CLOSED') {
     actor = 'COMPLETED';
-    badgeLabel = 'Lifecycle Complete';
-    title = 'Grievance Resolved & Verified';
-    description = 'The issue has been addressed and confirmed. All audit logs and history are archived.';
+    badgeLabel = 'Completed';
+    title = 'Grievance Resolved';
+    description = 'This issue has been successfully resolved and confirmed.';
     icon = <CheckCircle2 size={18} />;
     themeColor = '#059669';
     bgGradient = 'linear-gradient(135deg, #ECFDF5 0%, #D1FAE5 100%)';
@@ -194,7 +194,7 @@ export const NextActionCard: React.FC<NextActionCardProps> = ({
             }}
           >
             <AlertOctagon size={13} />
-            <span>System: SLA Breached — Escalated</span>
+            <span>Delayed — Expedited Review Active</span>
           </span>
         )}
         {!isSlaBreached && isSlaWarning && (
@@ -214,7 +214,7 @@ export const NextActionCard: React.FC<NextActionCardProps> = ({
             }}
           >
             <Clock size={13} />
-            <span>System: SLA Approaching Deadline</span>
+            <span>Nearing Target Completion Time</span>
           </span>
         )}
       </div>

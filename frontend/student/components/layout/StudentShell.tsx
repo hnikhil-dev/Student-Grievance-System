@@ -185,12 +185,13 @@ export const StudentShell: React.FC<StudentShellProps> = ({
         currentPath: activePath,
       }}
     >
-      <div style={{ minHeight: '100vh', backgroundColor: '#F8FAF8', color: '#111827', display: 'flex', flexDirection: 'column' }}>
+      <div style={{ height: '100vh', backgroundColor: '#F8FAF8', color: '#111827', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
         
         {/* Top Header Bar */}
         <header
           style={{
             height: '64px',
+            flexShrink: 0,
             backgroundColor: '#FFFFFF',
             borderBottom: '1px solid #E5E7EB',
             position: 'sticky',
@@ -247,7 +248,7 @@ export const StudentShell: React.FC<StudentShellProps> = ({
                   AMIT Student Portal
                 </span>
                 <span style={{ fontSize: '0.65rem', display: 'block', color: '#2D6A4F', fontWeight: 600 }}>
-                  Smart Grievance System 2026
+                  Campus Grievance Portal
                 </span>
               </div>
             </a>
@@ -402,13 +403,16 @@ export const StudentShell: React.FC<StudentShellProps> = ({
         </header>
 
         {/* Main Body: Desktop Sidebar + Page Content Container */}
-        <div style={{ display: 'flex', flex: 1 }}>
+        <div style={{ display: 'flex', flex: 1, minHeight: 0, overflow: 'hidden' }}>
           
           {/* Desktop Left Sidebar */}
           <aside
             className="sg-desktop-sidebar"
             style={{
               width: isSidebarCollapsed ? '72px' : '250px',
+              height: '100%',
+              overflowY: 'auto',
+              flexShrink: 0,
               backgroundColor: '#FFFFFF',
               borderRight: '1px solid #E5E7EB',
               display: 'flex',
@@ -504,7 +508,18 @@ export const StudentShell: React.FC<StudentShellProps> = ({
           </aside>
 
           {/* Main Content Area */}
-          <main className="sg-main-content" style={{ flex: 1, padding: '1.5rem', maxWidth: '1280px', width: '100%', margin: '0 auto', overflowX: 'hidden' }}>
+          <main
+            className="sg-main-content"
+            style={{
+              flex: 1,
+              height: '100%',
+              overflowY: 'auto',
+              padding: '1.5rem',
+              maxWidth: '1280px',
+              width: '100%',
+              margin: '0 auto',
+            }}
+          >
             {children}
           </main>
         </div>

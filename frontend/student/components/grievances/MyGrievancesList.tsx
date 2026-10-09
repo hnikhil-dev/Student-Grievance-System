@@ -287,7 +287,7 @@ export const MyGrievancesList: React.FC = () => {
               </h1>
             </div>
             <p style={{ margin: 0, fontSize: '0.9375rem', color: '#4B5563', maxWidth: '650px', lineHeight: 1.5 }}>
-              Monitor, filter, and track real-time resolution progress and institutional SLAs for all your submitted campus complaints.
+              Track updates and view resolution status for all your submitted campus requests.
             </p>
           </div>
 

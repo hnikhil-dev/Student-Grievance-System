@@ -67,7 +67,7 @@ const RATING_LABELS: Record<number, { title: string; subtitle: string; icon: Rea
 };
 
 const STRUCTURED_REFLECTION_CHIPS = [
-  'Resolution was prompt & within SLA',
+  'Resolution was prompt and timely',
   'Officer communication was clear & helpful',
   'Problem was thoroughly solved',
   'Resolution took longer than expected',
@@ -240,7 +240,7 @@ export const StudentFeedback: React.FC<StudentFeedbackProps> = ({ initialGrievan
            ========================================================================= */}
         <div style={{ borderBottom: '1px solid #E5E7EB', paddingBottom: '1.25rem' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', marginBottom: '0.35rem' }}>
-            <span style={{ fontSize: '1.75rem' }}>⭐</span>
+            <Star size={26} color="#1B4332" />
             <h1
               style={{
                 margin: 0,
@@ -254,7 +254,7 @@ export const StudentFeedback: React.FC<StudentFeedbackProps> = ({ initialGrievan
             </h1>
           </div>
           <p style={{ margin: 0, fontSize: '0.9375rem', color: '#4B5563', lineHeight: 1.5 }}>
-            Close the loop on your resolved complaints. Your evaluation directly impacts departmental SLA performance and campus service improvement.
+            Share your experience on resolved requests. Your feedback helps improve campus services and response quality.
           </p>
         </div>
 
@@ -303,13 +303,13 @@ export const StudentFeedback: React.FC<StudentFeedbackProps> = ({ initialGrievan
 
               <div>
                 <span style={{ fontSize: '0.8125rem', fontWeight: 800, color: '#059669', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                  FEEDBACK OFFICIALLY LOGGED
+                  FEEDBACK SUBMITTED
                 </span>
                 <h2 style={{ margin: '0.35rem 0 0.5rem 0', fontSize: '2rem', fontWeight: 800, color: '#1B4332' }}>
-                  Thank You for Your Voice
+                  Thank You for Your Feedback!
                 </h2>
                 <p style={{ margin: 0, fontSize: '0.95rem', color: '#4B5563', lineHeight: 1.6 }}>
-                  Your <strong>{rating}-star rating</strong> and comments have been recorded into the institutional Quality Assurance audit. Your feedback directly shapes resource allocation, campus officer accountability, and system SLAs.
+                  Your <strong>{rating}-star rating</strong> and comments have been recorded. Thank you for helping us improve campus services and facilities.
                 </p>
               </div>
 

@@ -45,21 +45,21 @@ export const SlaIndicator: React.FC<SlaIndicatorProps> = ({
       Icon: Clock,
     },
     WARNING: {
-      label: remainingMinutes > 0 ? `SLA Warning: ${remainingMinutes > 60 ? `${Math.floor(remainingMinutes / 60)}h ${remainingMinutes % 60}m` : `${remainingMinutes}m`} remaining (${Math.round(elapsedPercent)}%)` : 'SLA Threshold Nearing',
+      label: remainingMinutes > 0 ? `${remainingMinutes > 60 ? `${Math.floor(remainingMinutes / 60)}h ${remainingMinutes % 60}m` : `${remainingMinutes}m`} remaining` : 'Target Time Nearing',
       bg: '#FFFBEB',
       text: '#B45309',
       border: '#FDE68A',
       Icon: AlertTriangle,
     },
     BREACHED: {
-      label: 'Overdue (SLA Breached)',
+      label: 'Delayed (Follow-up Active)',
       bg: '#FEF2F2',
       text: '#B91C1C',
       border: '#FCA5A5',
       Icon: AlertOctagon,
     },
     OVERDUE: {
-      label: 'Overdue (SLA Breached)',
+      label: 'Delayed (Follow-up Active)',
       bg: '#FEF2F2',
       text: '#B91C1C',
       border: '#FCA5A5',
@@ -175,7 +175,7 @@ export const DynamicSlaBar: React.FC<DynamicSlaBarProps> = ({
         border: '#FCA5A5',
         text: '#B91C1C',
         barColor: '#EF4444',
-        statusLabel: 'BREACHED',
+        statusLabel: 'RESOLUTION DELAYED',
         Icon: AlertOctagon,
       }
     : isWarn
@@ -184,7 +184,7 @@ export const DynamicSlaBar: React.FC<DynamicSlaBarProps> = ({
         border: '#FDE68A',
         text: '#B45309',
         barColor: '#F59E0B',
-        statusLabel: 'WARNING (>75% Consumed)',
+        statusLabel: 'NEARING TARGET TIME',
         Icon: AlertTriangle,
       }
     : {
@@ -198,7 +198,7 @@ export const DynamicSlaBar: React.FC<DynamicSlaBarProps> = ({
 
   const formattedRemaining =
     isBreached
-      ? 'Deadline passed'
+      ? 'Past target window — Expedited review in progress'
       : remainingMinutes > 60
       ? `${Math.floor(remainingMinutes / 60)}h ${remainingMinutes % 60}m remaining`
       : `${Math.max(0, remainingMinutes)}m remaining`;
@@ -252,8 +252,8 @@ export const DynamicSlaBar: React.FC<DynamicSlaBarProps> = ({
       </div>
 
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.72rem', color: theme.text, opacity: 0.85 }}>
-        <span>Institutional SLA Target: <strong>{slaHours || 24} hours</strong></span>
-        {dueAt && <span>Due: {new Date(dueAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', month: 'short', day: 'numeric' })}</span>}
+        <span>Target Resolution Time: <strong>{slaHours || 24} hours</strong></span>
+        {dueAt && <span>Expected by: {new Date(dueAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', month: 'short', day: 'numeric' })}</span>}
       </div>
     </div>
   );
