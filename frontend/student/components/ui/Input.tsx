@@ -77,6 +77,7 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(({
       {label && (
         <label htmlFor={inputId} style={labelStyle}>
           {label}
+          {props.required && <span style={{ color: '#DC2626', marginLeft: '4px' }} title="Required field">*</span>}
         </label>
       )}
       

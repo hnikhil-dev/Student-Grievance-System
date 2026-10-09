@@ -148,6 +148,13 @@ export const AiComplaintForm: React.FC = () => {
   const [recurrence, setRecurrence] = useState(false);
   const [selectedDeptId, setSelectedDeptId] = useState<string>('');
 
+  // Field validation errors
+  const [fieldErrors, setFieldErrors] = useState<{
+    title?: string;
+    description?: string;
+    category?: string;
+  }>({});
+
   // File Attachment State (Supported via POST /api/evidence/upload-and-verify)
   const [attachment, setAttachment] = useState<SelectedAttachment | null>(null);
   const [rawEvidenceFile, setRawEvidenceFile] = useState<File | null>(null);
@@ -272,27 +279,63 @@ export const AiComplaintForm: React.FC = () => {
     setLocation(preset.location);
     setAffectedStudents(preset.affectedStudents);
     setRecurrence(preset.recurrence);
+    setFieldErrors({});
     setAiError(null);
+  };
+
+  // Auto-generate title helper from current description
+  const handleAutoGenerateTitle = () => {
+    const desc = description.trim();
+    if (!desc) {
+      setFieldErrors((prev) => ({
+        ...prev,
+        description: 'Please describe your grievance first to auto-generate a title',
+      }));
+      return;
+    }
+    let generated = desc.split('.')[0]?.trim() || desc.slice(0, 60).trim();
+    if (generated.length > 70) generated = generated.slice(0, 68).trim() + '...';
+    if (generated.length < 5) generated = `${category || 'Campus'} Incident Report`;
+    setTitle(generated);
+    setFieldErrors((prev) => ({ ...prev, title: undefined }));
   };
 
   // STEP 2: Trigger AI Grievance Analysis
   const handleAnalyze = async () => {
     setAiError(null);
-    const descTrimmed = description.trim();
+    const errors: { title?: string; category?: string; description?: string } = {};
 
-    if (descTrimmed.length < 10) {
-      setAiError('Please enter at least 10 characters so the AI can evaluate the grievance.');
+    const descTrimmed = description.trim();
+    let finalTitle = title.trim();
+
+    if (!finalTitle) {
+      if (descTrimmed.length >= 10) {
+        finalTitle = descTrimmed.split('.')[0]?.slice(0, 65).trim() || descTrimmed.slice(0, 50).trim();
+        setTitle(finalTitle);
+      } else {
+        errors.title = 'Title is required (minimum 5 characters)';
+      }
+    } else if (finalTitle.length < 5) {
+      errors.title = 'Title must be at least 5 characters long';
+    }
+
+    if (!descTrimmed || descTrimmed.length < 10) {
+      errors.description = 'Description is required (minimum 10 characters)';
+    }
+
+    if (!category || category.trim().length < 2) {
+      errors.category = 'Please select a grievance category';
+    }
+
+    if (Object.keys(errors).length > 0) {
+      setFieldErrors(errors);
+      setAiError('Please fill in all required fields marked with * before continuing.');
       return;
     }
 
-    // Auto-generate title if student has not typed one
-    const derivedTitle = title.trim() || descTrimmed.slice(0, 60).trim();
-    if (!title.trim()) {
-      setTitle(derivedTitle);
-    }
-
+    setFieldErrors({});
     setStep(2);
-    setAiProcessingPhase('Understanding your complaint...');
+    setAiProcessingPhase('Understanding your complaint and assessing category...');
 
     // Progressively communicate institutional triage
     const t1 = setTimeout(() => setAiProcessingPhase('Identifying category & assessing urgency...'), 600);
@@ -306,7 +349,7 @@ export const AiComplaintForm: React.FC = () => {
           ...getDynamicAuthHeaders(),
         },
         body: JSON.stringify({
-          title: derivedTitle.length >= 5 ? derivedTitle : `${derivedTitle} (Grievance)`,
+          title: finalTitle.length >= 5 ? finalTitle : `${finalTitle} (Grievance)`,
           description: descTrimmed,
           category,
           location: location.trim() || undefined,
@@ -324,7 +367,7 @@ export const AiComplaintForm: React.FC = () => {
 
         // Pre-fill suggested title
         if (analysis.summary) {
-          const autoTitle = analysis.summary.split(':')[0]?.trim() || derivedTitle;
+          const autoTitle = analysis.summary.split(':')[0]?.trim() || finalTitle;
           setSuggestedTitle(autoTitle);
           if (!title.trim()) setTitle(autoTitle);
         }
@@ -373,10 +416,22 @@ export const AiComplaintForm: React.FC = () => {
     setSubmitError(null);
 
     const descTrimmed = description.trim();
-    const finalTitle = title.trim() || descTrimmed.slice(0, 50).trim();
+    const finalTitle = title.trim();
 
-    if (finalTitle.length < 5) {
-      setSubmitError('Title must be at least 5 characters long.');
+    if (!finalTitle || finalTitle.length < 5) {
+      setSubmitError('Title is required and must be at least 5 characters long.');
+      setIsSubmitting(false);
+      return;
+    }
+
+    if (!descTrimmed || descTrimmed.length < 10) {
+      setSubmitError('Description is required and must be at least 10 characters long.');
+      setIsSubmitting(false);
+      return;
+    }
+
+    if (!category || category.trim().length < 2) {
+      setSubmitError('Category is required. Please select a valid grievance category.');
       setIsSubmitting(false);
       return;
     }
@@ -612,76 +667,166 @@ export const AiComplaintForm: React.FC = () => {
                 </Alert>
               )}
 
+              {/* Required Fields Legend */}
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0.65rem 0.9rem', backgroundColor: '#F0FDF4', borderRadius: '10px', border: '1px solid #BBF7D0', flexWrap: 'wrap', gap: '0.5rem', marginBottom: '1.25rem' }}>
+                <span style={{ fontSize: '0.8125rem', color: '#166534', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+                  <span style={{ color: '#DC2626', fontWeight: 800 }}>*</span> Fields marked with asterisk are strictly required
+                </span>
+                <span style={{ fontSize: '0.75rem', color: '#059669', fontWeight: 700, backgroundColor: '#DCFCE7', padding: '0.2rem 0.6rem', borderRadius: '9999px' }}>
+                  Autonomous Triage Agent Active
+                </span>
+              </div>
+
               <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-                {/* Large Natural Language Input Area */}
+                {/* 1. Grievance Title (REQUIRED) */}
+                <div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.35rem' }}>
+                    <label style={{ fontSize: '0.875rem', fontWeight: 600, color: '#374151' }}>
+                      Grievance Title <span style={{ color: '#DC2626' }}>*</span>
+                    </label>
+                    <button
+                      type="button"
+                      onClick={handleAutoGenerateTitle}
+                      style={{
+                        background: 'none',
+                        border: 'none',
+                        color: '#2D6A4F',
+                        fontSize: '0.78rem',
+                        fontWeight: 700,
+                        cursor: 'pointer',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '0.3rem',
+                        padding: '0.2rem 0.4rem',
+                        borderRadius: '6px',
+                      }}
+                    >
+                      <Sparkles size={13} color="#2D6A4F" /> Auto-Generate from Description
+                    </button>
+                  </div>
+                  <Input
+                    required
+                    value={title}
+                    onChange={(e) => {
+                      setTitle(e.target.value);
+                      if (fieldErrors.title) setFieldErrors((prev) => ({ ...prev, title: undefined }));
+                    }}
+                    placeholder="e.g. Core Switch Breakdown in Computer Lab 3 during Capstone Freeze"
+                    leftIcon={<Pin size={16} />}
+                    errorMessage={fieldErrors.title}
+                    helperText="A clear, concise summary of the issue (minimum 5 characters)"
+                  />
+                </div>
+
+                {/* 2. Category & Destination Department Grid */}
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '1rem' }}>
+                  <Select
+                    label="Category"
+                    required
+                    options={[
+                      { value: 'IT', label: 'IT & Network Infrastructure' },
+                      { value: 'ACADEMICS', label: 'Academic Affairs & Exams' },
+                      { value: 'HOSTEL', label: 'Hostel & Housing' },
+                      { value: 'MAINTENANCE', label: 'Campus Maintenance & Civil' },
+                      { value: 'TRANSPORT', label: 'Shuttle & Transport' },
+                      { value: 'LIBRARY', label: 'Central Library' },
+                      { value: 'ADMINISTRATION', label: 'Campus Administration' },
+                      { value: 'CANTEEN', label: 'Canteen & Food Quality' },
+                      { value: 'STUDENT_AFFAIRS', label: 'Student Affairs & Welfare' },
+                    ]}
+                    value={category}
+                    onChange={(e) => {
+                      setCategory(e.target.value);
+                      if (fieldErrors.category) setFieldErrors((prev) => ({ ...prev, category: undefined }));
+                    }}
+                    leftIcon={<Folder size={16} />}
+                    errorMessage={fieldErrors.category}
+                    helperText="Core domain used for automatic SLA calculation"
+                  />
+
+                  <Select
+                    label="Destination Department"
+                    options={[
+                      { value: '', label: '✨ Auto-Detect via AI Multi-Agent Triage (Recommended)' },
+                      ...departments.map((d) => ({
+                        value: d.id,
+                        label: `${d.name} (${d.code})`,
+                      })),
+                    ]}
+                    value={selectedDeptId}
+                    onChange={(e) => setSelectedDeptId(e.target.value)}
+                    leftIcon={<Building2 size={16} />}
+                    helperText="Routed automatically by AI Triage if unselected"
+                  />
+                </div>
+
+                {/* 3. Detailed Description (REQUIRED) */}
                 <div>
                   <Textarea
                     label="Complaint Description"
                     required
-                    rows={6}
+                    rows={5}
                     value={description}
-                    onChange={(e) => setDescription(e.target.value)}
-                    placeholder="Tell us what happened... e.g. The Wi-Fi access point in Academic Hall B has been dropping connections every 5 minutes since 8:00 AM, preventing our batch of 60 students from taking our scheduled online assessment."
-                    helperText={`${description.length} characters (minimum 10 required for AI evaluation)`}
+                    onChange={(e) => {
+                      setDescription(e.target.value);
+                      if (fieldErrors.description) setFieldErrors((prev) => ({ ...prev, description: undefined }));
+                    }}
+                    placeholder="Describe what happened, where it happened, how long it has persisted, and how it impacts your activities... (minimum 10 characters required)"
+                    helperText={`${description.length} / 4000 characters (minimum 10 required for AI evaluation)`}
+                    errorMessage={fieldErrors.description}
                   />
                 </div>
 
-                {/* Optional Title */}
-                <div>
-                  <Input
-                    label="Title (Optional — AI will suggest one if left empty)"
-                    type="text"
-                    value={title}
-                    onChange={(e) => setTitle(e.target.value)}
-                    placeholder="e.g. Wi-Fi Access Point Dropping in Academic Hall B"
-                    leftIcon={<Pin size={16} />}
-                  />
-                </div>
-
-                {/* Contextual Parameters (Location, Cohort, Category) */}
+                {/* 4. Severity & Urgency Parameters (Aligned with DB schema enums) */}
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '1rem' }}>
-                  <div>
-                    <Input
-                      label="Location / Campus Area"
-                      type="text"
-                      value={location}
-                      onChange={(e) => setLocation(e.target.value)}
-                      placeholder="e.g. Science Block B, Room 304"
-                      leftIcon={<MapPin size={16} />}
-                    />
-                  </div>
+                  <Select
+                    label="Severity Assessment"
+                    options={[
+                      { value: 'LOW', label: 'Low — Minor Cosmetic or Routine Issue' },
+                      { value: 'MODERATE', label: 'Moderate — Standard Disruption (Default)' },
+                      { value: 'HIGH', label: 'High — Significant Impairment to Classes/Labs' },
+                      { value: 'CRITICAL', label: 'Critical — Safety Hazard or Total Outage' },
+                    ]}
+                    value={severity}
+                    onChange={(e) => setSeverity(e.target.value as any)}
+                    helperText="Scope of disruption across campus operations"
+                  />
 
-                  <div>
-                    <Input
-                      label="Estimated Affected Students"
-                      type="number"
-                      min={1}
-                      value={affectedStudents}
-                      onChange={(e) => setAffectedStudents(Math.max(1, parseInt(e.target.value) || 1))}
-                      leftIcon={<Users size={16} />}
-                      helperText="Feeds into priority formula"
-                    />
-                  </div>
+                  <Select
+                    label="Urgency Level"
+                    options={[
+                      { value: 'LOW', label: 'Low — Routine maintenance (48h target)' },
+                      { value: 'MEDIUM', label: 'Medium — Normal resolution (24h target)' },
+                      { value: 'HIGH', label: 'High — Intervention needed today (12h target)' },
+                      { value: 'IMMEDIATE', label: 'Immediate — Emergency intervention (4h target)' },
+                    ]}
+                    value={urgency}
+                    onChange={(e) => setUrgency(e.target.value as any)}
+                    helperText="Time sensitivity for SLA target"
+                  />
+                </div>
 
-                  <div>
-                    <Select
-                      label="Initial Category (Optional)"
-                      options={[
-                        { value: 'IT', label: 'IT & Network Infrastructure' },
-                        { value: 'ACADEMICS', label: 'Academic Affairs & Exams' },
-                        { value: 'HOSTEL', label: 'Hostel & Housing' },
-                        { value: 'MAINTENANCE', label: 'Campus Maintenance & Civil' },
-                        { value: 'TRANSPORT', label: 'Shuttle & Transport' },
-                        { value: 'LIBRARY', label: 'Central Library' },
-                        { value: 'ADMINISTRATION', label: 'Campus Administration' },
-                        { value: 'CANTEEN', label: 'Canteen & Food Quality' },
-                        { value: 'STUDENT_AFFAIRS', label: 'Student Affairs & Welfare' },
-                      ]}
-                      value={category}
-                      onChange={(e) => setCategory(e.target.value)}
-                      leftIcon={<Folder size={16} />}
-                    />
-                  </div>
+                {/* 5. Location & Affected Students */}
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '1rem' }}>
+                  <Input
+                    label="Location / Campus Area"
+                    type="text"
+                    value={location}
+                    onChange={(e) => setLocation(e.target.value)}
+                    placeholder="e.g. Science Block B, Room 304 (Lab 3)"
+                    leftIcon={<MapPin size={16} />}
+                    helperText="Physical campus location for on-site staff verification"
+                  />
+
+                  <Input
+                    label="Estimated Affected Students"
+                    type="number"
+                    min={1}
+                    value={affectedStudents}
+                    onChange={(e) => setAffectedStudents(Math.max(1, parseInt(e.target.value) || 1))}
+                    leftIcon={<Users size={16} />}
+                    helperText="Feeds into deterministic priority score formula"
+                  />
                 </div>
 
                 {/* Optional Attachment (Supported via backend) */}
@@ -805,7 +950,6 @@ export const AiComplaintForm: React.FC = () => {
                     size="lg"
                     pill
                     onClick={handleAnalyze}
-                    disabled={description.trim().length < 10}
                     rightIcon={<Sparkles size={16} />}
                   >
                     Continue to Review Details
@@ -1012,6 +1156,7 @@ export const AiComplaintForm: React.FC = () => {
                     <div>
                       <Select
                         label="Category"
+                        required
                         options={[
                           { value: 'IT', label: 'IT & Network Infrastructure' },
                           { value: 'ACADEMICS', label: 'Academic Affairs' },
@@ -1024,6 +1169,36 @@ export const AiComplaintForm: React.FC = () => {
                         ]}
                         value={category}
                         onChange={(e) => setCategory(e.target.value)}
+                      />
+                    </div>
+                  </div>
+
+                  {/* Impact & Urgency Review */}
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '1rem' }}>
+                    <div>
+                      <Select
+                        label="Assessed Severity"
+                        options={[
+                          { value: 'LOW', label: 'Low — Minor Inconvenience' },
+                          { value: 'MODERATE', label: 'Moderate — Standard Disruption' },
+                          { value: 'HIGH', label: 'High — Significant Impairment' },
+                          { value: 'CRITICAL', label: 'Critical — Emergency Safety Hazard' },
+                        ]}
+                        value={severity}
+                        onChange={(e) => setSeverity(e.target.value as any)}
+                      />
+                    </div>
+                    <div>
+                      <Select
+                        label="Assessed Urgency"
+                        options={[
+                          { value: 'LOW', label: 'Low — Routine maintenance (48h)' },
+                          { value: 'MEDIUM', label: 'Medium — Normal resolution (24h)' },
+                          { value: 'HIGH', label: 'High — Intervention needed today (12h)' },
+                          { value: 'IMMEDIATE', label: 'Immediate — Emergency intervention (4h)' },
+                        ]}
+                        value={urgency}
+                        onChange={(e) => setUrgency(e.target.value as any)}
                       />
                     </div>
                   </div>

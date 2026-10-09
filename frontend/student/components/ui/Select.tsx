@@ -77,6 +77,7 @@ export const Select = React.forwardRef<HTMLSelectElement, SelectProps>(({
       {label && (
         <label htmlFor={selectId} style={labelStyle}>
           {label}
+          {props.required && <span style={{ color: '#DC2626', marginLeft: '4px' }} title="Required field">*</span>}
         </label>
       )}
 

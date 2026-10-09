@@ -60,6 +60,7 @@ export const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(({
       {label && (
         <label htmlFor={textareaId} style={labelStyle}>
           {label}
+          {props.required && <span style={{ color: '#DC2626', marginLeft: '4px' }} title="Required field">*</span>}
         </label>
       )}
       
