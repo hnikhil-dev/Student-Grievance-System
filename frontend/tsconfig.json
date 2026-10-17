@@ -17,7 +17,16 @@
       {
         "name": "next"
       }
-    ]
+    ],
+    "baseUrl": ".",
+    "paths": {
+      "@student/*": ["./student/*"],
+      "@admin/*": ["./admin/*"],
+      "@lib/*": ["./lib/*"],
+      "@supabase/supabase-js": ["../backend/node_modules/@supabase/supabase-js"],
+      "@supabase/ssr": ["../backend/node_modules/@supabase/ssr"],
+      "lucide-react": ["../backend/node_modules/lucide-react"]
+    }
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
   "exclude": ["node_modules"]

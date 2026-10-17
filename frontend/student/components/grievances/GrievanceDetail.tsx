@@ -226,7 +226,7 @@ export const GrievanceDetail: React.FC<GrievanceDetailProps> = ({ id: propId }) 
   }, [grievanceId, loadGrievance]);
 
   // Real-time WebSocket: live update grievance when status changes or resolution is posted
-  useRealtimeGrievances((payload) => {
+  useRealtimeGrievances((payload: any) => {
     if (payload?.new?.id === grievanceId || payload?.old?.id === grievanceId) {
       loadGrievance();
     }

@@ -35,3 +35,8 @@ build/
 *.tsbuildinfo
 next-env.d.ts
 **/next-env.d.ts
+
+# python
+__pycache__/
+*.py[cod]
+

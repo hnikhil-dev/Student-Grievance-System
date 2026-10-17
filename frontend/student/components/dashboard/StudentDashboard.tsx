@@ -138,7 +138,7 @@ export const StudentDashboardContent: React.FC = () => {
   }, [fetchGrievances]);
 
   // Real-time Updates: Subscribe to table `grievances` via Supabase WebSocket
-  useRealtimeGrievances((payload) => {
+  useRealtimeGrievances((payload: any) => {
     console.log('[Realtime WebSocket] Received change in grievances:', payload);
     // Silent re-fetch updates the list and dynamic countdowns live
     fetchGrievances(true);
