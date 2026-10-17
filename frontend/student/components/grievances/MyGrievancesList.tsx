@@ -109,6 +109,17 @@ export const MyGrievancesList: React.FC = () => {
   const [sortBy, setSortBy] = useState<'LATEST' | 'OLDEST' | 'PRIORITY_DESC' | 'SLA_URGENT'>('LATEST');
   const [currentPage, setCurrentPage] = useState<number>(1);
 
+  // Initialize search from URL query if navigated from header search
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const urlParams = new URLSearchParams(window.location.search);
+      const searchParam = urlParams.get('search');
+      if (searchParam) {
+        setSearchQuery(searchParam);
+      }
+    }
+  }, []);
+
   // Debounce search input to minimize network requests
   useEffect(() => {
     const timer = setTimeout(() => {

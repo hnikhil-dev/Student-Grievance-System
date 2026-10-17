@@ -3,10 +3,10 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "dev": "next dev -p 3001",
-    "build": "next build",
-    "start": "next start -p 3001",
-    "lint": "next lint"
+    "dev": "npm --prefix ../backend run dev",
+    "build": "npm --prefix ../backend run build",
+    "start": "npm --prefix ../backend run start",
+    "lint": "npm --prefix ../backend run lint"
   },
   "dependencies": {
     "next": "^15.1.7",
@@ -17,6 +17,12 @@
     "@types/node": "^22.13.5",
     "@types/react": "^19.0.10",
     "@types/react-dom": "^19.0.4",
+    "postcss": "^8.5.30",
     "typescript": "^5.7.3"
+  },
+  "overrides": {
+    "next": {
+      "postcss": "^8.5.24"
+    }
   }
 }

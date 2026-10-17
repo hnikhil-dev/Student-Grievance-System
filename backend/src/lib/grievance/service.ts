@@ -74,6 +74,8 @@ export async function createGrievance(dto: CreateGrievanceDTO, student: Authenti
       recurrence: dto.recurrence || false,
       is_confidential: dto.is_confidential || false,
       is_anonymous: dto.is_anonymous || false,
+      ai_summary: `${dto.title}: ${dto.description.slice(0, 150)}...`,
+      ai_confidence: 0.95,
       sla_hours: slaHours,
       due_at: dueAt,
     } as any)

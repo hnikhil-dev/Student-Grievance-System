@@ -20,7 +20,7 @@ export const createGrievanceSchema = z.object({
   recurrence: z.boolean().default(false),
   is_confidential: z.boolean().default(false),
   is_anonymous: z.boolean().default(false),
-  department_id: z.string().uuid().optional().nullable(),
+  department_id: z.preprocess((val) => (val === '' ? null : val), z.string().uuid().optional().nullable()),
 });
 
 export type CreateGrievanceInput = z.infer<typeof createGrievanceSchema>;

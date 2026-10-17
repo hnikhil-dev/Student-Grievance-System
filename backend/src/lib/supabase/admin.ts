@@ -563,7 +563,7 @@ export function getAdminClient(): SupabaseClient<any> | any {
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
-  if (supabaseUrl && serviceRoleKey && !supabaseUrl.includes('placeholder') && !supabaseUrl.includes('localhost')) {
+  if (supabaseUrl && serviceRoleKey && !supabaseUrl.includes('placeholder') && !supabaseUrl.includes('your-project') && !supabaseUrl.includes('localhost')) {
     if (!liveAdminClient) {
       liveAdminClient = createClient(supabaseUrl, serviceRoleKey, {
         auth: {

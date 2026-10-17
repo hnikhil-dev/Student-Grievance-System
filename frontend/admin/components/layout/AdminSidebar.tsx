@@ -29,21 +29,16 @@ export interface AdminSidebarProps {
 
 export const NAV_SECTIONS: NavSection[] = [
   {
-    title: 'ADMIN',
+    title: 'MANAGEMENT',
     items: [
       {
         id: 'command-center',
         label: 'Command Center',
         href: '/admin/command-center',
         icon: <LayoutDashboard size={18} />,
-        description: 'Executive triage and operational overview',
+        description: 'Grievance triage, assignments, and resolution',
         phase: 1,
       },
-    ],
-  },
-  {
-    title: 'OPERATIONS',
-    items: [
       {
         id: 'departments',
         label: 'Departments',
@@ -52,89 +47,21 @@ export const NAV_SECTIONS: NavSection[] = [
         description: 'Departmental queues and workload allocation',
         phase: 2,
       },
-    ],
-  },
-  {
-    title: 'AI OPERATIONS',
-    items: [
-      {
-        id: 'classification',
-        label: 'AI Classification',
-        href: '/admin/classification',
-        icon: <Tag size={18} />,
-        badge: 'AI',
-        description: 'Autonomous symptom tagging and routing',
-        phase: 3,
-      },
-      {
-        id: 'priority',
-        label: 'Priority Engine',
-        href: '/admin/priority',
-        icon: <Zap size={18} />,
-        badge: 'AI',
-        description: 'Multi-factor severity and urgency matrix',
-        phase: 4,
-      },
-      {
-        id: 'duplicates',
-        label: 'Duplicate Detection',
-        href: '/admin/duplicates',
-        icon: <Copy size={18} />,
-        badge: 'AI',
-        description: 'Semantic vector similarity deduplication',
-        phase: 5,
-      },
-      {
-        id: 'clusters',
-        label: 'Clustering',
-        href: '/admin/clusters',
-        icon: <Network size={18} />,
-        badge: 'AI',
-        description: 'Issue aggregation and systemic trend analysis',
-        phase: 6,
-      },
-    ],
-  },
-  {
-    title: 'SERVICE MANAGEMENT',
-    items: [
       {
         id: 'sla',
         label: 'SLA Monitoring',
         href: '/admin/sla',
         icon: <Clock size={18} />,
-        description: 'Resolution countdown and threshold radar',
-        phase: 7,
+        description: 'Resolution countdown and threshold tracking',
+        phase: 3,
       },
-      {
-        id: 'escalation',
-        label: 'Escalation',
-        href: '/admin/escalation',
-        icon: <AlertTriangle size={18} />,
-        description: 'Hierarchical officer intervention dispatch',
-        phase: 8,
-      },
-    ],
-  },
-  {
-    title: 'INTELLIGENCE',
-    items: [
       {
         id: 'analytics',
         label: 'Analytics',
         href: '/admin/analytics',
         icon: <BarChart3 size={18} />,
-        description: 'Institutional compliance and trends',
-        phase: 9,
-      },
-      {
-        id: 'insights',
-        label: 'AI Insights',
-        href: '/admin/insights',
-        icon: <Sparkles size={18} />,
-        badge: 'AI',
-        description: 'Predictive root-cause recommendations',
-        phase: 10,
+        description: 'Institutional metrics and trends',
+        phase: 4,
       },
     ],
   },

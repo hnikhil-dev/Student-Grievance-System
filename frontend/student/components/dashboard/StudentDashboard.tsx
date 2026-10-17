@@ -591,58 +591,6 @@ export const StudentDashboardContent: React.FC = () => {
         </Card>
       )}
 
-      {/* 4. Latest Request Status Summary */}
-      {!isLoading && latestAiGrievance && (
-        <Card
-          variant="floating"
-          style={{
-            backgroundColor: '#F8FAFC',
-            borderColor: '#E2E8F0',
-            borderWidth: '1px',
-            padding: '1.5rem',
-          }}
-        >
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem', flexWrap: 'wrap', gap: '0.5rem' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              <Bot size={20} color="#4F46E5" />
-              <h3 style={{ margin: 0, fontSize: '0.95rem', fontWeight: 700, color: '#1E1B4B' }}>
-                Latest Request Status
-              </h3>
-            </div>
-            <AiBadge label="Auto-Assigned" variant="indigo" />
-          </div>
-
-          <p style={{ margin: 0, fontSize: '0.875rem', color: '#334155', lineHeight: 1.6 }}>
-            Your latest request <strong>{latestAiGrievance.ticket_number}</strong> was categorized as{' '}
-            <strong style={{ color: '#1B4332' }}>{latestAiGrievance.priority}</strong> priority and assigned to{' '}
-            <strong>{latestAiGrievance.department?.name || latestAiGrievance.category}</strong> with an estimated resolution window of{' '}
-            <strong>{latestAiGrievance.sla_hours ? `${latestAiGrievance.sla_hours} hours` : '24 hours'}</strong>.
-          </p>
-
-          {latestAiGrievance.priority_reasons && latestAiGrievance.priority_reasons.length > 0 && (
-            <div style={{ marginTop: '0.75rem', display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
-              {latestAiGrievance.priority_reasons.slice(0, 3).map((r, i) => (
-                <span
-                  key={i}
-                  style={{
-                    fontSize: '0.75rem',
-                    backgroundColor: '#EEF2FF',
-                    color: '#3730A3',
-                    padding: '0.2rem 0.55rem',
-                    borderRadius: '6px',
-                    border: '1px solid #E0E7FF',
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    gap: '0.3rem',
-                  }}
-                >
-                  <Zap size={12} color="#4F46E5" /> {r}
-                </span>
-              ))}
-            </div>
-          )}
-        </Card>
-      )}
 
       {/* 5. LIVE TICKET TRACKING & RECENT GRIEVANCES LIST */}
       <div>

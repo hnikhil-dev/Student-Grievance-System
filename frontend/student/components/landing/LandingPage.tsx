@@ -238,7 +238,7 @@ export const LandingPage: React.FC = () => {
                     <Landmark size={28} />
                   </div>
                   <h3 style={{ margin: 0, fontSize: '1.5rem', fontWeight: 800, color: '#1B4332' }}>
-                    Welcome to AMIT Portal
+                    Welcome to AMRIT Portal
                   </h3>
                   <p style={{ margin: '0.25rem 0 0 0', fontSize: '0.875rem', color: '#6B7280' }}>
                     Access your student dashboard or file an urgent grievance.
@@ -450,7 +450,7 @@ export const LandingPage: React.FC = () => {
                 <Landmark size={22} color="#52B788" />
               </div>
               <div>
-                <div style={{ fontWeight: 800, color: '#FFFFFF', fontSize: '1rem' }}>ATMA MALIK INSTITUTE OF TECHNOLOGY & RESEARCH</div>
+                <div style={{ fontWeight: 800, color: '#FFFFFF', fontSize: '1rem' }}>AMRIT INSTITUTE OF TECHNOLOGY & RESEARCH</div>
                 <div style={{ fontSize: '0.75rem', color: '#D8F3DC' }}>Smart Student Grievance Management System • 24-Hour Hackathon Project</div>
               </div>
             </div>
@@ -462,7 +462,7 @@ export const LandingPage: React.FC = () => {
           </div>
 
           <div style={{ borderTop: '1px solid #143627', paddingTop: '1.5rem', display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap', gap: '1rem', fontSize: '0.75rem' }}>
-            <div>© 2026 AMIT Student Experience Engineering Team (Member 2). All rights reserved.</div>
+            <div>© 2026 AMRIT Student Experience Engineering Team (Member 2). All rights reserved.</div>
             <div>Built on Next.js 15, PostgreSQL & Supabase Engine.</div>
           </div>
         </div>

@@ -3,8 +3,8 @@ import React from 'react';
 import '@student/styles/tokens.css';
 
 export const metadata: Metadata = {
-  title: 'Smart Student Grievance System API',
-  description: 'Backend foundation for 24-hour Student Grievance Hackathon',
+  title: 'AMRIT Student Grievance Redressal System',
+  description: 'AMRIT Student Grievance Redressal System Portal & API',
 };
 
 export default function RootLayout({

@@ -38,7 +38,7 @@ class NumberedCanvas(canvas.Canvas):
         self.setStrokeColor(colors.HexColor("#CBD5E1"))
         self.setLineWidth(0.5)
         self.line(36, 756, 576, 756)
-        self.drawString(36, 762, "AMIT Student Grievance Redressal System - Technical Project Document")
+        self.drawString(36, 762, "AMRIT Student Grievance Redressal System - Technical Project Document")
         self.drawRightString(576, 762, "Academic Year 2026")
         
         # Running footer rule

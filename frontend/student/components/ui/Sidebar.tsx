@@ -39,12 +39,9 @@ export const Sidebar: React.FC<SidebarProps> = ({
   if (!isOpen) return null;
 
   const menuItems = [
-    { label: 'Campus Portal Home', href: '/', icon: <Landmark size={18} /> },
     { label: 'Student Dashboard', href: '/student/page', icon: <LayoutDashboard size={18} /> },
-    { label: 'Report Grievance (AI)', href: '/student/report', icon: <Sparkles size={18} /> },
     { label: 'My Grievances', href: '/student/grievances', icon: <Folder size={18} /> },
-    { label: 'Notifications', href: '/student/notifications', icon: <Bell size={18} /> },
-    { label: 'Feedback & Ratings', href: '/student/feedback', icon: <Star size={18} /> },
+    { label: 'Report Grievance', href: '/student/report', icon: <Sparkles size={18} /> },
   ];
 
   return (
@@ -79,7 +76,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.75rem' }}>
           <div>
             <div style={{ fontWeight: 800, color: '#1B4332', fontSize: '0.9375rem', letterSpacing: '-0.01em' }}>
-              AMIT Student Portal
+              AMRIT Student Portal
             </div>
             <div style={{ fontSize: '0.6875rem', color: '#2D6A4F', fontWeight: 600 }}>
               Smart Grievance 2026

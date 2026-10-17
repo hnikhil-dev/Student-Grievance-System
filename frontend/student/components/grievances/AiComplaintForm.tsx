@@ -15,18 +15,11 @@ import {
   Alert,
   StatusBadge,
   PriorityBadge,
-  SlaIndicator,
   AiBadge,
-  AiReasoningCard,
   NextActionCard,
 } from '../index';
 import {
-  Sparkles,
   Check,
-  Laptop,
-  Droplets,
-  Calendar,
-  Zap,
   Pin,
   MapPin,
   Users,
@@ -36,24 +29,17 @@ import {
   X,
   Lock,
   RefreshCw,
-  UserCheck,
   UserX,
-  ArrowRight,
-  ArrowLeft,
-  Bot,
-  Lightbulb,
-  Edit3,
-  Clock,
   Send,
   ShieldCheck,
   Copy,
   Search,
   BarChart2,
   Plus,
-  Camera,
-  Receipt,
-  Monitor,
   Building2,
+  Bot,
+  Lightbulb,
+  Clock,
 } from 'lucide-react';
 import { getDynamicAuthHeaders } from '@lib/api';
 
@@ -62,19 +48,6 @@ interface DepartmentItem {
   name: string;
   code: string;
   description?: string;
-}
-
-interface AiAnalysisResult {
-  category: string;
-  subcategory?: string | null;
-  severity: string;
-  urgency: string;
-  priority: 'LOW' | 'MEDIUM' | 'HIGH' | 'CRITICAL';
-  priorityScore: number;
-  priorityReasons: string[];
-  department?: string;
-  summary: string;
-  confidence: number;
 }
 
 interface CreatedGrievanceResult {
@@ -96,53 +69,15 @@ interface SelectedAttachment {
   file_size: number;
 }
 
-// Pre-packaged realistic hackathon demo scenarios for 1-click evaluation
-const HACKATHON_DEMO_PRESETS = [
-  {
-    icon: <Laptop size={14} />,
-    label: 'Lab 3 Wi-Fi Failure',
-    title: 'Core Switch Breakdown in Computer Lab 3 during Capstone Freeze',
-    description: 'All 60 workstations in Computer Lab 3 lost internet connectivity right before our capstone submission deadline. The rack switches are flashing red and no student can access GitHub or local staging repositories.',
-    category: 'IT',
-    location: 'Science Block B, Room 304 (Lab 3)',
-    affectedStudents: 60,
-    recurrence: true,
-  },
-  {
-    icon: <Droplets size={14} />,
-    label: 'Hostel Water Leak',
-    title: 'Severe Water Pipe Rupture Flooding Corridor and Electrical Conduits',
-    description: 'The main overhead water pipe has burst outside washroom 2B on the second floor of Hostel Block 4. High-pressure water is flooding into dormitory rooms and dripping onto electrical switchboards near the staircase.',
-    category: 'MAINTENANCE',
-    location: 'Boys Hostel Block 4, 2nd Floor Corridor',
-    affectedStudents: 45,
-    recurrence: false,
-  },
-  {
-    icon: <Calendar size={14} />,
-    label: 'Exam Timetable Clash',
-    title: 'Exam Conflict: CS-401 and CS-408 Scheduled Simultaneously',
-    description: 'Both the mid-term examinations for Distributed Systems (CS-401) and Machine Learning (CS-408) have been scheduled for Friday at 10:00 AM in Examination Hall 2. 35 dual-major students cannot sit for two mandatory papers simultaneously.',
-    category: 'ACADEMICS',
-    location: 'Examination Hall 2 / Academic Block A',
-    affectedStudents: 35,
-    recurrence: false,
-  },
-];
-
 export const AiComplaintForm: React.FC = () => {
-  // Step State: 1 = Describe, 2 = AI Analyzing, 3 = Review & Explain, 4 = Created
-  const [step, setStep] = useState<1 | 2 | 3 | 4>(1);
-
-  // Form Fields (Step 1)
+  // Form Fields
   const [description, setDescription] = useState('');
   const [title, setTitle] = useState('');
-  const [suggestedTitle, setSuggestedTitle] = useState('');
   const [category, setCategory] = useState('IT');
   const [location, setLocation] = useState('');
   const [affectedStudents, setAffectedStudents] = useState<number>(1);
-  const [severity, setSeverity] = useState<'LOW' | 'MODERATE' | 'HIGH' | 'CRITICAL'>('MODERATE');
-  const [urgency, setUrgency] = useState<'LOW' | 'MEDIUM' | 'HIGH' | 'IMMEDIATE'>('MEDIUM');
+  const severity = 'MODERATE';
+  const urgency = 'MEDIUM';
   const [isConfidential, setIsConfidential] = useState(false);
   const [isAnonymous, setIsAnonymous] = useState(false);
   const [recurrence, setRecurrence] = useState(false);
@@ -173,20 +108,16 @@ export const AiComplaintForm: React.FC = () => {
   // Departments fetched from real API: GET /api/departments
   const [departments, setDepartments] = useState<DepartmentItem[]>([]);
 
-  // AI Analysis Results (Step 2 & 3)
-  const [aiAnalysis, setAiAnalysis] = useState<AiAnalysisResult | null>(null);
-  const [aiProcessingPhase, setAiProcessingPhase] = useState<string>('Understanding your complaint...');
-  const [aiError, setAiError] = useState<string | null>(null);
-
-  // Submission & Success (Step 4)
+  // Submission & Success State
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [createdGrievance, setCreatedGrievance] = useState<CreatedGrievanceResult | null>(null);
+  const [isSubmitted, setIsSubmitted] = useState(false);
 
   // 1. Restore saved draft on mount (Guarantees student never loses their text)
   useEffect(() => {
     try {
-      const saved = sessionStorage.getItem('sg_complaint_draft');
+      const saved = sessionStorage.getItem('amrit_complaint_draft');
       if (saved) {
         const parsed = JSON.parse(saved);
         if (parsed.description && !description) setDescription(parsed.description);
@@ -202,10 +133,10 @@ export const AiComplaintForm: React.FC = () => {
 
   // 2. Persist draft into sessionStorage on changes
   useEffect(() => {
-    if (step === 1 && description) {
+    if (!isSubmitted && description) {
       try {
         sessionStorage.setItem(
-          'sg_complaint_draft',
+          'amrit_complaint_draft',
           JSON.stringify({
             description,
             title,
@@ -218,7 +149,7 @@ export const AiComplaintForm: React.FC = () => {
         // Ignore storage errors
       }
     }
-  }, [description, title, category, location, affectedStudents, step]);
+  }, [description, title, category, location, affectedStudents, isSubmitted]);
 
   // 3. Load departments dynamically from real backend API: GET /api/departments
   useEffect(() => {
@@ -230,7 +161,6 @@ export const AiComplaintForm: React.FC = () => {
         const json = await res.json();
         if (json.success && Array.isArray(json.data) && json.data.length > 0) {
           setDepartments(json.data);
-          setSelectedDeptId(json.data[0].id);
         }
       } catch (err) {
         console.warn('Dynamic departments fetch notice:', err);
@@ -271,56 +201,25 @@ export const AiComplaintForm: React.FC = () => {
     });
   };
 
-  // Quick Demo Preset Trigger
-  const handleApplyPreset = (preset: typeof HACKATHON_DEMO_PRESETS[0]) => {
-    setDescription(preset.description);
-    setTitle(preset.title);
-    setCategory(preset.category);
-    setLocation(preset.location);
-    setAffectedStudents(preset.affectedStudents);
-    setRecurrence(preset.recurrence);
-    setFieldErrors({});
-    setAiError(null);
-  };
-
-  // Auto-generate title helper from current description
-  const handleAutoGenerateTitle = () => {
-    const desc = description.trim();
-    if (!desc) {
-      setFieldErrors((prev) => ({
-        ...prev,
-        description: 'Please describe your grievance first to auto-generate a title',
-      }));
-      return;
-    }
-    let generated = desc.split('.')[0]?.trim() || desc.slice(0, 60).trim();
-    if (generated.length > 70) generated = generated.slice(0, 68).trim() + '...';
-    if (generated.length < 5) generated = `${category || 'Campus'} Incident Report`;
-    setTitle(generated);
-    setFieldErrors((prev) => ({ ...prev, title: undefined }));
-  };
-
-  // STEP 2: Trigger AI Grievance Analysis
-  const handleAnalyze = async () => {
-    setAiError(null);
-    const errors: { title?: string; category?: string; description?: string } = {};
+  // Submit Grievance directly to backend (POST /api/grievances)
+  const handleSubmitGrievance = async () => {
+    setIsSubmitting(true);
+    setSubmitError(null);
 
     const descTrimmed = description.trim();
-    let finalTitle = title.trim();
+    const finalTitle = title.trim();
+    const errors: { title?: string; category?: string; description?: string } = {};
 
     if (!finalTitle) {
-      if (descTrimmed.length >= 10) {
-        finalTitle = descTrimmed.split('.')[0]?.slice(0, 65).trim() || descTrimmed.slice(0, 50).trim();
-        setTitle(finalTitle);
-      } else {
-        errors.title = 'Title is required (minimum 5 characters)';
-      }
+      errors.title = 'Title is required (minimum 5 characters)';
     } else if (finalTitle.length < 5) {
       errors.title = 'Title must be at least 5 characters long';
     }
 
-    if (!descTrimmed || descTrimmed.length < 10) {
+    if (!descTrimmed) {
       errors.description = 'Description is required (minimum 10 characters)';
+    } else if (descTrimmed.length < 10) {
+      errors.description = 'Description must be at least 10 characters long';
     }
 
     if (!category || category.trim().length < 2) {
@@ -329,112 +228,12 @@ export const AiComplaintForm: React.FC = () => {
 
     if (Object.keys(errors).length > 0) {
       setFieldErrors(errors);
-      setAiError('Please fill in all required fields marked with * before continuing.');
+      setSubmitError('Please resolve the highlighted field errors before submitting.');
+      setIsSubmitting(false);
       return;
     }
 
     setFieldErrors({});
-    setStep(2);
-    setAiProcessingPhase('Understanding your complaint and assessing category...');
-
-    // Progressively communicate institutional triage
-    const t1 = setTimeout(() => setAiProcessingPhase('Identifying category & assessing urgency...'), 600);
-    const t2 = setTimeout(() => setAiProcessingPhase('Finding the right department & calculating SLA target...'), 1200);
-
-    try {
-      const res = await fetch('/api/ai/analyze-grievance', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          ...getDynamicAuthHeaders(),
-        },
-        body: JSON.stringify({
-          title: finalTitle.length >= 5 ? finalTitle : `${finalTitle} (Grievance)`,
-          description: descTrimmed,
-          category,
-          location: location.trim() || undefined,
-          affected_students: Number(affectedStudents) || 1,
-        }),
-      });
-
-      clearTimeout(t1);
-      clearTimeout(t2);
-
-      const json = await res.json();
-      if (json.success && json.data?.analysis) {
-        const analysis = json.data.analysis as AiAnalysisResult;
-        setAiAnalysis(analysis);
-
-        // Pre-fill suggested title
-        if (analysis.summary) {
-          const autoTitle = analysis.summary.split(':')[0]?.trim() || finalTitle;
-          setSuggestedTitle(autoTitle);
-          if (!title.trim()) setTitle(autoTitle);
-        }
-
-        // Apply AI classification
-        if (analysis.category) {
-          setCategory(analysis.category);
-        }
-        if (analysis.severity) {
-          setSeverity(analysis.severity as any);
-        }
-        if (analysis.urgency) {
-          setUrgency(analysis.urgency as any);
-        }
-
-        // Route to department
-        if (analysis.department && departments.length > 0) {
-          const matchedDept = departments.find(
-            (d) =>
-              d.code.toUpperCase() === analysis.department?.toUpperCase() ||
-              d.name.toUpperCase().includes(analysis.department?.toUpperCase() || '')
-          );
-          if (matchedDept) {
-            setSelectedDeptId(matchedDept.id);
-          }
-        }
-
-        // Move to Step 3: Review & Explainability
-        setStep(3);
-      } else {
-        // Graceful fallback: let student review manually without losing text
-        setAiError(json.error?.message || 'AI service returned a fallback baseline. You can review and proceed directly.');
-        setStep(3);
-      }
-    } catch {
-      clearTimeout(t1);
-      clearTimeout(t2);
-      setAiError('AI analysis request timed out. You can review the details manually and submit.');
-      setStep(3);
-    }
-  };
-
-  // STEP 4: Submit Final Grievance to POST /api/grievances
-  const handleSubmitGrievance = async () => {
-    setIsSubmitting(true);
-    setSubmitError(null);
-
-    const descTrimmed = description.trim();
-    const finalTitle = title.trim();
-
-    if (!finalTitle || finalTitle.length < 5) {
-      setSubmitError('Title is required and must be at least 5 characters long.');
-      setIsSubmitting(false);
-      return;
-    }
-
-    if (!descTrimmed || descTrimmed.length < 10) {
-      setSubmitError('Description is required and must be at least 10 characters long.');
-      setIsSubmitting(false);
-      return;
-    }
-
-    if (!category || category.trim().length < 2) {
-      setSubmitError('Category is required. Please select a valid grievance category.');
-      setIsSubmitting(false);
-      return;
-    }
 
     try {
       const payload = {
@@ -496,10 +295,11 @@ export const AiComplaintForm: React.FC = () => {
 
         // Clean up draft on success
         try {
+          sessionStorage.removeItem('amrit_complaint_draft');
           sessionStorage.removeItem('sg_complaint_draft');
         } catch {}
 
-        setStep(4);
+        setIsSubmitted(true);
       } else {
         setSubmitError(json.error?.message || 'Failed to submit grievance. Please verify fields.');
       }
@@ -512,19 +312,22 @@ export const AiComplaintForm: React.FC = () => {
 
   // Reset form to file another ticket
   const handleResetForm = () => {
-    setStep(1);
+    setIsSubmitted(false);
     setDescription('');
     setTitle('');
-    setSuggestedTitle('');
     setLocation('');
+    setCategory('IT');
+    setSelectedDeptId('');
     setAffectedStudents(1);
     setAttachment(null);
-    setAiAnalysis(null);
+    setRawEvidenceFile(null);
+    setVaultEvidence(null);
     setCreatedGrievance(null);
     setSubmitError(null);
-    setAiError(null);
+    setFieldErrors({});
+    if (fileInputRef.current) fileInputRef.current.value = '';
     try {
-      sessionStorage.removeItem('amit_complaint_draft');
+      sessionStorage.removeItem('amrit_complaint_draft');
     } catch {}
   };
 
@@ -536,7 +339,7 @@ export const AiComplaintForm: React.FC = () => {
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', marginBottom: '0.25rem' }}>
-              <Sparkles size={24} color="#2D6A4F" />
+              <FileText size={24} color="#2D6A4F" />
               <h1 style={{ margin: 0, fontSize: 'clamp(1.4rem, 2.5vw, 1.85rem)', fontWeight: 800, color: '#1B4332' }}>
                 Submit a Campus Grievance
               </h1>
@@ -549,64 +352,8 @@ export const AiComplaintForm: React.FC = () => {
           <AiBadge label="Smart Routing" variant="indigo" />
         </div>
 
-        {/* 4-Step Interactive Visual Stepper */}
-        <div
-          role="list"
-          aria-label="Submission progress"
-          style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(4, minmax(0, 1fr))',
-            gap: '0.35rem',
-            backgroundColor: '#FFFFFF',
-            padding: '0.5rem',
-            borderRadius: '16px',
-            border: '1px solid #E5E7EB',
-            boxShadow: '0 1px 3px rgba(0,0,0,0.03)',
-          }}
-        >
-          {[
-            { num: 1, label: '1. Describe' },
-            { num: 2, label: '2. Details' },
-            { num: 3, label: '3. Review' },
-            { num: 4, label: '4. Done' },
-          ].map((s) => {
-            const isActive = step === s.num;
-            const isCompleted = step > s.num;
-            return (
-              <div
-                key={s.num}
-                role="listitem"
-                aria-current={isActive ? 'step' : undefined}
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  padding: '0.45rem 0.2rem',
-                  borderRadius: '10px',
-                  backgroundColor: isActive ? '#E8F5E9' : isCompleted ? '#F0FDF4' : 'transparent',
-                  color: isActive ? '#1B4332' : isCompleted ? '#059669' : '#9CA3AF',
-                  fontWeight: isActive || isCompleted ? 700 : 500,
-                  fontSize: 'clamp(0.6875rem, 2vw, 0.8125rem)',
-                  gap: '0.3rem',
-                  transition: 'all 200ms ease',
-                  textAlign: 'center',
-                  minWidth: 0,
-                  overflow: 'hidden',
-                }}
-              >
-                <span>{isCompleted ? <Check size={13} /> : s.num}</span>
-                <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                  {s.label.replace(/^\d+\.\s*/, '')}
-                </span>
-              </div>
-            );
-          })}
-        </div>
-
-        {/* =========================================================================
-            STEP 1: DESCRIBE (Natural Language Input First)
-           ========================================================================= */}
-        {step === 1 && (
+        {/* Grievance Submission Form */}
+        {!isSubmitted && (
           <Card variant="floating" style={{ padding: 'clamp(1rem, 3.5vw, 2rem)' }}>
             <CardHeader>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '0.75rem' }}>
@@ -617,92 +364,22 @@ export const AiComplaintForm: React.FC = () => {
                   </CardDescription>
                 </div>
               </div>
-
-              {/* Hackathon 1-Click Demo Buttons */}
-              <div style={{ marginTop: '1.25rem', backgroundColor: '#F8FAF8', padding: '0.85rem 1rem', borderRadius: '12px', border: '1px solid #E2E8F0' }}>
-                <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#2D6A4F', textTransform: 'uppercase', letterSpacing: '0.04em', display: 'flex', alignItems: 'center', gap: '0.35rem', marginBottom: '0.5rem' }}>
-                  <Zap size={14} /> Quick Demo Scenarios (One-Click Evaluation)
-                </span>
-                <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
-                  {HACKATHON_DEMO_PRESETS.map((p, idx) => (
-                    <button
-                      key={idx}
-                      type="button"
-                      onClick={() => handleApplyPreset(p)}
-                      style={{
-                        padding: '0.35rem 0.75rem',
-                        borderRadius: '9999px',
-                        border: '1px solid #D8F3DC',
-                        backgroundColor: '#FFFFFF',
-                        fontSize: '0.8rem',
-                        fontWeight: 600,
-                        color: '#1B4332',
-                        cursor: 'pointer',
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '0.35rem',
-                        transition: 'all 150ms ease',
-                      }}
-                      onMouseEnter={(e) => {
-                        e.currentTarget.style.backgroundColor = '#E8F5E9';
-                        e.currentTarget.style.borderColor = '#52B788';
-                      }}
-                      onMouseLeave={(e) => {
-                        e.currentTarget.style.backgroundColor = '#FFFFFF';
-                        e.currentTarget.style.borderColor = '#D8F3DC';
-                      }}
-                    >
-                      <span style={{ display: 'flex', alignItems: 'center' }}>{p.icon}</span>
-                      <span>{p.label}</span>
-                    </button>
-                  ))}
-                </div>
-              </div>
             </CardHeader>
 
             <CardContent>
-              {aiError && (
-                <Alert type="warning" style={{ marginBottom: '1.25rem' }}>
-                  {aiError}
+              {submitError && (
+                <Alert type="error" style={{ marginBottom: '1.25rem' }}>
+                  {submitError}
                 </Alert>
               )}
-
-              {/* Required Fields Legend */}
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0.65rem 0.9rem', backgroundColor: '#F0FDF4', borderRadius: '10px', border: '1px solid #BBF7D0', flexWrap: 'wrap', gap: '0.5rem', marginBottom: '1.25rem' }}>
-                <span style={{ fontSize: '0.8125rem', color: '#166534', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
-                  <span style={{ color: '#DC2626', fontWeight: 800 }}>*</span> Fields marked with asterisk are strictly required
-                </span>
-                <span style={{ fontSize: '0.75rem', color: '#059669', fontWeight: 700, backgroundColor: '#DCFCE7', padding: '0.2rem 0.6rem', borderRadius: '9999px' }}>
-                  Fast-Track Smart Routing Active
-                </span>
-              </div>
 
               <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
                 {/* 1. Grievance Title (REQUIRED) */}
                 <div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.35rem' }}>
+                  <div style={{ marginBottom: '0.35rem' }}>
                     <label style={{ fontSize: '0.875rem', fontWeight: 600, color: '#374151' }}>
                       Grievance Title <span style={{ color: '#DC2626' }}>*</span>
                     </label>
-                    <button
-                      type="button"
-                      onClick={handleAutoGenerateTitle}
-                      style={{
-                        background: 'none',
-                        border: 'none',
-                        color: '#2D6A4F',
-                        fontSize: '0.78rem',
-                        fontWeight: 700,
-                        cursor: 'pointer',
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '0.3rem',
-                        padding: '0.2rem 0.4rem',
-                        borderRadius: '6px',
-                      }}
-                    >
-                      <Sparkles size={13} color="#2D6A4F" /> Auto-Generate from Description
-                    </button>
                   </div>
                   <Input
                     required
@@ -777,36 +454,7 @@ export const AiComplaintForm: React.FC = () => {
                   />
                 </div>
 
-                {/* 4. Severity & Urgency Parameters (Aligned with DB schema enums) */}
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '1rem' }}>
-                  <Select
-                    label="Severity Assessment"
-                    options={[
-                      { value: 'LOW', label: 'Low — Minor Cosmetic or Routine Issue' },
-                      { value: 'MODERATE', label: 'Moderate — Standard Disruption (Default)' },
-                      { value: 'HIGH', label: 'High — Significant Impairment to Classes/Labs' },
-                      { value: 'CRITICAL', label: 'Critical — Safety Hazard or Total Outage' },
-                    ]}
-                    value={severity}
-                    onChange={(e) => setSeverity(e.target.value as any)}
-                    helperText="Scope of disruption across campus operations"
-                  />
-
-                  <Select
-                    label="Urgency Level"
-                    options={[
-                      { value: 'LOW', label: 'Low — Routine maintenance (48h target)' },
-                      { value: 'MEDIUM', label: 'Medium — Normal resolution (24h target)' },
-                      { value: 'HIGH', label: 'High — Intervention needed today (12h target)' },
-                      { value: 'IMMEDIATE', label: 'Immediate — Emergency intervention (4h target)' },
-                    ]}
-                    value={urgency}
-                    onChange={(e) => setUrgency(e.target.value as any)}
-                    helperText="Time sensitivity for SLA target"
-                  />
-                </div>
-
-                {/* 5. Location & Affected Students */}
+                {/* 4. Location & Affected Students */}
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '1rem' }}>
                   <Input
                     label="Location / Campus Area"
@@ -943,16 +591,25 @@ export const AiComplaintForm: React.FC = () => {
                   </label>
                 </div>
 
+                {/* Backend Processing Info Note */}
+                <div style={{ backgroundColor: '#F0FDF4', borderRadius: '12px', border: '1px solid #BBF7D0', padding: '0.85rem 1rem', display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                  <Bot size={20} color="#166534" style={{ flexShrink: 0 }} />
+                  <p style={{ margin: 0, fontSize: '0.8125rem', color: '#166534', lineHeight: 1.4 }}>
+                    <strong>Automated Institutional Triage:</strong> Upon submission, our backend engine will automatically analyze your issue, calculate priority, assign the SLA resolution window, and route it to the designated department.
+                  </p>
+                </div>
+
                 {/* Primary Action Button */}
                 <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '0.5rem' }}>
                   <Button
                     variant="primary"
                     size="lg"
                     pill
-                    onClick={handleAnalyze}
-                    rightIcon={<Sparkles size={16} />}
+                    isLoading={isSubmitting}
+                    onClick={handleSubmitGrievance}
+                    rightIcon={<Send size={16} />}
                   >
-                    Continue to Review Details
+                    {isSubmitting ? 'Submitting & Routing Grievance...' : 'Submit Grievance'}
                   </Button>
                 </div>
               </div>
@@ -960,311 +617,8 @@ export const AiComplaintForm: React.FC = () => {
           </Card>
         )}
 
-        {/* =========================================================================
-            STEP 2: POLISHED AI PROCESSING STATE
-           ========================================================================= */}
-        {step === 2 && (
-          <Card variant="floating" style={{ padding: '3.5rem 2rem', textAlign: 'center' }}>
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1.5rem', maxWidth: '480px', margin: '0 auto' }}>
-              <div
-                style={{
-                  width: '84px',
-                  height: '84px',
-                  borderRadius: '50%',
-                  backgroundColor: '#EEF2FF',
-                  border: '3px solid #C7D2FE',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  fontSize: '2.5rem',
-                  animation: 'sg-ai-pulse 1.6s infinite ease-in-out',
-                }}
-              >
-                <Bot size={40} color="#4F46E5" />
-              </div>
-
-              <div>
-                <h3 style={{ margin: 0, fontSize: '1.35rem', fontWeight: 800, color: '#1E1B4B' }}>
-                  Organizing Your Request...
-                </h3>
-                <p style={{ margin: '0.5rem 0 0 0', fontSize: '0.95rem', color: '#4F46E5', fontWeight: 600 }}>
-                  {aiProcessingPhase}
-                </p>
-              </div>
-
-              {/* Polished Indeterminate Progress Bar */}
-              <div style={{ width: '240px', height: '6px', backgroundColor: '#E0E7FF', borderRadius: '9999px', overflow: 'hidden' }}>
-                <div
-                  style={{
-                    height: '100%',
-                    width: '60%',
-                    backgroundColor: '#4F46E5',
-                    borderRadius: '9999px',
-                    animation: 'sg-indeterminate 1.2s infinite ease-in-out',
-                  }}
-                />
-              </div>
-
-              <span style={{ fontSize: '0.75rem', color: '#6B7280' }}>
-                Matching department and routing your request...
-              </span>
-            </div>
-
-            <style jsx>{`
-              @keyframes sg-ai-pulse {
-                0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(79, 70, 229, 0.4); }
-                50% { transform: scale(1.06); box-shadow: 0 0 0 16px rgba(79, 70, 229, 0); }
-              }
-              @keyframes sg-indeterminate {
-                0% { transform: translateX(-100%); }
-                100% { transform: translateX(200%); }
-              }
-            `}</style>
-          </Card>
-        )}
-
-        {/* =========================================================================
-            STEP 3: REVIEW & EXPLAINABILITY (Student in Full Control)
-           ========================================================================= */}
-        {step === 3 && (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '1.75rem' }}>
-            {/* AI Decision & Explainability Card */}
-            {aiAnalysis ? (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                <AiReasoningCard
-                  analysis={aiAnalysis}
-                  isAiEnhanced={true}
-                  onApplyCategory={(cat) => setCategory(cat)}
-                />
-
-                {/* Deep Explainability: "Why was this classified as HIGH?" */}
-                <div style={{ backgroundColor: '#F0FDF4', borderRadius: '16px', border: '1px solid #BBF7D0', padding: '1.25rem' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem' }}>
-                    <Lightbulb size={20} color="#166534" />
-                    <h4 style={{ margin: 0, fontSize: '0.9375rem', fontWeight: 800, color: '#1B4332' }}>
-                      Why was this classified as {aiAnalysis.priority}?
-                    </h4>
-                  </div>
-                  <p style={{ margin: '0 0 0.75rem 0', fontSize: '0.85rem', color: '#166534', lineHeight: 1.5 }}>
-                    Here is why this priority was assigned based on your request description:
-                  </p>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.35rem' }}>
-                    {aiAnalysis.priorityReasons.map((reason, idx) => (
-                      <div key={idx} style={{ display: 'flex', alignItems: 'flex-start', gap: '0.5rem', fontSize: '0.8125rem', color: '#14532D' }}>
-                        <Check size={14} color="#059669" />
-                        <span>{reason}</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            ) : (
-              <Alert type="info">
-                Details organized automatically. You can review and edit any field before submitting.
-              </Alert>
-            )}
-
-            {/* Editable Confirmation Form */}
-            <Card variant="floating" style={{ padding: 'clamp(1rem, 3.5vw, 2rem)' }}>
-              <CardHeader>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.5rem' }}>
-                  <div>
-                    <CardTitle style={{ color: '#1B4332', fontSize: '1.3rem' }}>Review & Submit Grievance</CardTitle>
-                    <CardDescription>
-                      Review the details below. You can modify any field prior to submitting.
-                    </CardDescription>
-                  </div>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => setStep(1)}
-                    leftIcon={<Edit3 size={14} />}
-                  >
-                    Edit Description
-                  </Button>
-                </div>
-              </CardHeader>
-
-              <CardContent>
-                {submitError && (
-                  <Alert type="error" style={{ marginBottom: '1.25rem' }}>
-                    {submitError}
-                  </Alert>
-                )}
-
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
-                  {/* Suggested Title Input with AI Helper */}
-                  <div>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.35rem' }}>
-                      <label style={{ fontSize: '0.875rem', fontWeight: 700, color: '#374151' }}>
-                        Final Grievance Title <span style={{ color: '#DC2626' }}>*</span>
-                      </label>
-                      {suggestedTitle && suggestedTitle !== title && (
-                        <button
-                          type="button"
-                          onClick={() => setTitle(suggestedTitle)}
-                          style={{
-                            background: 'none',
-                            border: 'none',
-                            color: '#4F46E5',
-                            fontSize: '0.75rem',
-                            fontWeight: 600,
-                            cursor: 'pointer',
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: '0.25rem',
-                            padding: 0,
-                          }}
-                        >
-                          <Sparkles size={13} /> Use Suggested Title
-                        </button>
-                      )}
-                    </div>
-                    <Input
-                      value={title}
-                      onChange={(e) => setTitle(e.target.value)}
-                      placeholder="Title of complaint"
-                      required
-                    />
-                  </div>
-
-                  {/* Description Box */}
-                  <div>
-                    <Textarea
-                      label="Detailed Complaint Description"
-                      value={description}
-                      onChange={(e) => setDescription(e.target.value)}
-                      rows={4}
-                      required
-                    />
-                  </div>
-
-                  {/* Department & Category Selectors */}
-                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '1rem' }}>
-                    <div>
-                      <Select
-                        label="Destination Department"
-                        options={departments.map((d) => ({
-                          value: d.id,
-                          label: `${d.name} (${d.code})`,
-                        }))}
-                        value={selectedDeptId}
-                        onChange={(e) => setSelectedDeptId(e.target.value)}
-                      />
-                    </div>
-
-                    <div>
-                      <Select
-                        label="Category"
-                        required
-                        options={[
-                          { value: 'IT', label: 'IT & Network Infrastructure' },
-                          { value: 'ACADEMICS', label: 'Academic Affairs' },
-                          { value: 'HOSTEL', label: 'Hostel & Housing' },
-                          { value: 'MAINTENANCE', label: 'Campus Maintenance' },
-                          { value: 'TRANSPORT', label: 'Transport Services' },
-                          { value: 'CANTEEN', label: 'Canteen & Food' },
-                          { value: 'LIBRARY', label: 'Central Library' },
-                          { value: 'STUDENT_AFFAIRS', label: 'Student Affairs' },
-                        ]}
-                        value={category}
-                        onChange={(e) => setCategory(e.target.value)}
-                      />
-                    </div>
-                  </div>
-
-                  {/* Impact & Urgency Review */}
-                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '1rem' }}>
-                    <div>
-                      <Select
-                        label="Assessed Severity"
-                        options={[
-                          { value: 'LOW', label: 'Low — Minor Inconvenience' },
-                          { value: 'MODERATE', label: 'Moderate — Standard Disruption' },
-                          { value: 'HIGH', label: 'High — Significant Impairment' },
-                          { value: 'CRITICAL', label: 'Critical — Emergency Safety Hazard' },
-                        ]}
-                        value={severity}
-                        onChange={(e) => setSeverity(e.target.value as any)}
-                      />
-                    </div>
-                    <div>
-                      <Select
-                        label="Assessed Urgency"
-                        options={[
-                          { value: 'LOW', label: 'Low — Routine maintenance (48h)' },
-                          { value: 'MEDIUM', label: 'Medium — Normal resolution (24h)' },
-                          { value: 'HIGH', label: 'High — Intervention needed today (12h)' },
-                          { value: 'IMMEDIATE', label: 'Immediate — Emergency intervention (4h)' },
-                        ]}
-                        value={urgency}
-                        onChange={(e) => setUrgency(e.target.value as any)}
-                      />
-                    </div>
-                  </div>
-
-                  {/* Summary Review Bar */}
-                  <div
-                    style={{
-                      backgroundColor: '#F0FDF4',
-                      padding: '1rem',
-                      borderRadius: '12px',
-                      border: '1px solid #DCFCE7',
-                      display: 'flex',
-                      justifyContent: 'space-between',
-                      alignItems: 'center',
-                      flexWrap: 'wrap',
-                      gap: '0.75rem',
-                    }}
-                  >
-                    <div>
-                      <span style={{ fontSize: '0.75rem', color: '#1B4332', fontWeight: 700, textTransform: 'uppercase' }}>
-                        ESTIMATED RESOLUTION WINDOW
-                      </span>
-                      <div style={{ fontSize: '1.1rem', fontWeight: 800, color: '#2D6A4F', display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
-                        <Clock size={16} /> {aiAnalysis?.priority === 'CRITICAL' ? '4 Hours' : aiAnalysis?.priority === 'HIGH' ? '12 Hours' : '24 Hours'} Target
-                      </div>
-                    </div>
-
-                    <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
-                      <PriorityBadge priority={aiAnalysis?.priority || 'MEDIUM'} />
-                      <StatusBadge status="SUBMITTED" size="sm" />
-                    </div>
-                  </div>
-
-                  {/* Action Buttons */}
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '1rem', flexWrap: 'wrap', gap: '0.75rem' }}>
-                    <Button
-                      variant="outline"
-                      size="md"
-                      pill
-                      onClick={() => setStep(1)}
-                      leftIcon={<ArrowLeft size={16} />}
-                    >
-                      Back to Edit
-                    </Button>
-
-                    <Button
-                      variant="primary"
-                      size="lg"
-                      pill
-                      isLoading={isSubmitting}
-                      onClick={handleSubmitGrievance}
-                      rightIcon={<Send size={16} />}
-                    >
-                      {isSubmitting ? 'Submitting Request...' : 'Submit Grievance'}
-                    </Button>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        )}
-
-        {/* =========================================================================
-            STEP 4: SUBMITTED CONFIRMATION (Ticket ID, SLA Target, Tracking CTAs)
-           ========================================================================= */}
-        {step === 4 && createdGrievance && (
+        {/* Confirmation Screen */}
+        {isSubmitted && createdGrievance && (
           <Card variant="floating" style={{ padding: '2.75rem 2rem', textAlign: 'center' }}>
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1.5rem', maxWidth: '600px', margin: '0 auto' }}>
               <div
@@ -1292,7 +646,7 @@ export const AiComplaintForm: React.FC = () => {
                   {createdGrievance.ticket_number}
                 </h2>
                 <p style={{ margin: 0, fontSize: '0.9375rem', color: '#4B5563', lineHeight: 1.5 }}>
-                  Your grievance has been submitted. The designated department has been notified, and resolution tracking is active.
+                  Your grievance has been submitted. The designated department has been notified, and automated backend triage has processed your request.
                 </p>
               </div>
 
@@ -1327,6 +681,26 @@ export const AiComplaintForm: React.FC = () => {
                   </div>
                 )}
               </div>
+
+              {/* Automated Backend Triage & Priority Assessment */}
+              {createdGrievance.priority_reasons && createdGrievance.priority_reasons.length > 0 && (
+                <div style={{ width: '100%', backgroundColor: '#F0FDF4', borderRadius: '14px', border: '1px solid #BBF7D0', padding: '1rem', textAlign: 'left' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', marginBottom: '0.5rem' }}>
+                    <Lightbulb size={18} color="#166534" />
+                    <strong style={{ fontSize: '0.875rem', color: '#1B4332' }}>
+                      Automated Backend Triage Assessment ({createdGrievance.priority})
+                    </strong>
+                  </div>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.35rem' }}>
+                    {createdGrievance.priority_reasons.map((reason, idx) => (
+                      <div key={idx} style={{ display: 'flex', alignItems: 'flex-start', gap: '0.4rem', fontSize: '0.8125rem', color: '#14532D' }}>
+                        <Check size={14} color="#059669" style={{ marginTop: '2px', flexShrink: 0 }} />
+                        <span>{reason}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
 
               {/* Tamper-Proof Evidence Vault Display */}
               {vaultEvidence && (

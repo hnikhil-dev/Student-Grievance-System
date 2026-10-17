@@ -176,19 +176,34 @@ export const StudentShell: React.FC<StudentShellProps> = ({
     refreshUnreadCount();
   });
 
+  const [headerSearch, setHeaderSearch] = useState('');
+
+  const handleHeaderSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    const query = headerSearch.trim();
+    if (query) {
+      window.location.href = `/student/grievances?search=${encodeURIComponent(query)}`;
+    }
+  };
+
   const handleLogout = () => {
     clearStoredUser();
     setUser(null);
     window.location.href = '/login';
   };
 
-  const navigationItems = [
+  interface NavigationItem {
+    label: string;
+    href: string;
+    icon: React.ReactNode;
+    isCta?: boolean;
+    badge?: number;
+  }
+
+  const navigationItems: NavigationItem[] = [
     { label: 'Dashboard', href: '/student/page', icon: <LayoutDashboard size={18} /> },
     { label: 'My Grievances', href: '/student/grievances', icon: <Folder size={18} /> },
     { label: 'Report Grievance', href: '/student/report', icon: <Plus size={18} />, isCta: true },
-    { label: 'Notifications', href: '/student/notifications', icon: <Bell size={18} />, badge: unreadCount },
-    { label: 'Feedback & Ratings', href: '/student/feedback', icon: <Star size={18} /> },
-    { label: 'My Profile', href: '/student/page', icon: <User size={18} /> },
   ];
 
   return (
@@ -262,7 +277,7 @@ export const StudentShell: React.FC<StudentShellProps> = ({
               </div>
               <div>
                 <span style={{ fontSize: '0.9375rem', fontWeight: 800, color: '#1B4332', letterSpacing: '-0.01em' }}>
-                  AMIT Student Portal
+                  AMRIT Student Portal
                 </span>
                 <span style={{ fontSize: '0.65rem', display: 'block', color: '#2D6A4F', fontWeight: 600 }}>
                   Campus Grievance Portal
@@ -271,27 +286,38 @@ export const StudentShell: React.FC<StudentShellProps> = ({
             </a>
           </div>
 
-          {/* Center: Search / Quick Navigation Trigger (Desktop) */}
+          {/* Center: Search / Quick Navigation Input (Desktop) */}
           <div style={{ alignItems: 'center' }} className="sg-desktop-search">
-            <div
-              onClick={() => (window.location.href = '/student/page')}
-              style={{
-                backgroundColor: '#F3F4F6',
-                borderRadius: '9999px',
-                padding: '0.45rem 1rem',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '0.5rem',
-                cursor: 'pointer',
-                fontSize: '0.85rem',
-                color: '#6B7280',
-                width: '260px',
-                border: '1px solid #E5E7EB',
-              }}
-            >
-              <Search size={15} />
-              <span>Search grievances or ticket ID...</span>
-            </div>
+            <form onSubmit={handleHeaderSearch} style={{ margin: 0 }}>
+              <div
+                style={{
+                  backgroundColor: '#F3F4F6',
+                  borderRadius: '9999px',
+                  padding: '0.4rem 0.9rem',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.5rem',
+                  width: '260px',
+                  border: '1px solid #E5E7EB',
+                }}
+              >
+                <Search size={15} color="#6B7280" />
+                <input
+                  type="text"
+                  placeholder="Search grievances or ticket ID..."
+                  value={headerSearch}
+                  onChange={(e) => setHeaderSearch(e.target.value)}
+                  style={{
+                    border: 'none',
+                    background: 'transparent',
+                    outline: 'none',
+                    fontSize: '0.8125rem',
+                    color: '#111827',
+                    width: '100%',
+                  }}
+                />
+              </div>
+            </form>
           </div>
 
           {/* Right: Primary CTA + Notifications + Profile Dropdown */}
@@ -390,22 +416,10 @@ export const StudentShell: React.FC<StudentShellProps> = ({
               }
               items={[
                 {
-                  id: 'profile',
-                  label: 'My Profile & ID',
-                  icon: <User size={15} />,
-                  onClick: () => (window.location.href = '/student/page'),
-                },
-                {
                   id: 'my-grievances',
                   label: 'My Grievances',
                   icon: <Folder size={15} />,
-                  onClick: () => (window.location.href = '/student/page'),
-                },
-                {
-                  id: 'notifications',
-                  label: `Notifications (${unreadCount})`,
-                  icon: <Bell size={15} />,
-                  onClick: () => (window.location.href = '/student/page'),
+                  onClick: () => (window.location.href = '/student/grievances'),
                 },
                 {
                   id: 'logout',
@@ -566,25 +580,17 @@ export const StudentShell: React.FC<StudentShellProps> = ({
             boxShadow: '0 -4px 10px rgba(0,0,0,0.05)',
           }}
         >
-          <a href="/student/page" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '2px', fontSize: '0.7rem', color: '#1B4332', fontWeight: 700, textDecoration: 'none' }}>
-            <LayoutDashboard size={18} />
+          <a href="/student/page" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '2px', fontSize: '0.75rem', color: '#1B4332', fontWeight: 700, textDecoration: 'none' }}>
+            <LayoutDashboard size={20} />
             <span>Dashboard</span>
           </a>
-          <a href="/student/grievances" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '2px', fontSize: '0.7rem', color: '#4B5563', textDecoration: 'none' }}>
-            <Folder size={18} />
-            <span>Complaints</span>
+          <a href="/student/grievances" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '2px', fontSize: '0.75rem', color: '#4B5563', textDecoration: 'none' }}>
+            <Folder size={20} />
+            <span>My Grievances</span>
           </a>
-          <a href="/student/report" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '2px', fontSize: '0.75rem', color: '#FFFFFF', backgroundColor: '#2D6A4F', padding: '0.35rem 0.85rem', borderRadius: '9999px', fontWeight: 700, textDecoration: 'none' }}>
-            <Plus size={16} />
+          <a href="/student/report" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '2px', fontSize: '0.75rem', color: '#FFFFFF', backgroundColor: '#2D6A4F', padding: '0.4rem 1.1rem', borderRadius: '9999px', fontWeight: 700, textDecoration: 'none' }}>
+            <Plus size={18} />
             <span>Report</span>
-          </a>
-          <a href="/student/notifications" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '2px', fontSize: '0.7rem', color: '#4B5563', textDecoration: 'none' }}>
-            <Bell size={18} />
-            <span>Alerts</span>
-          </a>
-          <a href="/student/page" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '2px', fontSize: '0.7rem', color: '#4B5563', textDecoration: 'none' }}>
-            <User size={18} />
-            <span>Profile</span>
           </a>
         </nav>
       </div>

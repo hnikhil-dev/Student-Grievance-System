@@ -21,10 +21,9 @@ export const Navbar: React.FC<NavbarProps> = ({
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const navItems = [
-    { label: 'Landing', href: '/' },
     { label: 'Dashboard', href: '/student/page' },
-    { label: '+ File Complaint', href: '/student/report', highlight: true },
     { label: 'My Grievances', href: '/student/grievances' },
+    { label: '+ Report Grievance', href: '/student/report', highlight: true },
   ];
 
   return (
@@ -72,7 +71,7 @@ export const Navbar: React.FC<NavbarProps> = ({
           </div>
           <div>
             <div className="sg-nav-institution" style={{ fontSize: '0.7rem', fontWeight: 800, color: '#1B4332', letterSpacing: '0.04em', textTransform: 'uppercase' }}>
-              ATMA MALIK INSTITUTE
+              AMRIT INSTITUTE
             </div>
             <div style={{ fontSize: '0.875rem', fontWeight: 700, color: '#2D6A4F', display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
               <span>Student Grievance</span>
